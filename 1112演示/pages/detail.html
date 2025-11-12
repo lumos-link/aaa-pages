@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品详情 - 拍卖平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .main-image { transition: opacity 0.3s; }
+        .thumb { cursor: pointer; opacity: 0.6; transition: opacity 0.3s; }
+        .thumb.active { opacity: 1; border: 2px solid #1a365d; }
+        .bid-item { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="mb-4">
+            <button onclick="if(window.parent!==window)window.parent.postMessage({type:'navigate',page:'home'},'*');else history.back();" class="text-blue-900 hover:text-blue-700">
+                <i class="fas fa-arrow-left mr-2"></i>返回首页
+            </button>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div>
+                <div class="bg-white rounded-lg overflow-hidden mb-4">
+                    <img id="mainImg" src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800&h=600&fit=crop" alt="主图" class="main-image w-full h-96 object-cover">
+                </div>
+                <div class="flex space-x-2">
+                    <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=200&h=150&fit=crop" alt="缩略图1" class="thumb active w-20 h-20 object-cover rounded cursor-pointer" onclick="changeImage(this.src.replace('w=200&h=150','w=800&h=600'))">
+                    <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=200&h=150&fit=crop" alt="缩略图2" class="thumb w-20 h-20 object-cover rounded cursor-pointer" onclick="changeImage(this.src.replace('w=200&h=150','w=800&h=600'))">
+                    <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=200&h=150&fit=crop" alt="缩略图3" class="thumb w-20 h-20 object-cover rounded cursor-pointer" onclick="changeImage(this.src.replace('w=200&h=150','w=800&h=600'))">
+                </div>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">清代青花瓷瓶 精美古董收藏品</h1>
+                <div class="bg-white rounded-lg p-6 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">起拍价</p>
+                            <p class="text-2xl text-gray-600">¥5,000</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-500 mb-1">当前最高价</p>
+                            <p class="text-3xl font-bold text-red-600">¥8,800</p>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-200 pt-4 mb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-gray-600">剩余时间</span>
+                            <span class="text-xl font-bold text-red-600 countdown" id="countdown">2天 5小时 32分 15秒</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">出价次数</span>
+                            <span class="text-lg font-semibold">12次</span>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <input type="number" id="bidAmount" placeholder="请输入出价金额" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" min="8800" step="100">
+                        <p class="text-sm text-gray-500">最低出价：¥9,000（需高于当前最高价）</p>
+                        <button onclick="submitBid()" class="w-full py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition">立即出价</button>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-6">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4">商品详情</h2>
+                    <div class="space-y-3 text-gray-700">
+                        <p><span class="font-medium">年代：</span>清代</p>
+                        <p><span class="font-medium">材质：</span>陶瓷</p>
+                        <p><span class="font-medium">尺寸：</span>高35cm，口径12cm</p>
+                        <p><span class="font-medium">品相：</span>完好，无破损</p>
+                        <p class="mt-4">这是一件精美的清代青花瓷瓶，工艺精湛，图案清晰，具有很高的收藏价值。经过专业鉴定，确认为真品，品相完好。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg p-6">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">出价记录</h2>
+            <div class="space-y-3" id="bidHistory">
+                <div class="bid-item flex items-center justify-between p-3 bg-gray-50 rounded">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center text-white font-semibold">张</div>
+                        <div>
+                            <p class="font-medium text-gray-900">张***</p>
+                            <p class="text-sm text-gray-500">2小时前</p>
+                        </div>
+                    </div>
+                    <span class="text-lg font-bold text-red-600">¥8,800</span>
+                </div>
+                <div class="bid-item flex items-center justify-between p-3 bg-gray-50 rounded">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-semibold">李</div>
+                        <div>
+                            <p class="font-medium text-gray-900">李***</p>
+                            <p class="text-sm text-gray-500">3小时前</p>
+                        </div>
+                    </div>
+                    <span class="text-lg font-bold text-red-600">¥8,500</span>
+                </div>
+                <div class="bid-item flex items-center justify-between p-3 bg-gray-50 rounded">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-semibold">王</div>
+                        <div>
+                            <p class="font-medium text-gray-900">王***</p>
+                            <p class="text-sm text-gray-500">5小时前</p>
+                        </div>
+                    </div>
+                    <span class="text-lg font-bold text-red-600">¥8,200</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function changeImage(src) {
+            document.getElementById('mainImg').src = src;
+            document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        function submitBid() {
+            const amount = document.getElementById('bidAmount').value;
+            if (!amount || amount < 9000) {
+                alert('出价必须高于当前最高价¥8,800');
+                return;
+            }
+            if (confirm(`确认出价¥${amount}？`)) {
+                alert('出价成功！');
+                document.getElementById('bidAmount').value = '';
+            }
+        }
+        let seconds = 15, minutes = 32, hours = 5, days = 2;
+        setInterval(() => {
+            seconds--;
+            if (seconds < 0) { seconds = 59; minutes--; }
+            if (minutes < 0) { minutes = 59; hours--; }
+            if (hours < 0) { hours = 23; days--; }
+            document.getElementById('countdown').textContent = `${days}天 ${hours}小时 ${minutes}分 ${seconds}秒`;
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布拍卖 - 拍卖平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">发布拍卖商品</h1>
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <form class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">商品标题 <span class="text-red-500">*</span></label>
+                    <input type="text" placeholder="请输入商品标题" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">商品分类 <span class="text-red-500">*</span></label>
+                    <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" required>
+                        <option value="">请选择分类</option>
+                        <option>艺术品</option>
+                        <option>珠宝</option>
+                        <option>古董</option>
+                        <option>收藏品</option>
+                        <option>名表</option>
+                        <option>名酒</option>
+                        <option>古籍</option>
+                        <option>家具</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">商品图片 <span class="text-red-500">*</span></label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-gray-600 mb-2">点击上传或拖拽图片到此处</p>
+                        <p class="text-sm text-gray-500">支持JPG、PNG格式，最多5张</p>
+                        <input type="file" multiple accept="image/*" class="hidden" id="imageUpload">
+                        <button type="button" onclick="document.getElementById('imageUpload').click()" class="mt-4 px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800">选择图片</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">商品描述 <span class="text-red-500">*</span></label>
+                    <textarea rows="6" placeholder="请详细描述商品信息，包括年代、材质、尺寸、品相等" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" required></textarea>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">起拍价（元） <span class="text-red-500">*</span></label>
+                        <input type="number" placeholder="0" min="0" step="100" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">加价幅度（元） <span class="text-red-500">*</span></label>
+                        <input type="number" placeholder="100" min="1" step="10" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">拍卖开始时间 <span class="text-red-500">*</span></label>
+                        <input type="datetime-local" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">拍卖结束时间 <span class="text-red-500">*</span></label>
+                        <input type="datetime-local" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" class="w-4 h-4 text-blue-900 border-gray-300 rounded focus:ring-blue-900">
+                        <span class="text-sm text-gray-700">我已阅读并同意《拍卖平台服务协议》</span>
+                    </label>
+                </div>
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition">发布拍卖</button>
+                    <button type="button" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition">保存草稿</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
