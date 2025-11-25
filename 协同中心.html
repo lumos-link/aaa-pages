@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>协同中心</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <section class="p-6 space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-800">协同中心</h1>
+                <p class="text-sm text-gray-500">掌控所有标书项目、人员角色与实时进度。</p>
+            </div>
+            <div class="flex items-center gap-3 text-sm">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2"><i class="fas fa-plus"></i> 新建项目</button>
+                <button class="px-4 py-2 bg-white border border-gray-200 rounded-lg flex items-center gap-2"><i class="fas fa-filter"></i> 筛选</button>
+            </div>
+        </div>
+
+        <div class="grid xl:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">项目看板</h2>
+                    <span class="text-xs text-gray-400">近 30 天</span>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div class="p-3 border border-gray-100 rounded-xl">
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="font-semibold text-gray-800">智慧园区建设</p>
+                            <span class="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-600">AI写作</span>
+                        </div>
+                        <p class="text-xs text-gray-500">负责人：王琪 · 协作者 4 人</p>
+                        <div class="w-full h-1.5 bg-gray-100 rounded-full mt-2">
+                            <div class="h-1.5 bg-blue-600 rounded-full" style="width:70%"></div>
+                        </div>
+                    </div>
+                    <div class="p-3 border border-gray-100 rounded-xl">
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="font-semibold text-gray-800">医院信息化运维</p>
+                            <span class="text-xs px-2 py-1 rounded-full bg-yellow-50 text-yellow-600">协同审校</span>
+                        </div>
+                        <p class="text-xs text-gray-500">负责人：陈悦 · 待审批 2</p>
+                        <div class="w-full h-1.5 bg-gray-100 rounded-full mt-2">
+                            <div class="h-1.5 bg-yellow-500 rounded-full" style="width:55%"></div>
+                        </div>
+                    </div>
+                    <div class="p-3 border border-gray-100 rounded-xl">
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="font-semibold text-gray-800">市政道路提升</p>
+                            <span class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600">导出交付</span>
+                        </div>
+                        <p class="text-xs text-gray-500">负责人：李卓 · 等待盖章</p>
+                        <div class="w-full h-1.5 bg-gray-100 rounded-full mt-2">
+                            <div class="h-1.5 bg-green-500 rounded-full" style="width:90%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800">实时协作</h2>
+                    <span class="text-xs text-gray-400">在线 8 人</span>
+                </div>
+                <div class="space-y-3 text-sm text-gray-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-semibold">王</div>
+                        <div>
+                            <p class="font-semibold text-gray-800">王琪 正在修改《技术方案》第三章</p>
+                            <p class="text-xs text-gray-500">已提交 3 条 AI 建议</p>
+                        </div>
+                        <span class="text-xs text-gray-400 ml-auto">刚刚</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-semibold">陈</div>
+                        <div>
+                            <p class="font-semibold text-gray-800">陈悦 完成暗标内容确认</p>
+                            <p class="text-xs text-gray-500">等待负责人批准</p>
+                        </div>
+                        <span class="text-xs text-gray-400 ml-auto">5 分钟前</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-semibold">李</div>
+                        <div>
+                            <p class="font-semibold text-gray-800">李卓 上传了新的施工照片</p>
+                            <p class="text-xs text-gray-500">自动同步至图片库</p>
+                        </div>
+                        <span class="text-xs text-gray-400 ml-auto">12 分钟前</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800">任务与审批</h2>
+                    <button class="text-xs text-blue-600"><i class="fas fa-list mr-1"></i> 查看全部</button>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div class="p-3 border border-gray-100 rounded-xl flex items-start gap-3">
+                        <span class="text-blue-500 mt-0.5"><i class="fas fa-check-square"></i></span>
+                        <div>
+                            <p class="font-semibold text-gray-800">确认评分明细</p>
+                            <p class="text-xs text-gray-500">指派给：赵晨 · 截止 6/30</p>
+                        </div>
+                    </div>
+                    <div class="p-3 border border-gray-100 rounded-xl flex items-start gap-3">
+                        <span class="text-yellow-500 mt-0.5"><i class="fas fa-pen-alt"></i></span>
+                        <div>
+                            <p class="font-semibold text-gray-800">完成预算表格格式化</p>
+                            <p class="text-xs text-gray-500">指派给：刘雪 · 截止 今日</p>
+                        </div>
+                        <span class="text-xs text-red-500 ml-auto">紧急</span>
+                    </div>
+                    <div class="p-3 border border-gray-100 rounded-xl flex items-start gap-3">
+                        <span class="text-green-500 mt-0.5"><i class="fas fa-signature"></i></span>
+                        <div>
+                            <p class="font-semibold text-gray-800">导出文件审批</p>
+                            <p class="text-xs text-gray-500">等待负责人签署</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">版本对比</h2>
+                <button class="text-xs text-blue-600"><i class="fas fa-history mr-1"></i> 历史版本</button>
+            </div>
+            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                <div class="p-4 border border-gray-100 rounded-xl">
+                    <p class="font-semibold text-gray-800 mb-2">V12 / 当前版本</p>
+                    <ul class="space-y-2 text-gray-600 text-xs">
+                        <li>· 新增“智能运维”章节，AI 生成内容 1,200 字</li>
+                        <li>· 更新企业绩效数据，引入近三年项目回款率</li>
+                        <li>· 图片替换为最新施工现场，自动压缩</li>
+                    </ul>
+                </div>
+                <div class="p-4 border border-gray-100 rounded-xl bg-gray-50">
+                    <p class="font-semibold text-gray-800 mb-2">V11 / 上一版</p>
+                    <ul class="space-y-2 text-gray-600 text-xs">
+                        <li>· 无暗标章节说明</li>
+                        <li>· 项目进度表含旧模板，格式不合规</li>
+                        <li>· 缺少施工队伍资质附件</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+

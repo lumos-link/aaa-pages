@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>格式与图片</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <section class="p-6 space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <p class="text-xs text-orange-500 font-semibold uppercase tracking-widest mb-2">Step 04</p>
+                <h1 class="text-2xl font-semibold text-gray-800">格式与图片中心</h1>
+                <p class="text-sm text-gray-500">模板套用、排版校验、AI 生图、图片库一站式管理。</p>
+            </div>
+            <div class="flex items-center gap-3 text-sm">
+                <button class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-600"><i class="fas fa-check-circle mr-2"></i> 一键校验</button>
+                <button class="px-4 py-2 bg-orange-600 text-white rounded-lg"><i class="fas fa-image mr-2"></i> AI 生图</button>
+            </div>
+        </div>
+
+        <div class="grid xl:grid-cols-3 gap-6">
+            <div class="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">格式检查</h2>
+                    <span class="text-xs text-gray-400">智能校验 17 项</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <div class="p-4 border border-gray-100 rounded-xl">
+                        <p class="font-semibold text-gray-800 mb-1">字体字号</p>
+                        <p class="text-xs text-gray-500 mb-2">正文应为三号仿宋，当前部分章节为默认字体。</p>
+                        <button class="text-blue-600 text-xs">一键修复</button>
+                    </div>
+                    <div class="p-4 border border-gray-100 rounded-xl">
+                        <p class="font-semibold text-gray-800 mb-1">段落/行距</p>
+                        <p class="text-xs text-gray-500 mb-2">已按 28pt 行距、段前后 0pt 设置。</p>
+                        <span class="text-green-600 text-xs"><i class="fas fa-check mr-1"></i>通过</span>
+                    </div>
+                    <div class="p-4 border border-gray-100 rounded-xl">
+                        <p class="font-semibold text-gray-800 mb-1">页眉页脚</p>
+                        <p class="text-xs text-gray-500 mb-2">明标需展示企业名称，暗标需留空。</p>
+                        <button class="text-blue-600 text-xs">套用模板</button>
+                    </div>
+                    <div class="p-4 border border-gray-100 rounded-xl">
+                        <p class="font-semibold text-gray-800 mb-1">目录与编号</p>
+                        <p class="text-xs text-gray-500 mb-2">目录已自动更新，章节编号一致。</p>
+                        <span class="text-green-600 text-xs"><i class="fas fa-check mr-1"></i>通过</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800">封面模板</h2>
+                    <button class="text-xs text-blue-600">更多</button>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button class="border-2 border-blue-500 rounded-xl p-3 text-left">
+                        <p class="text-xs text-gray-400 mb-1">选择中</p>
+                        <p class="font-semibold text-gray-800">现代科技蓝</p>
+                    </button>
+                    <button class="border border-gray-200 rounded-xl p-3 text-left">
+                        <p class="text-xs text-gray-400 mb-1">备选</p>
+                        <p class="font-semibold text-gray-800">工程图纸风</p>
+                    </button>
+                </div>
+                <div class="text-xs text-gray-500">
+                    可绑定品牌色、自动插入项目名称和日期，同时生成封底与书脊。
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800">图片库</h2>
+                    <button class="text-xs text-blue-600"><i class="fas fa-folder-open mr-1"></i> 管理</button>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="rounded-xl overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=600&q=60" alt="科技" class="w-full h-28 object-cover">
+                        <span class="absolute bottom-2 left-2 text-white text-[10px] bg-black/40 px-2 py-0.5 rounded">园区大屏</span>
+                    </div>
+                    <div class="rounded-xl overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1503389152951-9f343605f61e?auto=format&fit=crop&w=600&q=60" alt="工程" class="w-full h-28 object-cover">
+                        <span class="absolute bottom-2 left-2 text-white text-[10px] bg-black/40 px-2 py-0.5 rounded">施工现场</span>
+                    </div>
+                    <div class="rounded-xl overflow-hidden relative border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">
+                        <i class="fas fa-plus mr-1"></i> 上传
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800">AI 生图任务</h2>
+                    <button class="text-xs text-blue-600">查看历史</button>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div class="p-3 border border-gray-100 rounded-xl">
+                        <p class="text-xs text-gray-400 mb-1">提示词</p>
+                        <p class="font-semibold text-gray-800">“智慧城市指挥中心 · 夜景 · 蓝紫科技风”</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500 mt-2">
+                            <span>风格：写实视觉</span>
+                            <span class="text-green-600"><i class="fas fa-check mr-1"></i>已完成</span>
+                        </div>
+                    </div>
+                    <div class="p-3 border border-gray-100 rounded-xl">
+                        <p class="text-xs text-gray-400 mb-1">提示词</p>
+                        <p class="font-semibold text-gray-800">“工程团队协作 · 动态示意”</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500 mt-2">
+                            <span>风格：插画</span>
+                            <span class="text-blue-600"><i class="fas fa-spinner fa-spin mr-1"></i>生成中</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+

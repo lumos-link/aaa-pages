@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标书设置</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <section class="p-6 space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <p class="text-xs text-orange-500 font-semibold uppercase tracking-widest mb-2">Step 02</p>
+                <h1 class="text-2xl font-semibold text-gray-800">标书设置</h1>
+                <p class="text-sm text-gray-500">配置标书基本信息、目录结构和格式模板。</p>
+            </div>
+            <button class="px-5 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2" onclick="saveSettings()">
+                <i class="fas fa-save"></i> 保存设置
+            </button>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-5">
+                <h2 class="text-lg font-semibold text-gray-800">基本信息</h2>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        标书标题 <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="bookTitle" value="城市运行数字底座建设项目投标书" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <p class="text-xs text-gray-500 mt-1">默认读取招标文件中的项目名称，可修改</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        行业类型 <span class="text-red-500">*</span>
+                    </label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="industry-btn px-4 py-3 border-2 border-blue-600 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium" data-industry="it">
+                            <i class="fas fa-laptop-code mr-2"></i>IT信息化
+                        </button>
+                        <button class="industry-btn px-4 py-3 border-2 border-gray-200 text-gray-600 rounded-lg text-sm font-medium" data-industry="construction">
+                            <i class="fas fa-building mr-2"></i>工程建设
+                        </button>
+                        <button class="industry-btn px-4 py-3 border-2 border-gray-200 text-gray-600 rounded-lg text-sm font-medium" data-industry="procurement">
+                            <i class="fas fa-shopping-cart mr-2"></i>设备采购
+                        </button>
+                        <button class="industry-btn px-4 py-3 border-2 border-gray-200 text-gray-600 rounded-lg text-sm font-medium" data-industry="service">
+                            <i class="fas fa-handshake mr-2"></i>服务类
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-5">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800">标书格式</h2>
+                    <button class="text-xs text-blue-600" onclick="showFormatModal()">
+                        <i class="fas fa-plus mr-1"></i> 新建格式
+                    </button>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">选择格式模板</label>
+                    <select id="formatSelect" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="default">默认格式（三号仿宋）</option>
+                        <option value="standard">标准格式（小四号宋体）</option>
+                        <option value="custom1">自定义格式1</option>
+                        <option value="custom2">自定义格式2</option>
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">可选择已有格式或创建新格式</p>
+                </div>
+
+                <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <p class="text-xs text-gray-500 mb-2">当前格式预览</p>
+                    <div class="text-sm text-gray-700 space-y-1">
+                        <p>字体：三号仿宋</p>
+                        <p>行距：1.5倍</p>
+                        <p>页边距：上下2.5cm，左右3cm</p>
+                        <p>页眉页脚：已启用</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">标书目录</h2>
+                <div class="flex gap-2">
+                    <button class="text-xs text-blue-600" onclick="editCatalog()">
+                        <i class="fas fa-edit mr-1"></i> 编辑目录
+                    </button>
+                    <button class="text-xs text-gray-600" onclick="resetCatalog()">
+                        <i class="fas fa-undo mr-1"></i> 恢复默认
+                    </button>
+                </div>
+            </div>
+            <p class="text-xs text-gray-500 mb-4">默认目录来自招标文件解析的"响应文件格式"，可在此修改</p>
+            
+            <div id="catalogContent" class="space-y-2 text-sm text-gray-700">
+                <div class="flex items-start gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <i class="fas fa-file-alt text-blue-600 mt-1"></i>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-800">第一部分 投标函及投标函附录</p>
+                        <div class="ml-4 mt-1 space-y-1 text-xs text-gray-600">
+                            <p>1.1 投标函</p>
+                            <p>1.2 投标函附录</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <i class="fas fa-file-alt text-blue-600 mt-1"></i>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-800">第二部分 法定代表人身份证明</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <i class="fas fa-file-alt text-blue-600 mt-1"></i>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-800">第三部分 技术方案</p>
+                        <div class="ml-4 mt-1 space-y-1 text-xs text-gray-600">
+                            <p>3.1 项目理解</p>
+                            <p>3.2 技术架构</p>
+                            <p>3.3 实施方案</p>
+                            <p>3.4 质量保证措施</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <i class="fas fa-file-alt text-blue-600 mt-1"></i>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-800">第四部分 商务部分</p>
+                        <div class="ml-4 mt-1 space-y-1 text-xs text-gray-600">
+                            <p>4.1 报价明细</p>
+                            <p>4.2 付款方式</p>
+                            <p>4.3 售后服务</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <i class="fas fa-file-alt text-blue-600 mt-1"></i>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-800">第五部分 资格证明文件</p>
+                        <div class="ml-4 mt-1 space-y-1 text-xs text-gray-600">
+                            <p>5.1 企业资质</p>
+                            <p>5.2 业绩案例</p>
+                            <p>5.3 团队配置</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <p class="text-sm font-semibold text-gray-800">设置完成</p>
+                <p class="text-xs text-gray-500 mt-1">确认标书信息无误后，可继续下一步。</p>
+            </div>
+            <div class="flex flex-wrap gap-3 text-sm">
+                <button class="hidden px-4 py-2 bg-pink-600 text-white rounded-lg" onclick="showCollabModal()">
+                    <i class="fas fa-users mr-2"></i> 开启协同
+                </button>
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg" onclick="parent.loadPage('标书编写.html','step')">
+                    <i class="fas fa-arrow-right mr-2"></i> 下一步：标书编写
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <div id="formatModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-lg w-full">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">新建格式模板</h3>
+                <button onclick="closeFormatModal()" class="text-gray-400"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">格式名称</label>
+                    <input type="text" placeholder="请输入格式名称" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">字体</label>
+                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option>仿宋</option>
+                            <option>宋体</option>
+                            <option>黑体</option>
+                            <option>微软雅黑</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">字号</label>
+                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option>三号</option>
+                            <option>四号</option>
+                            <option>小四号</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">行距</label>
+                    <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        <option>单倍行距</option>
+                        <option>1.5倍行距</option>
+                        <option>2倍行距</option>
+                    </select>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="closeFormatModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700">取消</button>
+                    <button onclick="saveFormat()" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="collabModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl p-6 max-w-2xl w-full my-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold">邀请成员开启协同</h3>
+                <button onclick="closeCollabModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <div class="space-y-6">
+                <div id="memberList" class="space-y-4">
+                    <div class="member-item p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="flex-1 relative">
+                                        <input type="text" placeholder="搜索协同人账号" class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg text-sm" oninput="searchMember(this)">
+                                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                    </div>
+                                    <select class="px-4 py-2 border border-gray-300 rounded-lg text-sm">
+                                        <option>技术负责人</option>
+                                        <option>商务经理</option>
+                                        <option>项目经理</option>
+                                        <option>审核人员</option>
+                                    </select>
+                                    <button onclick="removeMember(this)" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">分配章节（可选）</label>
+                                    <div class="chapter-checkbox-container grid grid-cols-2 gap-2 max-h-32 overflow-y-auto p-2 bg-gray-50 rounded-lg border border-gray-200">
+                                        <!-- 章节复选框将动态生成 -->
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">备注（可选）</label>
+                                    <textarea placeholder="添加备注说明，如：主要负责技术方案部分，需在3天内完成..." class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm resize-none" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="addMember()" class="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-500 transition">
+                    <i class="fas fa-plus mr-2"></i> 添加更多成员
+                </button>
+            </div>
+            
+            <div class="mt-6 flex gap-3 pt-6 border-t border-gray-200">
+                <button onclick="closeCollabModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                <button onclick="sendInvites()" class="flex-1 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700">
+                    <i class="fas fa-paper-plane mr-2"></i> 发送邀请
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="catalogEditModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl p-6 max-w-3xl w-full my-8 max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold">编辑标书目录</h3>
+                <button onclick="closeCatalogEdit()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto mb-4">
+                <div id="catalogEditList" class="space-y-3">
+                    <!-- 目录项将动态加载 -->
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-4 space-y-3">
+                <button onclick="addChapter()" class="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-500 transition">
+                    <i class="fas fa-plus mr-2"></i> 添加新章节
+                </button>
+                <div class="flex gap-3">
+                    <button onclick="closeCatalogEdit()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button onclick="saveCatalog()" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-save mr-2"></i> 保存目录
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.industry-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.industry-btn').forEach(b => {
+                    b.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-600');
+                    b.classList.add('border-gray-200', 'text-gray-600');
+                });
+                this.classList.remove('border-gray-200', 'text-gray-600');
+                this.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-600');
+            });
+        });
+
+        function showFormatModal() {
+            document.getElementById('formatModal').classList.remove('hidden');
+        }
+        function closeFormatModal() {
+            document.getElementById('formatModal').classList.add('hidden');
+        }
+        function saveFormat() {
+            alert('格式模板已保存');
+            closeFormatModal();
+        }
+        function saveSettings() {
+            alert('标书设置已保存');
+        }
+        function editCatalog() {
+            document.getElementById('catalogEditModal').classList.remove('hidden');
+            loadCatalogForEdit();
+        }
+        function closeCatalogEdit() {
+            document.getElementById('catalogEditModal').classList.add('hidden');
+        }
+        function loadCatalogForEdit() {
+            const catalogData = [
+                { id: 1, title: '第一部分 投标函及投标函附录', children: [
+                    { id: 11, title: '1.1 投标函' },
+                    { id: 12, title: '1.2 投标函附录' }
+                ]},
+                { id: 2, title: '第二部分 法定代表人身份证明', children: [] },
+                { id: 3, title: '第三部分 技术方案', children: [
+                    { id: 31, title: '3.1 项目理解' },
+                    { id: 32, title: '3.2 技术架构' },
+                    { id: 33, title: '3.3 实施方案' },
+                    { id: 34, title: '3.4 质量保证措施' }
+                ]},
+                { id: 4, title: '第四部分 商务部分', children: [
+                    { id: 41, title: '4.1 报价明细' },
+                    { id: 42, title: '4.2 付款方式' },
+                    { id: 43, title: '4.3 售后服务' }
+                ]},
+                { id: 5, title: '第五部分 资格证明文件', children: [
+                    { id: 51, title: '5.1 企业资质' },
+                    { id: 52, title: '5.2 业绩案例' },
+                    { id: 53, title: '5.3 团队配置' }
+                ]}
+            ];
+            window.catalogData = catalogData;
+            renderCatalogEdit();
+        }
+        function renderCatalogEdit() {
+            const container = document.getElementById('catalogEditList');
+            container.innerHTML = '';
+            window.catalogData.forEach((item, index) => {
+                const html = `
+                    <div class="catalog-item" data-id="${item.id}">
+                        <div class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200 mb-2">
+                            <div class="flex flex-col gap-1">
+                                <button onclick="moveChapterUp(${item.id})" class="text-gray-400 hover:text-gray-600 text-xs ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}" ${index === 0 ? 'disabled' : ''}>
+                                    <i class="fas fa-chevron-up"></i>
+                                </button>
+                                <button onclick="moveChapterDown(${item.id})" class="text-gray-400 hover:text-gray-600 text-xs ${index === window.catalogData.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" ${index === window.catalogData.length - 1 ? 'disabled' : ''}>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <input type="text" value="${item.title}" class="flex-1 px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" onchange="updateCatalogTitle(${item.id}, this.value)">
+                            <button onclick="addSubChapter(${item.id})" class="text-xs text-blue-600 px-2 py-1 hover:bg-blue-50 rounded" title="添加子章节">
+                                <i class="fas fa-plus mr-1"></i> 子章节
+                            </button>
+                            <button onclick="removeChapter(${item.id})" class="text-xs text-red-600 px-2 py-1 hover:bg-red-50 rounded" title="删除章节">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="ml-6 space-y-2" id="children-${item.id}">
+                            ${item.children.map(child => `
+                                <div class="flex items-center gap-2 p-2 bg-white rounded border border-gray-200">
+                                    <i class="fas fa-grip-vertical text-gray-400 cursor-move text-xs"></i>
+                                    <input type="text" value="${child.title}" class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs" onchange="updateSubChapterTitle(${item.id}, ${child.id}, this.value)">
+                                    <button onclick="removeSubChapter(${item.id}, ${child.id})" class="text-xs text-red-600 px-2 py-1 hover:bg-red-50 rounded">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+        function addChapter() {
+            const newId = Math.max(...window.catalogData.map(i => i.id)) + 1;
+            const partNum = window.catalogData.length + 1;
+            window.catalogData.push({
+                id: newId,
+                title: `第${partNum}部分 新章节`,
+                children: []
+            });
+            renderCatalogEdit();
+        }
+        function addSubChapter(parentId) {
+            const parent = window.catalogData.find(item => item.id === parentId);
+            if (parent) {
+                const subNum = parent.children.length + 1;
+                const partNum = window.catalogData.findIndex(item => item.id === parentId) + 1;
+                const newId = parentId * 10 + subNum;
+                parent.children.push({
+                    id: newId,
+                    title: `${partNum}.${subNum} 新子章节`
+                });
+                renderCatalogEdit();
+            }
+        }
+        function removeChapter(id) {
+            if (window.catalogData.length <= 1) {
+                alert('至少需要保留一个章节');
+                return;
+            }
+            if (confirm('确定要删除此章节及其所有子章节吗？')) {
+                window.catalogData = window.catalogData.filter(item => item.id !== id);
+                renderCatalogEdit();
+            }
+        }
+        function removeSubChapter(parentId, childId) {
+            const parent = window.catalogData.find(item => item.id === parentId);
+            if (parent) {
+                parent.children = parent.children.filter(child => child.id !== childId);
+                renderCatalogEdit();
+            }
+        }
+        function updateCatalogTitle(id, title) {
+            const item = window.catalogData.find(i => i.id === id);
+            if (item) item.title = title;
+        }
+        function updateSubChapterTitle(parentId, childId, title) {
+            const parent = window.catalogData.find(item => item.id === parentId);
+            if (parent) {
+                const child = parent.children.find(c => c.id === childId);
+                if (child) child.title = title;
+            }
+        }
+        function saveCatalog() {
+            if (!window.catalogData || window.catalogData.length === 0) {
+                alert('目录不能为空');
+                return;
+            }
+            updateCatalogDisplay();
+            closeCatalogEdit();
+            alert('目录已保存');
+        }
+        function updateCatalogDisplay() {
+            // 如果已有分配信息，使用带分配的显示
+            if (window.chapterAssignments) {
+                updateCatalogWithAssignments();
+            } else {
+                const container = document.getElementById('catalogContent');
+                container.innerHTML = '';
+                window.catalogData.forEach((item, index) => {
+                    const html = `
+                        <div class="flex items-start gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <i class="fas fa-file-alt text-blue-600 mt-1"></i>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">${item.title}</p>
+                                ${item.children && item.children.length > 0 ? `
+                                    <div class="ml-4 mt-1 space-y-1 text-xs text-gray-600">
+                                        ${item.children.map(child => `<p>${child.title}</p>`).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += html;
+                });
+            }
+        }
+        function moveChapterUp(id) {
+            const index = window.catalogData.findIndex(item => item.id === id);
+            if (index > 0) {
+                [window.catalogData[index], window.catalogData[index - 1]] = [window.catalogData[index - 1], window.catalogData[index]];
+                renderCatalogEdit();
+            }
+        }
+        function moveChapterDown(id) {
+            const index = window.catalogData.findIndex(item => item.id === id);
+            if (index < window.catalogData.length - 1) {
+                [window.catalogData[index], window.catalogData[index + 1]] = [window.catalogData[index + 1], window.catalogData[index]];
+                renderCatalogEdit();
+            }
+        }
+        function resetCatalog() {
+            if(confirm('确定要恢复默认目录吗？此操作将覆盖当前目录结构。')) {
+                const defaultCatalog = [
+                    { id: 1, title: '第一部分 投标函及投标函附录', children: [
+                        { id: 11, title: '1.1 投标函' },
+                        { id: 12, title: '1.2 投标函附录' }
+                    ]},
+                    { id: 2, title: '第二部分 法定代表人身份证明', children: [] },
+                    { id: 3, title: '第三部分 技术方案', children: [
+                        { id: 31, title: '3.1 项目理解' },
+                        { id: 32, title: '3.2 技术架构' },
+                        { id: 33, title: '3.3 实施方案' },
+                        { id: 34, title: '3.4 质量保证措施' }
+                    ]},
+                    { id: 4, title: '第四部分 商务部分', children: [
+                        { id: 41, title: '4.1 报价明细' },
+                        { id: 42, title: '4.2 付款方式' },
+                        { id: 43, title: '4.3 售后服务' }
+                    ]},
+                    { id: 5, title: '第五部分 资格证明文件', children: [
+                        { id: 51, title: '5.1 企业资质' },
+                        { id: 52, title: '5.2 业绩案例' },
+                        { id: 53, title: '5.3 团队配置' }
+                    ]}
+                ];
+                window.catalogData = defaultCatalog;
+                updateCatalogDisplay();
+                alert('已恢复默认目录');
+            }
+        }
+        
+        function showCollabModal() {
+            // 确保有目录数据
+            if (!window.catalogData || window.catalogData.length === 0) {
+                // 如果没有目录数据，初始化默认目录
+                const defaultCatalog = [
+                    { id: 1, title: '第一部分 投标函及投标函附录', children: [
+                        { id: 11, title: '1.1 投标函' },
+                        { id: 12, title: '1.2 投标函附录' }
+                    ]},
+                    { id: 2, title: '第二部分 法定代表人身份证明', children: [] },
+                    { id: 3, title: '第三部分 技术方案', children: [
+                        { id: 31, title: '3.1 项目理解' },
+                        { id: 32, title: '3.2 技术架构' },
+                        { id: 33, title: '3.3 实施方案' },
+                        { id: 34, title: '3.4 质量保证措施' }
+                    ]},
+                    { id: 4, title: '第四部分 商务部分', children: [
+                        { id: 41, title: '4.1 报价明细' },
+                        { id: 42, title: '4.2 付款方式' },
+                        { id: 43, title: '4.3 售后服务' }
+                    ]},
+                    { id: 5, title: '第五部分 资格证明文件', children: [
+                        { id: 51, title: '5.1 企业资质' },
+                        { id: 52, title: '5.2 业绩案例' },
+                        { id: 53, title: '5.3 团队配置' }
+                    ]}
+                ];
+                window.catalogData = defaultCatalog;
+            }
+            document.getElementById('collabModal').classList.remove('hidden');
+            updateChapterCheckboxes();
+        }
+        function updateChapterCheckboxes() {
+            // 确保有目录数据
+            if (!window.catalogData || window.catalogData.length === 0) {
+                loadCatalogForEdit();
+            }
+            
+            // 更新所有成员项中的章节复选框
+            document.querySelectorAll('.chapter-checkbox-container').forEach(container => {
+                container.innerHTML = '';
+                
+                if (window.catalogData) {
+                    window.catalogData.forEach((chapter, index) => {
+                        const chapterNum = index + 1;
+                        const chapterKey = chapterNum.toString();
+                        
+                        // 主章节
+                        const mainLabel = document.createElement('label');
+                        mainLabel.className = 'flex items-center gap-2 text-xs cursor-pointer';
+                        mainLabel.innerHTML = `
+                            <input type="checkbox" value="${chapterKey}" class="chapter-checkbox">
+                            <span>${chapter.title}</span>
+                        `;
+                        container.appendChild(mainLabel);
+                        
+                        // 子章节
+                        if (chapter.children && chapter.children.length > 0) {
+                            chapter.children.forEach((sub, subIndex) => {
+                                const subKey = `${chapterNum}.${subIndex + 1}`;
+                                const subLabel = document.createElement('label');
+                                subLabel.className = 'flex items-center gap-2 text-xs cursor-pointer';
+                                subLabel.innerHTML = `
+                                    <input type="checkbox" value="${subKey}" class="chapter-checkbox">
+                                    <span>${sub.title}</span>
+                                `;
+                                container.appendChild(subLabel);
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        function closeCollabModal() {
+            document.getElementById('collabModal').classList.add('hidden');
+        }
+        function addMember() {
+            const memberList = document.getElementById('memberList');
+            const newMember = document.querySelector('.member-item').cloneNode(true);
+            newMember.querySelector('input[type="text"]').value = '';
+            newMember.querySelector('textarea').value = '';
+            
+            // 重新生成章节复选框
+            const checkboxContainer = newMember.querySelector('.chapter-checkbox-container');
+            if (checkboxContainer) {
+                updateChapterCheckboxes();
+            }
+            
+            memberList.appendChild(newMember);
+        }
+        function removeMember(btn) {
+            if (document.querySelectorAll('.member-item').length > 1) {
+                btn.closest('.member-item').remove();
+            } else {
+                alert('至少需要保留一个成员');
+            }
+        }
+        function sendInvites() {
+            const members = [];
+            const chapterAssignments = {}; // 存储章节分配信息
+            
+            document.querySelectorAll('.member-item').forEach(item => {
+                const account = item.querySelector('input[type="text"]').value.trim();
+                const role = item.querySelector('select').value;
+                const chapters = Array.from(item.querySelectorAll('.chapter-checkbox:checked')).map(cb => cb.value);
+                const note = item.querySelector('textarea').value;
+                
+                if (account) {
+                    members.push({ account, role, chapters, note });
+                    // 记录每个章节的负责人
+                    chapters.forEach(chapter => {
+                        if (!chapterAssignments[chapter]) {
+                            chapterAssignments[chapter] = [];
+                        }
+                        chapterAssignments[chapter].push(account);
+                    });
+                }
+            });
+            
+            if (members.length === 0) {
+                alert('请至少输入一个协同人账号');
+                return;
+            }
+            
+            // 保存章节分配信息
+            window.chapterAssignments = chapterAssignments;
+            
+            // 更新目录显示
+            updateCatalogWithAssignments();
+            
+            console.log('邀请成员:', members);
+            console.log('章节分配:', chapterAssignments);
+            alert('邀请已发送！');
+            closeCollabModal();
+        }
+        function searchMember(input) {
+            const keyword = input.value.trim();
+            if (keyword.length > 0) {
+                // 这里可以实现搜索逻辑，比如显示匹配的用户列表
+                // 暂时留空，后续可以接入用户搜索API
+            }
+        }
+        function updateCatalogWithAssignments() {
+            if (!window.catalogData) return;
+            
+            const container = document.getElementById('catalogContent');
+            container.innerHTML = '';
+            
+            window.catalogData.forEach((item, index) => {
+                // 获取主章节的负责人（如果有子章节被分配，也显示）
+                const mainChapterKey = (index + 1).toString();
+                const subChapters = item.children || [];
+                
+                let mainAssignees = window.chapterAssignments[mainChapterKey] || [];
+                subChapters.forEach((sub, subIndex) => {
+                    const subKey = `${index + 1}.${subIndex + 1}`;
+                    const subAssignees = window.chapterAssignments[subKey] || [];
+                    mainAssignees = [...new Set([...mainAssignees, ...subAssignees])];
+                });
+                
+                const html = `
+                    <div class="flex items-start gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <i class="fas fa-file-alt text-blue-600 mt-1"></i>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <p class="font-semibold text-gray-800">${item.title}</p>
+                                ${mainAssignees.length > 0 ? `
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-gray-500">负责人：</span>
+                                        <span class="text-xs text-blue-600 font-medium">${mainAssignees.join('、')}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            ${subChapters.length > 0 ? `
+                                <div class="ml-4 mt-1 space-y-1 text-xs text-gray-600">
+                                    ${subChapters.map((child, subIndex) => {
+                                        const subKey = `${index + 1}.${subIndex + 1}`;
+                                        const subAssignees = window.chapterAssignments[subKey] || [];
+                                        return `
+                                            <div class="flex items-center justify-between">
+                                                <p>${child.title}</p>
+                                                ${subAssignees.length > 0 ? `
+                                                    <span class="text-blue-600 text-[10px]">${subAssignees.join('、')}</span>
+                                                ` : ''}
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+    </script>
+</body>
+</html>

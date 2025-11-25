@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据洞察</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <section class="p-6 space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-800">数据洞察</h1>
+                <p class="text-sm text-gray-500">回顾投标表现，洞察成功因子，AI 预测下一次胜率。</p>
+            </div>
+            <div class="flex items-center gap-3 text-sm">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg"><i class="fas fa-chart-line mr-2"></i> 导出分析</button>
+                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg"><i class="fas fa-sync mr-2"></i> 更新数据</button>
+            </div>
+        </div>
+
+        <div class="grid xl:grid-cols-3 gap-6">
+            <div class="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">年度投标表现</h2>
+                    <span class="text-xs text-gray-400">2024.01 - 2024.12</span>
+                </div>
+                <div class="grid grid-cols-3 gap-4 text-center text-sm">
+                    <div class="p-4 rounded-xl bg-blue-50">
+                        <p class="text-xs text-blue-500">提交标书</p>
+                        <p class="text-2xl font-bold text-blue-700 mt-1">64</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-green-50">
+                        <p class="text-xs text-green-500">中标率</p>
+                        <p class="text-2xl font-bold text-green-700 mt-1">38%</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-purple-50">
+                        <p class="text-xs text-purple-500">AI 生成章节</p>
+                        <p class="text-2xl font-bold text-purple-700 mt-1">412</p>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <p class="text-xs text-gray-400 mb-2">季度趋势</p>
+                    <div class="h-48 bg-gradient-to-b from-blue-50 to-white rounded-xl relative overflow-hidden">
+                        <div class="absolute inset-4 grid grid-cols-4 text-xs text-gray-400">
+                            <span>Q1</span><span>Q2</span><span>Q3</span><span>Q4</span>
+                        </div>
+                        <svg viewBox="0 0 400 160" class="absolute inset-0">
+                            <polyline fill="none" stroke="#2563eb" stroke-width="3" points="20,120 120,80 220,60 320,90"></polyline>
+                            <polyline fill="none" stroke="#34d399" stroke-width="3" points="20,140 120,100 220,70 320,60"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800">AI 预测胜率</h2>
+                    <span class="text-xs text-gray-400">模型版本 V3.2</span>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div class="p-3 border border-gray-100 rounded-xl flex items-center justify-between">
+                        <div>
+                            <p class="font-semibold text-gray-800">智慧园区</p>
+                            <p class="text-xs text-gray-500">评分贴合度 93%</p>
+                        </div>
+                        <span class="text-lg font-bold text-green-600">78%</span>
+                    </div>
+                    <div class="p-3 border border-gray-100 rounded-xl flex items-center justify-between">
+                        <div>
+                            <p class="font-semibold text-gray-800">医院运维</p>
+                            <p class="text-xs text-gray-500">素材完整度 86%</p>
+                        </div>
+                        <span class="text-lg font-bold text-yellow-600">62%</span>
+                    </div>
+                    <div class="p-3 border border-gray-100 rounded-xl flex items-center justify-between">
+                        <div>
+                            <p class="font-semibold text-gray-800">轨道交通</p>
+                            <p class="text-xs text-gray-500">协同效率 71%</p>
+                        </div>
+                        <span class="text-lg font-bold text-orange-600">54%</span>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 p-3 rounded-xl bg-gray-50 border border-dashed border-gray-200">
+                    <p class="font-semibold text-gray-800 mb-1">提升建议</p>
+                    <p>补齐“智慧运维”案例，可提升 6%；优化暗标格式，可提升 3%。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">失败原因洞察</h2>
+                    <span class="text-xs text-gray-400">近 10 份未中标</span>
+                </div>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">评分项扣分</p>
+                            <p class="text-xs text-gray-500">暗标未覆盖 3 项强制条款 · 占比 42%</p>
+                        </div>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">企业资质缺口</p>
+                            <p class="text-xs text-gray-500">缺少最新安全生产许可证 · 占比 28%</p>
+                        </div>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">价格策略</p>
+                            <p class="text-xs text-gray-500">报价高于平均 6.2% · 占比 18%</p>
+                        </div>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">其他</p>
+                            <p class="text-xs text-gray-500">格式、排版、材料延迟 · 占比 12%</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">AI 洞察摘要</h2>
+                    <span class="text-xs text-gray-400">自动生成</span>
+                </div>
+                <div class="space-y-3 text-sm text-gray-600">
+                    <div class="p-3 border border-gray-100 rounded-xl">
+                        <p class="text-xs text-gray-400 mb-1">趋势 01</p>
+                        <p class="text-gray-800">“智慧城市 + 绿色节能”项目需求显著增长，需提前准备相关案例。</p>
+                    </div>
+                    <div class="p-3 border border-gray-100 rounded-xl">
+                        <p class="text-xs text-gray-400 mb-1">趋势 02</p>
+                        <p class="text-gray-800">协同效率直接影响评分，平均每增加 1 位协作者可提升 2% 胜率。</p>
+                    </div>
+                    <div class="p-3 border border-gray-100 rounded-xl">
+                        <p class="text-xs text-gray-400 mb-1">趋势 03</p>
+                        <p class="text-gray-800">AI 生图使用率持续上升，占比 63%，显著提升视觉得分。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+

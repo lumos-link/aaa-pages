@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI写作</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <section class="p-6 space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <p class="text-xs text-purple-500 font-semibold uppercase tracking-widest mb-2">Step 03</p>
+                <h1 class="text-2xl font-semibold text-gray-800">AI 写作工作台</h1>
+                <p class="text-sm text-gray-500">章节树 + AI 指令 + 实时协同，支持重写、扩写、润色与对比。</p>
+            </div>
+            <div class="flex items-center gap-3 text-sm">
+                <button class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-600"><i class="fas fa-history mr-2"></i> 历史版本</button>
+                <button class="px-4 py-2 bg-purple-600 text-white rounded-lg"><i class="fas fa-magic mr-2"></i> AI 继续写作</button>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-[280px_1fr] gap-4">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm font-semibold text-gray-800">章节结构</h2>
+                    <button class="text-xs text-blue-600"><i class="fas fa-plus mr-1"></i> 新增</button>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <button class="w-full text-left px-3 py-2 rounded-xl bg-purple-50 text-purple-600 font-semibold flex items-center justify-between">
+                        1. 项目综述 <span class="text-xs text-purple-400">AI 已完成</span>
+                    </button>
+                    <button class="w-full text-left px-3 py-2 rounded-xl border border-gray-100 flex items-center justify-between">
+                        2. 技术方案 <span class="text-xs text-gray-400">待完善</span>
+                    </button>
+                    <button class="w-full text-left px-3 py-2 rounded-xl border border-gray-100 flex items-center justify-between">
+                        3. 施工组织 <span class="text-xs text-green-500">协作中</span>
+                    </button>
+                    <button class="w-full text-left px-3 py-2 rounded-xl border border-gray-100 flex items-center justify-between">
+                        4. 运维服务 <span class="text-xs text-gray-400">未开始</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                <div class="border-b border-gray-100 px-5 py-3 flex items-center justify-between text-sm">
+                    <div class="flex items-center gap-3">
+                        <button class="text-blue-600 font-semibold">写作模式</button>
+                        <button class="text-gray-400">审阅模式</button>
+                        <button class="text-gray-400">对比模式</button>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs">
+                        <button class="px-3 py-1 bg-gray-100 rounded-full text-gray-600"><i class="fas fa-bolt mr-1"></i> AI 建议 4</button>
+                        <button class="px-3 py-1 bg-gray-100 rounded-full text-gray-600"><i class="fas fa-user-friends mr-1"></i> 协作 3</button>
+                    </div>
+                </div>
+                <div class="flex-1 grid lg:grid-cols-[320px_1fr]">
+                    <div class="border-r border-gray-100 p-4 text-sm space-y-4 bg-gray-50">
+                        <h3 class="font-semibold text-gray-800">AI 写作指令</h3>
+                        <div class="space-y-2 text-xs text-gray-600">
+                            <div class="p-3 bg-white rounded-xl border border-gray-100">
+                                <p class="text-purple-500 text-[11px] uppercase tracking-widest mb-1">提示词</p>
+                                <p>用“顶层设计 + 数据治理 + 安全可控”三条主线展开技术方案。</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-xl border border-gray-100">
+                                <p class="font-semibold text-gray-800 mb-1">风格</p>
+                                <p>政府标书正式语气，突出数字底座与可视化运营。</p>
+                            </div>
+                            <button class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg text-xs flex items-center justify-center gap-2">
+                                <i class="fas fa-magic"></i> 生成 600 字
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-5 text-sm text-gray-700 space-y-4 overflow-y-auto">
+                        <div class="flex items-center justify-between text-xs text-gray-400">
+                            <span>AI 生成 · 2 分钟前</span>
+                            <div class="flex items-center gap-2">
+                                <button class="text-blue-600">对比上一版</button>
+                                <button class="text-gray-400">复制</button>
+                            </div>
+                        </div>
+                        <div class="leading-relaxed space-y-3">
+                            <p>本项目构建“城市运行数字底座”，以统一的数据治理体系为核心，打通感知层、平台层及应用层，实现跨部门、跨场景的实时协同。系统采用分布式云原生架构，通过双活部署保障高可用。</p>
+                            <p>在技术方案方面，平台引入 AI 智能引擎，对接物联网、视频、环境等多源数据，建立指标体系与规则模型，并以三维可视化看板展示城市运行态势，支持秒级预警。</p>
+                            <p>安全策略遵循“分区、分级、分权”原则，综合使用国密算法、零信任访问以及数据水印技术，确保敏感数据全流程可追溯。</p>
+                        </div>
+                        <div class="border border-dashed border-gray-200 rounded-xl p-4 text-xs text-gray-500">
+                            <p class="font-semibold text-gray-800 mb-2">AI 建议</p>
+                            <ul class="space-y-1">
+                                <li>· 补充“运维保障体系”描述，可提升评分 6 分</li>
+                                <li>· 引用企业库中的“智慧园区案例”段落</li>
+                                <li>· 建议插入流程图（可通过 AI 生图生成）</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+

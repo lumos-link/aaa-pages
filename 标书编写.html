@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标书编写</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .tool-panel { 
+            transition: all 0.3s;
+            animation: slideIn 0.2s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes slide-in {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slide-out {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        .animate-slide-in {
+            animation: slide-in 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <section class="p-6 space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <p class="text-xs text-purple-500 font-semibold uppercase tracking-widest mb-2">Step 03</p>
+                <h1 class="text-2xl font-semibold text-gray-800">标书编写</h1>
+                <p class="text-sm text-gray-500">使用AI写作、格式工具、素材库等功能完成标书内容编写。</p>
+            </div>
+            <div class="flex items-center gap-3 text-sm">
+                <button class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-600"><i class="fas fa-save mr-2"></i> 保存</button>
+                <button class="px-4 py-2 bg-purple-600 text-white rounded-lg" onclick="parent.loadPage('协同审校.html','step')">
+                    <i class="fas fa-check mr-2"></i> 完成编写
+                </button>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-[280px_1fr] gap-6">
+            <div class="space-y-4">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="text-sm font-semibold text-gray-800">章节结构</h2>
+                        <button class="text-xs text-blue-600"><i class="fas fa-sync mr-1"></i> 刷新</button>
+                    </div>
+                    <div id="chapterTree" class="space-y-1 text-sm max-h-96 overflow-y-auto">
+                        <!-- 章节结构将动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div id="writingStatus" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">编写情况</h2>
+                        <span class="text-xs text-gray-500">最后更新：刚刚</span>
+                    </div>
+                    <div class="grid md:grid-cols-4 gap-4 mb-4">
+                        <div class="text-center p-3 bg-blue-50 rounded-lg">
+                            <div class="text-2xl font-bold text-blue-600" id="totalChapters">0</div>
+                            <div class="text-xs text-gray-600 mt-1">总章节数</div>
+                        </div>
+                        <div class="text-center p-3 bg-green-50 rounded-lg">
+                            <div class="text-2xl font-bold text-green-600" id="completedChapters">0</div>
+                            <div class="text-xs text-gray-600 mt-1">已完成</div>
+                        </div>
+                        <div class="text-center p-3 bg-yellow-50 rounded-lg">
+                            <div class="text-2xl font-bold text-yellow-600" id="writingChapters">0</div>
+                            <div class="text-xs text-gray-600 mt-1">编写中</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-gray-600" id="pendingChapters">0</div>
+                            <div class="text-xs text-gray-600 mt-1">未开始</div>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-200 pt-4">
+                        <div class="flex items-center justify-between text-sm mb-2">
+                            <span class="text-gray-600">整体进度</span>
+                            <span class="font-semibold text-gray-800" id="progressPercent">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full transition-all" id="progressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-sm font-medium text-gray-700">当前章节：</span>
+                        <span class="text-sm text-purple-600 font-semibold" id="currentChapter">请选择章节</span>
+                    </div>
+                    
+                    <div class="mb-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-xs font-medium text-gray-700">引用企业知识库</label>
+                            <button onclick="showKnowledgeModal()" class="text-xs text-blue-600"><i class="fas fa-plus mr-1"></i> 选择</button>
+                        </div>
+                        <div id="knowledgeList" class="flex flex-wrap gap-2 mt-2">
+                            <span class="px-2 py-1 bg-white border border-blue-200 rounded text-xs text-blue-700">
+                                智慧城市项目案例库 <i class="fas fa-times ml-1 cursor-pointer" onclick="removeKnowledge(this)"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg">
+                        <div class="flex items-center gap-2 p-3 border-b border-gray-200 bg-gray-50 flex-wrap">
+                            <button onclick="showToolPanel('ai-write')" class="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs flex items-center gap-1 hover:bg-purple-700">
+                                <i class="fas fa-magic"></i> AI生成
+                            </button>
+                            <button onclick="showToolPanel('ai-rewrite')" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
+                                <i class="fas fa-edit"></i> 重写
+                            </button>
+                            <button onclick="showToolPanel('ai-expand')" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
+                                <i class="fas fa-expand"></i> 扩写
+                            </button>
+                            <button onclick="showToolPanel('ai-polish')" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
+                                <i class="fas fa-spell-check"></i> 润色
+                            </button>
+                            <div class="w-px h-4 bg-gray-300"></div>
+                            <button onclick="showToolPanel('image-lib')" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
+                                <i class="fas fa-images"></i> 图片库
+                            </button>
+                            <button onclick="showToolPanel('company-lib')" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
+                                <i class="fas fa-building"></i> 企业档案
+                            </button>
+                            <button onclick="showToolPanel('format')" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
+                                <i class="fas fa-paint-brush"></i> 格式
+                            </button>
+                            <button onclick="showToolPanel('ai-image')" class="px-3 py-1.5 bg-white border border-orange-200 text-orange-600 rounded-lg text-xs flex items-center gap-1 hover:bg-orange-50">
+                                <i class="fas fa-image"></i> AI生图
+                            </button>
+                        </div>
+                        <textarea id="chapterContent" class="w-full h-96 p-4 border-none focus:outline-none resize-none text-sm text-gray-700" placeholder="请先选择章节，或使用工具栏中的工具辅助编写..." oninput="updateChapterContent()"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 工具面板 -->
+    <div id="tool-image-lib" class="tool-panel hidden absolute bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-96 max-h-[500px] flex flex-col">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-gray-800">图片素材库</h3>
+            <button onclick="closeToolPanel('image-lib')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mb-3">
+            <div class="relative">
+                <input type="text" id="imageSearch" placeholder="搜索图片..." class="w-full px-3 py-2 pl-9 border border-gray-300 rounded-lg text-sm" oninput="searchImages(this.value)">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto">
+            <div id="imageGrid" class="grid grid-cols-2 gap-2">
+                <div class="aspect-square bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-2 hover:border-blue-500 border-2 border-transparent group" onclick="insertImage('架构图1.jpg', '系统架构图')">
+                    <i class="fas fa-sitemap text-2xl text-blue-600 mb-2"></i>
+                    <span class="text-xs text-blue-700 group-hover:font-semibold">架构图</span>
+                </div>
+                <div class="aspect-square bg-gradient-to-br from-green-100 to-green-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-2 hover:border-blue-500 border-2 border-transparent group" onclick="insertImage('流程图1.jpg', '业务流程图')">
+                    <i class="fas fa-project-diagram text-2xl text-green-600 mb-2"></i>
+                    <span class="text-xs text-green-700 group-hover:font-semibold">流程图</span>
+                </div>
+                <div class="aspect-square bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-2 hover:border-blue-500 border-2 border-transparent group" onclick="insertImage('数据图1.jpg', '数据可视化')">
+                    <i class="fas fa-chart-bar text-2xl text-purple-600 mb-2"></i>
+                    <span class="text-xs text-purple-700 group-hover:font-semibold">数据图</span>
+                </div>
+                <div class="aspect-square bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-2 hover:border-blue-500 border-2 border-transparent group" onclick="insertImage('界面图1.jpg', '系统界面')">
+                    <i class="fas fa-desktop text-2xl text-orange-600 mb-2"></i>
+                    <span class="text-xs text-orange-700 group-hover:font-semibold">界面图</span>
+                </div>
+            </div>
+        </div>
+        <button onclick="uploadImage()" class="w-full mt-3 px-3 py-2 text-xs text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50">
+            <i class="fas fa-upload mr-1"></i> 上传图片
+        </button>
+    </div>
+
+    <div id="tool-company-lib" class="tool-panel hidden absolute bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-96 max-h-[500px] flex flex-col">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-gray-800">企业素材档案库</h3>
+            <button onclick="closeToolPanel('company-lib')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mb-3">
+            <div class="relative">
+                <input type="text" id="companySearch" placeholder="搜索素材..." class="w-full px-3 py-2 pl-9 border border-gray-300 rounded-lg text-sm" oninput="searchCompanyMaterials(this.value)">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
+            </div>
+        </div>
+        <div class="flex gap-2 mb-3 text-xs">
+            <button onclick="filterCompanyMaterials('all')" class="px-3 py-1 bg-blue-600 text-white rounded-full">全部</button>
+            <button onclick="filterCompanyMaterials('certificate')" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200">资质</button>
+            <button onclick="filterCompanyMaterials('case')" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200">案例</button>
+            <button onclick="filterCompanyMaterials('team')" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200">团队</button>
+        </div>
+        <div id="companyMaterialsList" class="flex-1 overflow-y-auto space-y-2">
+            <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500 transition" data-type="certificate" onclick="insertCompanyMaterial('企业资质证书', '企业库 · 证件中心')">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-certificate text-blue-600"></i>
+                        <p class="font-medium text-sm text-gray-800">企业资质证书</p>
+                    </div>
+                    <span class="text-xs text-green-600">已引用</span>
+                </div>
+                <p class="text-xs text-gray-500">来源：企业库 · 证件中心</p>
+            </div>
+            <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500 transition" data-type="case" onclick="insertCompanyMaterial('智慧城市案例', '素材库 · 案例库')">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-folder-open text-green-600"></i>
+                        <p class="font-medium text-sm text-gray-800">智慧城市案例</p>
+                    </div>
+                    <span class="text-xs text-gray-400">未引用</span>
+                </div>
+                <p class="text-xs text-gray-500">来源：素材库 · 案例库</p>
+            </div>
+            <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500 transition" data-type="team" onclick="insertCompanyMaterial('专家团队简历', '企业库 · 人员档案')">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-users text-purple-600"></i>
+                        <p class="font-medium text-sm text-gray-800">专家团队简历</p>
+                    </div>
+                    <span class="text-xs text-gray-400">未引用</span>
+                </div>
+                <p class="text-xs text-gray-500">来源：企业库 · 人员档案</p>
+            </div>
+            <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500 transition" data-type="certificate" onclick="insertCompanyMaterial('ISO认证证书', '企业库 · 证件中心')">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-award text-yellow-600"></i>
+                        <p class="font-medium text-sm text-gray-800">ISO认证证书</p>
+                    </div>
+                    <span class="text-xs text-gray-400">未引用</span>
+                </div>
+                <p class="text-xs text-gray-500">来源：企业库 · 证件中心</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="tool-format" class="tool-panel hidden absolute bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-96">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-gray-800">格式工具</h3>
+            <button onclick="closeToolPanel('format')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="space-y-3 text-xs">
+            <div class="p-3 border border-gray-100 rounded-lg">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-font text-blue-600"></i>
+                        <span class="font-medium">字体字号</span>
+                    </div>
+                    <span class="text-yellow-600"><i class="fas fa-exclamation-triangle"></i> 需修复</span>
+                </div>
+                <p class="text-gray-500 mb-2">正文应为三号仿宋，当前部分章节为默认字体</p>
+                <button onclick="applyFormat('font')" class="w-full px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-magic mr-1"></i> 一键修复
+                </button>
+            </div>
+            <div class="p-3 border border-green-100 bg-green-50 rounded-lg">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-arrows-alt-v text-green-600"></i>
+                        <span class="font-medium">段落/行距</span>
+                    </div>
+                    <span class="text-green-600"><i class="fas fa-check"></i> 正常</span>
+                </div>
+                <p class="text-gray-500">已按 28pt 行距、段前后 0pt 设置</p>
+            </div>
+            <div class="p-3 border border-gray-100 rounded-lg">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-heading text-blue-600"></i>
+                        <span class="font-medium">页眉页脚</span>
+                    </div>
+                    <span class="text-gray-400">未设置</span>
+                </div>
+                <p class="text-gray-500 mb-2">明标需展示企业名称，暗标需留空</p>
+                <button onclick="applyFormat('header')" class="w-full px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-magic mr-1"></i> 套用模板
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tool-ai-image" class="tool-panel hidden absolute bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-96">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-gray-800">AI生图</h3>
+            <button onclick="closeToolPanel('ai-image')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-xs text-gray-600 mb-1">图片描述</label>
+                <textarea id="imagePrompt" placeholder="例如：系统架构图，包含前端、后端、数据库三层结构..." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm resize-none" rows="3"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-600 mb-1">图片风格</label>
+                <select id="imageStyle" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <option>商务风格</option>
+                    <option>技术图表</option>
+                    <option>流程图</option>
+                    <option>数据可视化</option>
+                </select>
+            </div>
+            <button onclick="generateImage()" id="generateImageBtn" class="w-full px-3 py-2 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700">
+                <i class="fas fa-magic mr-2"></i> 生成图片
+            </button>
+            <div id="imagePreview" class="hidden mt-3 p-3 border border-gray-200 rounded-lg">
+                <p class="text-xs text-gray-600 mb-2">生成结果：</p>
+                <div class="aspect-video bg-gray-100 rounded flex items-center justify-center">
+                    <i class="fas fa-image text-3xl text-gray-400"></i>
+                </div>
+                <div class="flex gap-2 mt-2">
+                    <button onclick="insertGeneratedImage()" class="flex-1 px-3 py-1.5 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">
+                        <i class="fas fa-plus mr-1"></i> 插入
+                    </button>
+                    <button onclick="regenerateImage()" class="flex-1 px-3 py-1.5 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200">
+                        <i class="fas fa-redo mr-1"></i> 重新生成
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI操作模态框 -->
+    <div id="aiModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-lg w-full">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold" id="aiModalTitle">AI生成内容</h3>
+                <button onclick="closeAIModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">内容描述</label>
+                    <textarea id="aiPromptInput" placeholder="描述您要生成的内容..." class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm resize-none" rows="4"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">详细描述有助于AI生成更精准的内容</p>
+                </div>
+                <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fas fa-info-circle text-blue-600"></i>
+                        <span class="text-xs font-medium text-blue-800">已引用知识库</span>
+                    </div>
+                    <div id="aiKnowledgeList" class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-white border border-blue-200 rounded text-xs text-blue-700">
+                            智慧城市项目案例库
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 flex gap-3">
+                <button onclick="closeAIModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                <button id="aiGenerateBtn" onclick="executeAIAction()" class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                    <i class="fas fa-magic mr-2"></i> 生成内容
+                </button>
+            </div>
+            <input type="hidden" id="aiModalMode" value="">
+        </div>
+    </div>
+
+    <div id="knowledgeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-lg w-full">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">选择企业知识库</h3>
+                <button onclick="closeKnowledgeModal()" class="text-gray-400"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-3 max-h-96 overflow-y-auto">
+                <div class="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-500" onclick="selectKnowledge('智慧城市项目案例库')">
+                    <p class="font-medium text-sm">智慧城市项目案例库</p>
+                    <p class="text-xs text-gray-500 mt-1">包含15个成功案例，技术方案模板等</p>
+                </div>
+                <div class="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-500" onclick="selectKnowledge('技术标准知识库')">
+                    <p class="font-medium text-sm">技术标准知识库</p>
+                    <p class="text-xs text-gray-500 mt-1">行业标准、技术规范、最佳实践</p>
+                </div>
+                <div class="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-500" onclick="selectKnowledge('企业资质库')">
+                    <p class="font-medium text-sm">企业资质库</p>
+                    <p class="text-xs text-gray-500 mt-1">各类资质证书、认证文件</p>
+                </div>
+            </div>
+            <div class="mt-4 flex gap-3">
+                <button onclick="closeKnowledgeModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 章节数据存储
+        window.chapterContents = {};
+        window.currentChapterId = null;
+        
+        // 初始化页面
+        window.addEventListener('load', function() {
+            loadCatalogStructure();
+            updateWritingStatus();
+            
+            // 点击外部区域关闭工具面板
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.tool-panel') && !e.target.closest('button[onclick*="showToolPanel"]')) {
+                    document.querySelectorAll('.tool-panel').forEach(panel => {
+                        if (!panel.classList.contains('hidden')) {
+                            panel.classList.add('hidden');
+                        }
+                    });
+                }
+            });
+        });
+        
+        function loadCatalogStructure() {
+            // 从标书设置获取目录数据，如果没有则使用默认
+            if (!window.catalogData || window.catalogData.length === 0) {
+                window.catalogData = [
+                    { id: 1, title: '第一部分 投标函及投标函附录', children: [
+                        { id: 11, title: '1.1 投标函' },
+                        { id: 12, title: '1.2 投标函附录' }
+                    ]},
+                    { id: 2, title: '第二部分 法定代表人身份证明', children: [] },
+                    { id: 3, title: '第三部分 技术方案', children: [
+                        { id: 31, title: '3.1 项目理解' },
+                        { id: 32, title: '3.2 技术架构' },
+                        { id: 33, title: '3.3 实施方案' },
+                        { id: 34, title: '3.4 质量保证措施' }
+                    ]},
+                    { id: 4, title: '第四部分 商务部分', children: [
+                        { id: 41, title: '4.1 报价明细' },
+                        { id: 42, title: '4.2 付款方式' },
+                        { id: 43, title: '4.3 售后服务' }
+                    ]},
+                    { id: 5, title: '第五部分 资格证明文件', children: [
+                        { id: 51, title: '5.1 企业资质' },
+                        { id: 52, title: '5.2 业绩案例' },
+                        { id: 53, title: '5.3 团队配置' }
+                    ]}
+                ];
+            }
+            
+            renderChapterTree();
+        }
+        
+        function renderChapterTree() {
+            const container = document.getElementById('chapterTree');
+            container.innerHTML = '';
+            
+            if (!window.catalogData || window.catalogData.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-400 text-center py-4">暂无章节数据</p>';
+                return;
+            }
+            
+            window.catalogData.forEach((chapter, index) => {
+                const chapterId = chapter.id;
+                const status = getChapterStatus(chapterId);
+                const hasChildren = chapter.children && chapter.children.length > 0;
+                
+                // 主章节
+                const mainDiv = document.createElement('div');
+                mainDiv.className = 'mb-2';
+                mainDiv.innerHTML = `
+                    <button onclick="selectChapter(${chapterId}, '${chapter.title}')" 
+                            class="w-full text-left px-3 py-2 rounded-lg flex items-center justify-between transition ${window.currentChapterId === chapterId ? 'bg-purple-50 text-purple-600 font-semibold border border-purple-200' : 'hover:bg-gray-50 border border-transparent'}"
+                            data-chapter-id="${chapterId}">
+                        <span class="flex items-center gap-2">
+                            ${hasChildren ? '<i class="fas fa-chevron-down text-xs text-gray-400"></i>' : '<i class="fas fa-file-alt text-xs text-gray-400"></i>'}
+                            <span class="text-sm">${chapter.title}</span>
+                        </span>
+                        <span class="text-xs ${getStatusColor(status)}">${getStatusText(status)}</span>
+                    </button>
+                `;
+                container.appendChild(mainDiv);
+                
+                // 子章节
+                if (hasChildren) {
+                    const subContainer = document.createElement('div');
+                    subContainer.className = 'ml-6 mb-2 space-y-1';
+                    chapter.children.forEach((sub) => {
+                        const subId = sub.id;
+                        const subStatus = getChapterStatus(subId);
+                        const subDiv = document.createElement('div');
+                        subDiv.innerHTML = `
+                            <button onclick="selectChapter(${subId}, '${sub.title}')" 
+                                    class="w-full text-left px-2 py-1.5 rounded text-xs flex items-center justify-between transition ${window.currentChapterId === subId ? 'bg-purple-50 text-purple-600 font-semibold border border-purple-200' : 'hover:bg-gray-50 border border-transparent'}"
+                                    data-chapter-id="${subId}">
+                                <span class="flex items-center gap-2">
+                                    <i class="fas fa-file text-[10px] text-gray-400"></i>
+                                    <span>${sub.title}</span>
+                                </span>
+                                <span class="text-[10px] ${getStatusColor(subStatus)}">${getStatusText(subStatus)}</span>
+                            </button>
+                        `;
+                        subContainer.appendChild(subDiv);
+                    });
+                    container.appendChild(subContainer);
+                }
+            });
+        }
+        
+        function getChapterStatus(chapterId) {
+            const content = window.chapterContents[chapterId];
+            if (!content || content.trim() === '') return 'pending';
+            if (content.length < 100) return 'writing';
+            return 'completed';
+        }
+        
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '未开始',
+                'writing': '编写中',
+                'completed': '已完成'
+            };
+            return statusMap[status] || '未开始';
+        }
+        
+        function getStatusColor(status) {
+            const colorMap = {
+                'pending': 'text-gray-400',
+                'writing': 'text-yellow-500',
+                'completed': 'text-green-500'
+            };
+            return colorMap[status] || 'text-gray-400';
+        }
+        
+        function selectChapter(chapterId, chapterTitle) {
+            window.currentChapterId = chapterId;
+            document.getElementById('currentChapter').textContent = chapterTitle;
+            document.getElementById('chapterContent').value = window.chapterContents[chapterId] || '';
+            renderChapterTree();
+        }
+        
+        function updateChapterContent() {
+            if (window.currentChapterId) {
+                window.chapterContents[window.currentChapterId] = document.getElementById('chapterContent').value;
+                updateWritingStatus();
+                renderChapterTree();
+            }
+        }
+        
+        function updateWritingStatus() {
+            if (!window.catalogData) return;
+            
+            let total = 0;
+            let completed = 0;
+            let writing = 0;
+            let pending = 0;
+            
+            window.catalogData.forEach(chapter => {
+                total++;
+                const mainStatus = getChapterStatus(chapter.id);
+                if (mainStatus === 'completed') completed++;
+                else if (mainStatus === 'writing') writing++;
+                else pending++;
+                
+                if (chapter.children) {
+                    chapter.children.forEach(sub => {
+                        total++;
+                        const subStatus = getChapterStatus(sub.id);
+                        if (subStatus === 'completed') completed++;
+                        else if (subStatus === 'writing') writing++;
+                        else pending++;
+                    });
+                }
+            });
+            
+            document.getElementById('totalChapters').textContent = total;
+            document.getElementById('completedChapters').textContent = completed;
+            document.getElementById('writingChapters').textContent = writing;
+            document.getElementById('pendingChapters').textContent = pending;
+            
+            const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+            document.getElementById('progressPercent').textContent = progress + '%';
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+        
+        function showToolPanel(toolName) {
+            console.log('showToolPanel called with:', toolName);
+            
+            // 关闭所有工具面板和模态框
+            document.querySelectorAll('.tool-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.add('hidden');
+            });
+            
+            // 如果是AI工具，显示模态框
+            if (toolName === 'ai-write') {
+                insertAIContent();
+                return;
+            } else if (toolName === 'ai-rewrite') {
+                rewriteContent();
+                return;
+            } else if (toolName === 'ai-expand') {
+                expandContent();
+                return;
+            } else if (toolName === 'ai-polish') {
+                polishContent();
+                return;
+            }
+            
+            // 显示对应的工具面板
+            const panel = document.getElementById('tool-' + toolName);
+            if (!panel) {
+                console.error('Panel not found:', 'tool-' + toolName);
+                showToast('工具面板未找到', 'error');
+                return;
+            }
+            
+            console.log('Panel found:', panel);
+            
+            // 找到触发按钮
+            const buttons = document.querySelectorAll('button[onclick*="showToolPanel"]');
+            let targetButton = null;
+            buttons.forEach(btn => {
+                const onclick = btn.getAttribute('onclick') || '';
+                if (onclick.includes(`'${toolName}'`) || onclick.includes(`"${toolName}"`)) {
+                    targetButton = btn;
+                }
+            });
+            
+            console.log('Target button:', targetButton);
+            
+            if (targetButton) {
+                const rect = targetButton.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                
+                console.log('Button rect:', rect, 'scroll:', scrollTop, scrollLeft);
+                
+                // 使用absolute定位，相对于文档
+                panel.style.position = 'absolute';
+                panel.style.top = (rect.bottom + scrollTop + 8) + 'px';
+                // 确保面板不会超出右边界
+                const panelWidth = 384; // w-96 = 384px
+                const leftPos = Math.max(20, Math.min(rect.left + scrollLeft, window.innerWidth - panelWidth - 20));
+                panel.style.left = leftPos + 'px';
+                panel.style.zIndex = '1000';
+                panel.classList.remove('hidden');
+                console.log('Panel shown at:', panel.style.top, panel.style.left);
+            } else {
+                console.log('Button not found, using fallback position');
+                // 如果找不到按钮，使用默认位置
+                const editorArea = document.querySelector('.border.border-gray-200.rounded-lg');
+                if (editorArea) {
+                    const rect = editorArea.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                    panel.style.position = 'absolute';
+                    panel.style.top = (rect.top + scrollTop + 60) + 'px';
+                    panel.style.left = (rect.left + scrollLeft + 20) + 'px';
+                    panel.style.zIndex = '1000';
+                    panel.classList.remove('hidden');
+                } else {
+                    // 最后的后备方案
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    panel.style.position = 'absolute';
+                    panel.style.top = (scrollTop + 100) + 'px';
+                    panel.style.left = '50%';
+                    panel.style.transform = 'translateX(-50%)';
+                    panel.style.zIndex = '1000';
+                    panel.classList.remove('hidden');
+                }
+            }
+            
+            // 添加点击外部关闭功能
+            setTimeout(() => {
+                const closeOnOutsideClick = (e) => {
+                    if (!panel.contains(e.target) && !e.target.closest('button[onclick*="showToolPanel"]')) {
+                        panel.classList.add('hidden');
+                        document.removeEventListener('click', closeOnOutsideClick);
+                    }
+                };
+                document.addEventListener('click', closeOnOutsideClick);
+            }, 100);
+        }
+        
+        function closeToolPanel(toolName) {
+            const panel = document.getElementById('tool-' + toolName);
+            if (panel) {
+                panel.classList.add('hidden');
+            }
+        }
+        
+        function insertImage(imageUrl, imageName) {
+            const editor = document.getElementById('chapterContent');
+            if (!window.currentChapterId) {
+                showToast('请先选择章节', 'warning');
+                return;
+            }
+            const cursorPos = editor.selectionStart;
+            const textBefore = editor.value.substring(0, cursorPos);
+            const textAfter = editor.value.substring(cursorPos);
+            editor.value = textBefore + `\n[图片: ${imageName || imageUrl}]\n` + textAfter;
+            editor.focus();
+            editor.setSelectionRange(cursorPos + imageName.length + 10, cursorPos + imageName.length + 10);
+            updateChapterContent();
+            closeToolPanel('image-lib');
+            showToast('图片已插入', 'success');
+        }
+        
+        function searchImages(keyword) {
+            // 模拟搜索功能
+            const images = document.querySelectorAll('#imageGrid > div');
+            images.forEach(img => {
+                const text = img.textContent.toLowerCase();
+                if (text.includes(keyword.toLowerCase()) || keyword === '') {
+                    img.style.display = 'block';
+                } else {
+                    img.style.display = 'none';
+                }
+            });
+        }
+        
+        function uploadImage() {
+            showToast('上传功能开发中', 'info');
+        }
+        
+        function insertCompanyMaterial(materialName, source) {
+            const editor = document.getElementById('chapterContent');
+            if (!window.currentChapterId) {
+                showToast('请先选择章节', 'warning');
+                return;
+            }
+            const cursorPos = editor.selectionStart;
+            const textBefore = editor.value.substring(0, cursorPos);
+            const textAfter = editor.value.substring(cursorPos);
+            editor.value = textBefore + `\n[引用${materialName} - ${source}]\n` + textAfter;
+            editor.focus();
+            editor.setSelectionRange(cursorPos + materialName.length + source.length + 8, cursorPos + materialName.length + source.length + 8);
+            updateChapterContent();
+            closeToolPanel('company-lib');
+            showToast(`${materialName}已插入`, 'success');
+        }
+        
+        function searchCompanyMaterials(keyword) {
+            const materials = document.querySelectorAll('#companyMaterialsList > div');
+            materials.forEach(material => {
+                const text = material.textContent.toLowerCase();
+                if (text.includes(keyword.toLowerCase()) || keyword === '') {
+                    material.style.display = 'block';
+                } else {
+                    material.style.display = 'none';
+                }
+            });
+        }
+        
+        function filterCompanyMaterials(type) {
+            const buttons = document.querySelectorAll('#tool-company-lib .rounded-full');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes('全部') && type === 'all') {
+                    btn.classList.remove('bg-gray-100', 'text-gray-600');
+                    btn.classList.add('bg-blue-600', 'text-white');
+                } else if (btn.textContent.includes('资质') && type === 'certificate') {
+                    btn.classList.remove('bg-gray-100', 'text-gray-600');
+                    btn.classList.add('bg-blue-600', 'text-white');
+                } else if (btn.textContent.includes('案例') && type === 'case') {
+                    btn.classList.remove('bg-gray-100', 'text-gray-600');
+                    btn.classList.add('bg-blue-600', 'text-white');
+                } else if (btn.textContent.includes('团队') && type === 'team') {
+                    btn.classList.remove('bg-gray-100', 'text-gray-600');
+                    btn.classList.add('bg-blue-600', 'text-white');
+                } else {
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                    btn.classList.add('bg-gray-100', 'text-gray-600');
+                }
+            });
+            
+            const materials = document.querySelectorAll('#companyMaterialsList > div');
+            materials.forEach(material => {
+                if (type === 'all' || material.dataset.type === type) {
+                    material.style.display = 'block';
+                } else {
+                    material.style.display = 'none';
+                }
+            });
+        }
+        
+        function applyFormat(formatType) {
+            const editor = document.getElementById('chapterContent');
+            if (!window.currentChapterId) {
+                showToast('请先选择章节', 'warning');
+                return;
+            }
+            
+            let message = '';
+            if (formatType === 'font') {
+                message = '字体已修复为三号仿宋';
+            } else if (formatType === 'spacing') {
+                message = '行距已调整';
+            } else if (formatType === 'header') {
+                message = '页眉页脚模板已套用';
+            }
+            
+            showToast(message, 'success');
+            closeToolPanel('format');
+        }
+        
+        function generateImage() {
+            const prompt = document.getElementById('imagePrompt').value;
+            const style = document.getElementById('imageStyle').value;
+            
+            if (!prompt.trim()) {
+                showToast('请输入图片描述', 'warning');
+                return;
+            }
+            
+            const btn = document.getElementById('generateImageBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 生成中...';
+            
+            // 模拟生成过程
+            setTimeout(() => {
+                document.getElementById('imagePreview').classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                showToast('图片生成完成', 'success');
+            }, 2000);
+        }
+        
+        function insertGeneratedImage() {
+            const prompt = document.getElementById('imagePrompt').value;
+            const editor = document.getElementById('chapterContent');
+            if (!window.currentChapterId) {
+                showToast('请先选择章节', 'warning');
+                return;
+            }
+            const cursorPos = editor.selectionStart;
+            const textBefore = editor.value.substring(0, cursorPos);
+            const textAfter = editor.value.substring(cursorPos);
+            editor.value = textBefore + `\n[AI生成图片: ${prompt}]\n` + textAfter;
+            updateChapterContent();
+            document.getElementById('imagePreview').classList.add('hidden');
+            document.getElementById('imagePrompt').value = '';
+            closeToolPanel('ai-image');
+            showToast('图片已插入', 'success');
+        }
+        
+        function regenerateImage() {
+            document.getElementById('imagePreview').classList.add('hidden');
+            generateImage();
+        }
+        
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const bgColor = {
+                'success': 'bg-green-500',
+                'warning': 'bg-yellow-500',
+                'error': 'bg-red-500',
+                'info': 'bg-blue-500'
+            }[type] || 'bg-blue-500';
+            
+            toast.className = `fixed top-4 right-4 ${bgColor} text-white px-4 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-slide-in`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slide-out 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        function insertAIContent() {
+            const editor = document.getElementById('chapterContent');
+            if (!window.currentChapterId) {
+                showToast('请先选择章节', 'warning');
+                return;
+            }
+            showAIModal('generate');
+        }
+        
+        function rewriteContent() {
+            const editor = document.getElementById('chapterContent');
+            const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+            if (!selectedText.trim() && editor.value.trim() === '') {
+                showToast('请先选择或输入要重写的内容', 'warning');
+                return;
+            }
+            showAIModal('rewrite', selectedText);
+        }
+        
+        function expandContent() {
+            const editor = document.getElementById('chapterContent');
+            const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+            if (!selectedText.trim() && editor.value.trim() === '') {
+                showToast('请先选择或输入要扩写的内容', 'warning');
+                return;
+            }
+            showAIModal('expand', selectedText);
+        }
+        
+        function polishContent() {
+            const editor = document.getElementById('chapterContent');
+            const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+            if (!selectedText.trim() && editor.value.trim() === '') {
+                showToast('请先选择或输入要润色的内容', 'warning');
+                return;
+            }
+            showAIModal('polish', selectedText);
+        }
+        
+        function showAIModal(mode, selectedText = '') {
+            const modal = document.getElementById('aiModal');
+            const modeText = {
+                'generate': 'AI生成内容',
+                'rewrite': 'AI重写',
+                'expand': 'AI扩写',
+                'polish': 'AI润色'
+            };
+            
+            document.getElementById('aiModalTitle').textContent = modeText[mode];
+            document.getElementById('aiPromptInput').value = selectedText || '';
+            document.getElementById('aiPromptInput').placeholder = mode === 'generate' ? '描述您要生成的内容，例如：项目概述、技术方案等...' : '可以补充具体要求，或直接生成';
+            document.getElementById('aiModalMode').value = mode;
+            
+            // 同步知识库列表
+            const knowledgeList = document.getElementById('knowledgeList');
+            const aiKnowledgeList = document.getElementById('aiKnowledgeList');
+            aiKnowledgeList.innerHTML = knowledgeList.innerHTML;
+            
+            modal.classList.remove('hidden');
+        }
+        
+        function closeAIModal() {
+            document.getElementById('aiModal').classList.add('hidden');
+        }
+        
+        function executeAIAction() {
+            const mode = document.getElementById('aiModalMode').value;
+            const prompt = document.getElementById('aiPromptInput').value;
+            const editor = document.getElementById('chapterContent');
+            
+            if (!window.currentChapterId) {
+                showToast('请先选择章节', 'warning');
+                return;
+            }
+            
+            // 显示加载状态
+            const generateBtn = document.getElementById('aiGenerateBtn');
+            const originalText = generateBtn.innerHTML;
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 生成中...';
+            
+            // 模拟AI生成
+            setTimeout(() => {
+                const cursorPos = editor.selectionStart;
+                const textBefore = editor.value.substring(0, cursorPos);
+                const textAfter = editor.value.substring(cursorPos);
+                
+                let generatedContent = '';
+                if (mode === 'generate') {
+                    generatedContent = `\n\n【${prompt || 'AI生成内容'}】\n本项目采用先进的技术架构，确保系统的高性能、高可用性和可扩展性。通过模块化设计，实现了业务逻辑的清晰分离，便于后续维护和升级。\n\n`;
+                } else if (mode === 'rewrite') {
+                    generatedContent = `\n\n【重写后的内容】\n${prompt || '已重写的内容将显示 here'}\n\n`;
+                } else if (mode === 'expand') {
+                    generatedContent = `\n\n【扩写后的内容】\n${prompt || '已扩写的内容将显示 here'}\n\n`;
+                } else if (mode === 'polish') {
+                    generatedContent = `\n\n【润色后的内容】\n${prompt || '已润色的内容将显示 here'}\n\n`;
+                }
+                
+                editor.value = textBefore + generatedContent + textAfter;
+                editor.focus();
+                editor.setSelectionRange(cursorPos + generatedContent.length, cursorPos + generatedContent.length);
+                
+                updateChapterContent();
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = originalText;
+                closeAIModal();
+                showToast('内容已生成并插入', 'success');
+            }, 2000);
+        }
+        function showKnowledgeModal() {
+            document.getElementById('knowledgeModal').classList.remove('hidden');
+        }
+        function closeKnowledgeModal() {
+            document.getElementById('knowledgeModal').classList.add('hidden');
+        }
+        function selectKnowledge(name) {
+            const list = document.getElementById('knowledgeList');
+            const exists = Array.from(list.children).some(span => span.textContent.includes(name));
+            if (!exists) {
+                const span = document.createElement('span');
+                span.className = 'px-2 py-1 bg-white border border-blue-200 rounded text-xs text-blue-700';
+                span.innerHTML = name + ' <i class="fas fa-times ml-1 cursor-pointer" onclick="removeKnowledge(this)"></i>';
+                list.appendChild(span);
+            }
+            closeKnowledgeModal();
+        }
+        function removeKnowledge(el) {
+            el.parentElement.remove();
+        }
+    </script>
+</body>
+</html>
+

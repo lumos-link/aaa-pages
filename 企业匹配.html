@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业匹配</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <section class="p-6 space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <p class="text-xs text-green-500 font-semibold uppercase tracking-widest mb-2">Step 02</p>
+                <h1 class="text-2xl font-semibold text-gray-800">企业与素材匹配</h1>
+                <p class="text-sm text-gray-500">自动检索企业库、业绩、证件与素材，提示缺口并提供补充入口。</p>
+            </div>
+            <button class="px-5 py-2 bg-green-600 text-white rounded-lg flex items-center gap-2"><i class="fas fa-sync"></i> 重新匹配</button>
+        </div>
+
+        <div class="grid xl:grid-cols-3 gap-6">
+            <div class="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">企业档案引用情况</h2>
+                    <span class="text-xs text-gray-400">匹配率 92%</span>
+                </div>
+                <table class="w-full text-sm text-gray-600">
+                    <thead>
+                        <tr class="text-left text-xs text-gray-400 uppercase tracking-widest border-b">
+                            <th class="py-2">资料项</th>
+                            <th class="py-2">来源</th>
+                            <th class="py-2">状态</th>
+                            <th class="py-2 text-right">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        <tr>
+                            <td class="py-3 font-semibold text-gray-800">企业资质证书</td>
+                            <td>企业库 · 证件中心</td>
+                            <td><span class="px-2 py-1 text-xs rounded-full bg-green-50 text-green-600">已引用</span></td>
+                            <td class="text-right text-blue-600 text-xs">查看</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 font-semibold text-gray-800">智慧城市案例</td>
+                            <td>素材库 · 案例库</td>
+                            <td><span class="px-2 py-1 text-xs rounded-full bg-green-50 text-green-600">已引用</span></td>
+                            <td class="text-right text-blue-600 text-xs">替换</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 font-semibold text-gray-800">专家团队简历</td>
+                            <td>企业库 · 人员库</td>
+                            <td><span class="px-2 py-1 text-xs rounded-full bg-yellow-50 text-yellow-600">待补充</span></td>
+                            <td class="text-right text-blue-600 text-xs">上传</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 font-semibold text-gray-800">施工现场照片</td>
+                            <td>图片库</td>
+                            <td><span class="px-2 py-1 text-xs rounded-full bg-green-50 text-green-600">已引用</span></td>
+                            <td class="text-right text-blue-600 text-xs">更换</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800">缺口提示</h2>
+                    <button class="text-xs text-blue-600">补充资料</button>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div class="p-3 border border-yellow-200 bg-yellow-50 rounded-xl">
+                        <p class="font-semibold text-yellow-700 mb-1">人员履历缺失</p>
+                        <p class="text-xs text-yellow-600">项目经理缺少近三年项目经历，建议上传。</p>
+                    </div>
+                    <div class="p-3 border border-red-200 bg-red-50 rounded-xl">
+                        <p class="font-semibold text-red-700 mb-1">证书即将过期</p>
+                        <p class="text-xs text-red-600">安全生产许可证 2024/08 到期，请更新扫描件。</p>
+                    </div>
+                    <div class="p-3 border border-blue-200 bg-blue-50 rounded-xl">
+                        <p class="font-semibold text-blue-700 mb-1">AI 推荐</p>
+                        <p class="text-xs text-blue-600">上传“智慧运维平台”行业深度文章，提升差异化。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">素材引用预览</h2>
+                <div class="text-xs text-gray-400">将自动同步至 AI 写作工作台</div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-4 text-sm">
+                <div class="p-4 border border-gray-100 rounded-xl">
+                    <p class="font-semibold text-gray-800 mb-1">企业荣誉</p>
+                    <p class="text-xs text-gray-500 mb-3">国家高新、双软、ISO 等 12 项奖项</p>
+                    <button class="text-blue-600 text-xs">替换</button>
+                </div>
+                <div class="p-4 border border-gray-100 rounded-xl">
+                    <p class="font-semibold text-gray-800 mb-1">组织架构</p>
+                    <p class="text-xs text-gray-500 mb-3">项目负责人 + 专家顾问 + 运维保障</p>
+                    <button class="text-blue-600 text-xs">编辑图表</button>
+                </div>
+                <div class="p-4 border border-gray-100 rounded-xl">
+                    <p class="font-semibold text-gray-800 mb-1">成功案例</p>
+                    <p class="text-xs text-gray-500 mb-3">智慧园区、数字政府、轨道云平台</p>
+                    <button class="text-blue-600 text-xs">替换案例</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+
