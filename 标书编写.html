@@ -44,6 +44,13 @@
         .animate-slide-in {
             animation: slide-in 0.3s ease-out;
         }
+        .export-format-option input[type="radio"]:checked + * {
+            /* 选中状态的样式 */
+        }
+        .export-format-option.border-blue-500 {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -56,8 +63,8 @@
             </div>
             <div class="flex items-center gap-3 text-sm">
                 <button class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-600"><i class="fas fa-save mr-2"></i> 保存</button>
-                <button class="px-4 py-2 bg-purple-600 text-white rounded-lg" onclick="parent.loadPage('协同审校.html','step')">
-                    <i class="fas fa-check mr-2"></i> 完成编写
+                <button class="px-4 py-2 bg-purple-600 text-white rounded-lg" onclick="showExportModal()">
+                    <i class="fas fa-download mr-2"></i> 导出
                 </button>
             </div>
         </div>
@@ -122,9 +129,7 @@
                             <button onclick="showKnowledgeModal()" class="text-xs text-blue-600"><i class="fas fa-plus mr-1"></i> 选择</button>
                         </div>
                         <div id="knowledgeList" class="flex flex-wrap gap-2 mt-2">
-                            <span class="px-2 py-1 bg-white border border-blue-200 rounded text-xs text-blue-700">
-                                智慧城市项目案例库 <i class="fas fa-times ml-1 cursor-pointer" onclick="removeKnowledge(this)"></i>
-                            </span>
+                            <!-- 已选择的知识库和文件将动态显示 -->
                         </div>
                     </div>
 
@@ -164,7 +169,7 @@
     </section>
 
     <!-- 工具面板 -->
-    <div id="tool-image-lib" class="tool-panel hidden absolute bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-96 max-h-[500px] flex flex-col">
+    <div id="tool-image-lib" class="tool-panel hidden bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-96 max-h-[500px] flex flex-col">
         <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-semibold text-gray-800">图片素材库</h3>
             <button onclick="closeToolPanel('image-lib')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
@@ -200,7 +205,7 @@
         </button>
     </div>
 
-    <div id="tool-company-lib" class="tool-panel hidden absolute bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-96 max-h-[500px] flex flex-col">
+    <div id="tool-company-lib" class="tool-panel hidden bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-96 max-h-[500px] flex flex-col">
         <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-semibold text-gray-800">企业素材档案库</h3>
             <button onclick="closeToolPanel('company-lib')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
@@ -261,7 +266,7 @@
         </div>
     </div>
 
-    <div id="tool-format" class="tool-panel hidden absolute bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-96">
+    <div id="tool-format" class="tool-panel hidden bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-96">
         <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-semibold text-gray-800">格式工具</h3>
             <button onclick="closeToolPanel('format')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
@@ -306,7 +311,7 @@
         </div>
     </div>
 
-    <div id="tool-ai-image" class="tool-panel hidden absolute bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-96">
+    <div id="tool-ai-image" class="tool-panel hidden bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-96">
         <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-semibold text-gray-800">AI生图</h3>
             <button onclick="closeToolPanel('ai-image')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
@@ -341,6 +346,52 @@
                         <i class="fas fa-redo mr-1"></i> 重新生成
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导出模态框 -->
+    <div id="exportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">导出标书</h3>
+                <button onclick="closeExportModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">选择导出格式</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="export-format-option relative flex flex-col items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition" data-format="word">
+                            <input type="radio" name="exportFormat" value="word" class="sr-only" checked>
+                            <i class="fas fa-file-word text-4xl text-blue-600 mb-2"></i>
+                            <span class="text-sm font-medium text-gray-700">Word 文档</span>
+                            <span class="text-xs text-gray-500 mt-1">.docx</span>
+                            <i class="fas fa-check-circle absolute top-2 right-2 text-blue-600 hidden"></i>
+                        </label>
+                        <label class="export-format-option relative flex flex-col items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition" data-format="pdf">
+                            <input type="radio" name="exportFormat" value="pdf" class="sr-only">
+                            <i class="fas fa-file-pdf text-4xl text-red-600 mb-2"></i>
+                            <span class="text-sm font-medium text-gray-700">PDF 文档</span>
+                            <span class="text-xs text-gray-500 mt-1">.pdf</span>
+                            <i class="fas fa-check-circle absolute top-2 right-2 text-blue-600 hidden"></i>
+                        </label>
+                    </div>
+                </div>
+                <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                    <div class="flex items-start gap-2">
+                        <i class="fas fa-info-circle text-blue-600 mt-0.5"></i>
+                        <div class="text-xs text-gray-700">
+                            <p class="font-medium text-blue-800 mb-1">导出说明</p>
+                            <p id="exportDescription">Word格式支持后续编辑，保留所有格式和样式。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 flex gap-3">
+                <button onclick="closeExportModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                <button onclick="executeExport()" class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                    <i class="fas fa-download mr-2"></i> 开始导出
+                </button>
             </div>
         </div>
     </div>
@@ -381,27 +432,154 @@
     </div>
 
     <div id="knowledgeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl p-6 max-w-lg w-full">
+        <div class="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] flex flex-col">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold">选择企业知识库</h3>
-                <button onclick="closeKnowledgeModal()" class="text-gray-400"><i class="fas fa-times"></i></button>
+                <h3 class="text-lg font-semibold">选择企业知识库及文件</h3>
+                <button onclick="closeKnowledgeModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
             </div>
-            <div class="space-y-3 max-h-96 overflow-y-auto">
-                <div class="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-500" onclick="selectKnowledge('智慧城市项目案例库')">
-                    <p class="font-medium text-sm">智慧城市项目案例库</p>
-                    <p class="text-xs text-gray-500 mt-1">包含15个成功案例，技术方案模板等</p>
+            <!-- 搜索框 -->
+            <div class="mb-4">
+                <div class="relative">
+                    <input type="text" id="knowledgeSearchInput" placeholder="搜索知识库或文件名..." 
+                           class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           oninput="searchKnowledgeFiles(this.value)">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    <button id="clearSearchBtn" onclick="clearKnowledgeSearch()" class="hidden absolute right-3 top-3 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <div class="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-500" onclick="selectKnowledge('技术标准知识库')">
-                    <p class="font-medium text-sm">技术标准知识库</p>
-                    <p class="text-xs text-gray-500 mt-1">行业标准、技术规范、最佳实践</p>
-                </div>
-                <div class="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-500" onclick="selectKnowledge('企业资质库')">
-                    <p class="font-medium text-sm">企业资质库</p>
-                    <p class="text-xs text-gray-500 mt-1">各类资质证书、认证文件</p>
+                <div id="searchResultCount" class="hidden text-xs text-gray-500 mt-2">
+                    <span id="searchCountText">找到 <span id="matchCount">0</span> 个匹配项</span>
                 </div>
             </div>
-            <div class="mt-4 flex gap-3">
-                <button onclick="closeKnowledgeModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700">取消</button>
+            <div id="knowledgeListContainer" class="flex-1 overflow-y-auto space-y-3 mb-4">
+                <!-- 知识库1 -->
+                <div class="knowledge-item border border-gray-200 rounded-lg overflow-hidden" data-knowledge-name="智慧城市项目案例库">
+                    <div class="p-3 bg-gray-50 flex items-center justify-between cursor-pointer hover:bg-gray-100" onclick="toggleKnowledgeFiles('knowledge-1')">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-chevron-down text-xs text-gray-400 transition-transform" id="icon-knowledge-1"></i>
+                            <p class="font-medium text-sm">智慧城市项目案例库</p>
+                            <span class="text-xs text-gray-500">(15个文件)</span>
+                        </div>
+                        <label class="flex items-center gap-2 cursor-pointer" onclick="event.stopPropagation()">
+                            <input type="checkbox" class="knowledge-checkbox" data-knowledge="智慧城市项目案例库" onchange="toggleAllFiles('knowledge-1', this.checked)">
+                            <span class="text-xs text-gray-600">全选</span>
+                        </label>
+                    </div>
+                    <div id="knowledge-1" class="hidden border-t border-gray-200 bg-white">
+                        <div class="p-2 space-y-1">
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="智慧城市项目案例库" data-file="智慧城市数字底座项目案例.docx" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-word text-blue-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">智慧城市数字底座项目案例.docx</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="智慧城市项目案例库" data-file="城市大脑平台建设方案.pdf" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-pdf text-red-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">城市大脑平台建设方案.pdf</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="智慧城市项目案例库" data-file="数据治理平台技术方案.docx" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-word text-blue-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">数据治理平台技术方案.docx</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="智慧城市项目案例库" data-file="物联网感知层架构设计.docx" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-word text-blue-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">物联网感知层架构设计.docx</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="智慧城市项目案例库" data-file="智慧交通系统实施方案.pdf" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-pdf text-red-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">智慧交通系统实施方案.pdf</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 知识库2 -->
+                <div class="knowledge-item border border-gray-200 rounded-lg overflow-hidden" data-knowledge-name="技术标准知识库">
+                    <div class="p-3 bg-gray-50 flex items-center justify-between cursor-pointer hover:bg-gray-100" onclick="toggleKnowledgeFiles('knowledge-2')">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-chevron-down text-xs text-gray-400 transition-transform" id="icon-knowledge-2"></i>
+                            <p class="font-medium text-sm">技术标准知识库</p>
+                            <span class="text-xs text-gray-500">(12个文件)</span>
+                        </div>
+                        <label class="flex items-center gap-2 cursor-pointer" onclick="event.stopPropagation()">
+                            <input type="checkbox" class="knowledge-checkbox" data-knowledge="技术标准知识库" onchange="toggleAllFiles('knowledge-2', this.checked)">
+                            <span class="text-xs text-gray-600">全选</span>
+                        </label>
+                    </div>
+                    <div id="knowledge-2" class="hidden border-t border-gray-200 bg-white">
+                        <div class="p-2 space-y-1">
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="技术标准知识库" data-file="GB/T 22239-2019 信息安全技术网络安全等级保护基本要求.pdf" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-pdf text-red-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">GB/T 22239-2019 信息安全技术网络安全等级保护基本要求.pdf</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="技术标准知识库" data-file="微服务架构设计规范.docx" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-word text-blue-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">微服务架构设计规范.docx</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="技术标准知识库" data-file="数据安全管理办法.docx" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-word text-blue-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">数据安全管理办法.docx</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="技术标准知识库" data-file="云计算平台技术规范.pdf" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-pdf text-red-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">云计算平台技术规范.pdf</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 知识库3 -->
+                <div class="knowledge-item border border-gray-200 rounded-lg overflow-hidden" data-knowledge-name="企业资质库">
+                    <div class="p-3 bg-gray-50 flex items-center justify-between cursor-pointer hover:bg-gray-100" onclick="toggleKnowledgeFiles('knowledge-3')">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-chevron-down text-xs text-gray-400 transition-transform" id="icon-knowledge-3"></i>
+                            <p class="font-medium text-sm">企业资质库</p>
+                            <span class="text-xs text-gray-500">(8个文件)</span>
+                        </div>
+                        <label class="flex items-center gap-2 cursor-pointer" onclick="event.stopPropagation()">
+                            <input type="checkbox" class="knowledge-checkbox" data-knowledge="企业资质库" onchange="toggleAllFiles('knowledge-3', this.checked)">
+                            <span class="text-xs text-gray-600">全选</span>
+                        </label>
+                    </div>
+                    <div id="knowledge-3" class="hidden border-t border-gray-200 bg-white">
+                        <div class="p-2 space-y-1">
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="企业资质库" data-file="ISO 9001质量管理体系认证证书.pdf" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-pdf text-red-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">ISO 9001质量管理体系认证证书.pdf</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="企业资质库" data-file="信息系统集成资质证书.pdf" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-pdf text-red-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">信息系统集成资质证书.pdf</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="企业资质库" data-file="软件著作权登记证书.pdf" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-pdf text-red-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">软件著作权登记证书.pdf</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" class="file-checkbox" data-knowledge="企业资质库" data-file="高新技术企业证书.pdf" onchange="updateKnowledgeSelection()">
+                                <i class="fas fa-file-pdf text-red-600 text-xs"></i>
+                                <span class="text-xs text-gray-700">高新技术企业证书.pdf</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 pt-4 flex gap-3">
+                <button onclick="closeKnowledgeModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                <button onclick="confirmKnowledgeSelection()" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-check mr-2"></i> 确认选择
+                </button>
             </div>
         </div>
     </div>
@@ -457,6 +635,8 @@
             }
             
             renderChapterTree();
+            // 初始化知识库列表显示
+            renderKnowledgeList();
         }
         
         function renderChapterTree() {
@@ -641,43 +821,44 @@
             
             if (targetButton) {
                 const rect = targetButton.getBoundingClientRect();
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                console.log('Button rect:', rect);
                 
-                console.log('Button rect:', rect, 'scroll:', scrollTop, scrollLeft);
-                
-                // 使用absolute定位，相对于文档
-                panel.style.position = 'absolute';
-                panel.style.top = (rect.bottom + scrollTop + 8) + 'px';
+                // 使用fixed定位，相对于视口（在iframe中就是iframe的视口）
+                panel.style.position = 'fixed';
+                panel.style.top = (rect.bottom + 8) + 'px';
                 // 确保面板不会超出右边界
                 const panelWidth = 384; // w-96 = 384px
-                const leftPos = Math.max(20, Math.min(rect.left + scrollLeft, window.innerWidth - panelWidth - 20));
+                const leftPos = Math.max(20, Math.min(rect.left, window.innerWidth - panelWidth - 20));
                 panel.style.left = leftPos + 'px';
                 panel.style.zIndex = '1000';
                 panel.classList.remove('hidden');
-                console.log('Panel shown at:', panel.style.top, panel.style.left);
+                // 确保面板可见
+                panel.style.visibility = 'visible';
+                panel.style.opacity = '1';
+                console.log('Panel shown at:', panel.style.top, panel.style.left, 'Panel visible:', !panel.classList.contains('hidden'));
             } else {
                 console.log('Button not found, using fallback position');
                 // 如果找不到按钮，使用默认位置
                 const editorArea = document.querySelector('.border.border-gray-200.rounded-lg');
                 if (editorArea) {
                     const rect = editorArea.getBoundingClientRect();
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-                    panel.style.position = 'absolute';
-                    panel.style.top = (rect.top + scrollTop + 60) + 'px';
-                    panel.style.left = (rect.left + scrollLeft + 20) + 'px';
+                    panel.style.position = 'fixed';
+                    panel.style.top = (rect.top + 60) + 'px';
+                    panel.style.left = (rect.left + 20) + 'px';
                     panel.style.zIndex = '1000';
                     panel.classList.remove('hidden');
+                    panel.style.visibility = 'visible';
+                    panel.style.opacity = '1';
                 } else {
                     // 最后的后备方案
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    panel.style.position = 'absolute';
-                    panel.style.top = (scrollTop + 100) + 'px';
+                    panel.style.position = 'fixed';
+                    panel.style.top = '100px';
                     panel.style.left = '50%';
                     panel.style.transform = 'translateX(-50%)';
                     panel.style.zIndex = '1000';
                     panel.classList.remove('hidden');
+                    panel.style.visibility = 'visible';
+                    panel.style.opacity = '1';
                 }
             }
             
@@ -947,6 +1128,111 @@
             document.getElementById('aiModal').classList.add('hidden');
         }
         
+        // 导出功能
+        function showExportModal() {
+            document.getElementById('exportModal').classList.remove('hidden');
+            // 初始化格式选择
+            initExportFormatSelection();
+        }
+        
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.add('hidden');
+        }
+        
+        function initExportFormatSelection() {
+            const formatOptions = document.querySelectorAll('.export-format-option');
+            const description = document.getElementById('exportDescription');
+            
+            // 移除之前的事件监听器（如果存在）
+            formatOptions.forEach(option => {
+                const newOption = option.cloneNode(true);
+                option.parentNode.replaceChild(newOption, option);
+            });
+            
+            // 重新获取选项
+            const updatedOptions = document.querySelectorAll('.export-format-option');
+            
+            updatedOptions.forEach(option => {
+                const radio = option.querySelector('input[type="radio"]');
+                const checkIcon = option.querySelector('.fa-check-circle');
+                
+                // 点击选项
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // 取消所有选中状态
+                    updatedOptions.forEach(opt => {
+                        opt.classList.remove('border-blue-500', 'bg-blue-50');
+                        opt.classList.add('border-gray-200');
+                        const icon = opt.querySelector('.fa-check-circle');
+                        if (icon) icon.classList.add('hidden');
+                        const radioBtn = opt.querySelector('input[type="radio"]');
+                        if (radioBtn) radioBtn.checked = false;
+                    });
+                    
+                    // 设置当前选中
+                    option.classList.remove('border-gray-200');
+                    option.classList.add('border-blue-500', 'bg-blue-50');
+                    if (checkIcon) checkIcon.classList.remove('hidden');
+                    if (radio) radio.checked = true;
+                    
+                    // 更新说明文字
+                    if (radio && radio.value === 'word') {
+                        if (description) description.textContent = 'Word格式支持后续编辑，保留所有格式和样式。';
+                    } else if (radio && radio.value === 'pdf') {
+                        if (description) description.textContent = 'PDF格式适合最终交付，不可编辑，保持格式一致性。';
+                    }
+                });
+            });
+            
+            // 默认选中Word
+            const wordOption = document.querySelector('.export-format-option[data-format="word"]');
+            if (wordOption) {
+                const wordRadio = wordOption.querySelector('input[type="radio"]');
+                const wordCheckIcon = wordOption.querySelector('.fa-check-circle');
+                if (wordRadio) wordRadio.checked = true;
+                wordOption.classList.remove('border-gray-200');
+                wordOption.classList.add('border-blue-500', 'bg-blue-50');
+                if (wordCheckIcon) wordCheckIcon.classList.remove('hidden');
+                if (description) description.textContent = 'Word格式支持后续编辑，保留所有格式和样式。';
+            }
+        }
+        
+        function executeExport() {
+            const selectedFormat = document.querySelector('input[name="exportFormat"]:checked');
+            if (!selectedFormat) {
+                showToast('请选择导出格式', 'warning');
+                return;
+            }
+            
+            const format = selectedFormat.value;
+            const formatName = format === 'word' ? 'Word' : 'PDF';
+            
+            // 显示加载状态
+            const exportBtn = document.querySelector('#exportModal button[onclick="executeExport()"]');
+            if (exportBtn) {
+                const originalText = exportBtn.innerHTML;
+                exportBtn.disabled = true;
+                exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 导出中...';
+                
+                // 模拟导出过程
+                setTimeout(() => {
+                    closeExportModal();
+                    showToast(`${formatName}格式标书导出成功！`, 'success');
+                    exportBtn.disabled = false;
+                    exportBtn.innerHTML = originalText;
+                    
+                    // 模拟下载（实际应该调用后端API）
+                    const fileName = `城市运行数字底座建设项目投标书.${format === 'word' ? 'docx' : 'pdf'}`;
+                    console.log(`导出文件：${fileName}`);
+                    // 实际项目中这里应该触发文件下载
+                    // window.location.href = `/api/export?format=${format}&filename=${fileName}`;
+                }, 2000);
+            } else {
+                closeExportModal();
+                showToast(`${formatName}格式标书导出成功！`, 'success');
+            }
+        }
+        
         function executeAIAction() {
             const mode = document.getElementById('aiModalMode').value;
             const prompt = document.getElementById('aiPromptInput').value;
@@ -991,25 +1277,265 @@
                 showToast('内容已生成并插入', 'success');
             }, 2000);
         }
+        // 存储已选择的知识库和文件
+        window.selectedKnowledgeFiles = {
+            '智慧城市项目案例库': ['智慧城市数字底座项目案例.docx']
+        }; // { "知识库名": ["文件1", "文件2"], ... }
+        
         function showKnowledgeModal() {
+            // 恢复之前的选择状态
+            restoreKnowledgeSelection();
+            // 清空搜索框
+            const searchInput = document.getElementById('knowledgeSearchInput');
+            if (searchInput) {
+                searchInput.value = '';
+                clearKnowledgeSearch();
+            }
             document.getElementById('knowledgeModal').classList.remove('hidden');
         }
+        
         function closeKnowledgeModal() {
             document.getElementById('knowledgeModal').classList.add('hidden');
         }
-        function selectKnowledge(name) {
-            const list = document.getElementById('knowledgeList');
-            const exists = Array.from(list.children).some(span => span.textContent.includes(name));
-            if (!exists) {
-                const span = document.createElement('span');
-                span.className = 'px-2 py-1 bg-white border border-blue-200 rounded text-xs text-blue-700';
-                span.innerHTML = name + ' <i class="fas fa-times ml-1 cursor-pointer" onclick="removeKnowledge(this)"></i>';
-                list.appendChild(span);
+        
+        function toggleKnowledgeFiles(knowledgeId) {
+            const filesDiv = document.getElementById(knowledgeId);
+            const icon = document.getElementById('icon-' + knowledgeId);
+            if (filesDiv.classList.contains('hidden')) {
+                filesDiv.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                filesDiv.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
             }
-            closeKnowledgeModal();
         }
-        function removeKnowledge(el) {
-            el.parentElement.remove();
+        
+        function toggleAllFiles(knowledgeId, checked) {
+            const knowledgeName = document.querySelector(`#${knowledgeId}`).closest('.border').querySelector('.knowledge-checkbox').dataset.knowledge;
+            const checkboxes = document.querySelectorAll(`#${knowledgeId} .file-checkbox[data-knowledge="${knowledgeName}"]`);
+            checkboxes.forEach(cb => {
+                cb.checked = checked;
+            });
+            updateKnowledgeSelection();
+        }
+        
+        function updateKnowledgeSelection() {
+            // 更新全选复选框状态
+            document.querySelectorAll('.knowledge-checkbox').forEach(kbCheckbox => {
+                const knowledgeName = kbCheckbox.dataset.knowledge;
+                const knowledgeId = kbCheckbox.closest('.border').querySelector('[id^="knowledge-"]').id;
+                const fileCheckboxes = document.querySelectorAll(`#${knowledgeId} .file-checkbox[data-knowledge="${knowledgeName}"]`);
+                const checkedFiles = Array.from(fileCheckboxes).filter(cb => cb.checked);
+                kbCheckbox.checked = fileCheckboxes.length > 0 && checkedFiles.length === fileCheckboxes.length;
+                kbCheckbox.indeterminate = checkedFiles.length > 0 && checkedFiles.length < fileCheckboxes.length;
+            });
+        }
+        
+        function confirmKnowledgeSelection() {
+            // 收集所有选中的文件
+            window.selectedKnowledgeFiles = {};
+            document.querySelectorAll('.file-checkbox:checked').forEach(checkbox => {
+                const knowledgeName = checkbox.dataset.knowledge;
+                const fileName = checkbox.dataset.file;
+                if (!window.selectedKnowledgeFiles[knowledgeName]) {
+                    window.selectedKnowledgeFiles[knowledgeName] = [];
+                }
+                window.selectedKnowledgeFiles[knowledgeName].push(fileName);
+            });
+            
+            // 更新显示
+            renderKnowledgeList();
+            closeKnowledgeModal();
+            showToast('知识库文件已选择', 'success');
+        }
+        
+        function renderKnowledgeList() {
+            const list = document.getElementById('knowledgeList');
+            list.innerHTML = '';
+            
+            Object.keys(window.selectedKnowledgeFiles).forEach(knowledgeName => {
+                const files = window.selectedKnowledgeFiles[knowledgeName];
+                if (files.length === 0) return;
+                
+                // 如果选择了该知识库的所有文件或文件数量较多，显示知识库名
+                if (files.length >= 3) {
+                    const span = document.createElement('span');
+                    span.className = 'px-2 py-1 bg-white border border-blue-200 rounded text-xs text-blue-700 flex items-center gap-1';
+                    span.innerHTML = `${knowledgeName} (${files.length}个文件) <i class="fas fa-times ml-1 cursor-pointer hover:text-red-600" onclick="removeKnowledge('${knowledgeName}', null)"></i>`;
+                    list.appendChild(span);
+                } else {
+                    // 显示具体文件
+                    files.forEach(fileName => {
+                        const span = document.createElement('span');
+                        span.className = 'px-2 py-1 bg-white border border-blue-200 rounded text-xs text-blue-700 flex items-center gap-1';
+                        span.innerHTML = `<span class="text-gray-500">${knowledgeName}/</span>${fileName} <i class="fas fa-times ml-1 cursor-pointer hover:text-red-600" onclick="removeKnowledge('${knowledgeName}', '${fileName}')"></i>`;
+                        list.appendChild(span);
+                    });
+                }
+            });
+            
+            // 同步到AI模态框
+            const aiKnowledgeList = document.getElementById('aiKnowledgeList');
+            if (aiKnowledgeList) {
+                aiKnowledgeList.innerHTML = list.innerHTML;
+            }
+        }
+        
+        function removeKnowledge(knowledgeName, fileName) {
+            if (fileName === null) {
+                // 删除整个知识库
+                delete window.selectedKnowledgeFiles[knowledgeName];
+            } else {
+                // 删除单个文件
+                if (window.selectedKnowledgeFiles[knowledgeName]) {
+                    window.selectedKnowledgeFiles[knowledgeName] = window.selectedKnowledgeFiles[knowledgeName].filter(f => f !== fileName);
+                    if (window.selectedKnowledgeFiles[knowledgeName].length === 0) {
+                        delete window.selectedKnowledgeFiles[knowledgeName];
+                    }
+                }
+            }
+            renderKnowledgeList();
+        }
+        
+        function restoreKnowledgeSelection() {
+            // 恢复之前的选择状态
+            document.querySelectorAll('.file-checkbox').forEach(checkbox => {
+                const knowledgeName = checkbox.dataset.knowledge;
+                const fileName = checkbox.dataset.file;
+                if (window.selectedKnowledgeFiles[knowledgeName] && window.selectedKnowledgeFiles[knowledgeName].includes(fileName)) {
+                    checkbox.checked = true;
+                } else {
+                    checkbox.checked = false;
+                }
+            });
+            updateKnowledgeSelection();
+        }
+        
+        function searchKnowledgeFiles(keyword) {
+            const clearBtn = document.getElementById('clearSearchBtn');
+            const resultCount = document.getElementById('searchResultCount');
+            const countText = document.getElementById('matchCount');
+            
+            // 显示/隐藏清除按钮
+            if (!keyword || keyword.trim() === '') {
+                if (clearBtn) clearBtn.classList.add('hidden');
+                if (resultCount) resultCount.classList.add('hidden');
+                // 清除搜索，显示所有
+                clearKnowledgeSearch();
+                return;
+            } else {
+                if (clearBtn) clearBtn.classList.remove('hidden');
+                if (resultCount) resultCount.classList.remove('hidden');
+            }
+            
+            keyword = keyword.toLowerCase().trim();
+            let matchCount = 0;
+            
+            // 遍历所有知识库
+            document.querySelectorAll('.knowledge-item').forEach(knowledgeItem => {
+                const knowledgeName = knowledgeItem.dataset.knowledgeName;
+                const knowledgeNameElement = knowledgeItem.querySelector('.font-medium');
+                const filesContainer = knowledgeItem.querySelector('[id^="knowledge-"]');
+                const fileCheckboxes = knowledgeItem.querySelectorAll('.file-checkbox');
+                
+                let knowledgeMatch = knowledgeName && knowledgeName.toLowerCase().includes(keyword);
+                let hasMatchingFile = false;
+                let fileMatchCount = 0;
+                
+                // 检查文件是否匹配
+                fileCheckboxes.forEach(checkbox => {
+                    const fileName = checkbox.dataset.file;
+                    const label = checkbox.closest('label');
+                    const fileNameElement = label ? label.querySelector('.text-xs.text-gray-700') : null;
+                    
+                    if (fileName && fileName.toLowerCase().includes(keyword)) {
+                        hasMatchingFile = true;
+                        fileMatchCount++;
+                        // 显示匹配的文件
+                        if (label) label.style.display = 'flex';
+                        // 高亮匹配的文本
+                        if (fileNameElement) {
+                            highlightText(fileNameElement, keyword);
+                        }
+                    } else {
+                        // 隐藏不匹配的文件
+                        if (label) label.style.display = 'none';
+                    }
+                });
+                
+                // 如果知识库名称匹配或有匹配的文件，显示知识库
+                if (knowledgeMatch || hasMatchingFile) {
+                    knowledgeItem.style.display = 'block';
+                    matchCount += fileMatchCount;
+                    if (knowledgeMatch) matchCount++;
+                    
+                    // 如果有匹配的文件，自动展开
+                    if (hasMatchingFile && filesContainer && filesContainer.classList.contains('hidden')) {
+                        filesContainer.classList.remove('hidden');
+                        const icon = knowledgeItem.querySelector('[id^="icon-"]');
+                        if (icon) icon.style.transform = 'rotate(180deg)';
+                    }
+                    // 高亮知识库名称
+                    if (knowledgeMatch && knowledgeNameElement) {
+                        highlightText(knowledgeNameElement, keyword);
+                    }
+                } else {
+                    // 隐藏不匹配的知识库
+                    knowledgeItem.style.display = 'none';
+                }
+            });
+            
+            // 更新匹配计数
+            if (countText) countText.textContent = matchCount;
+        }
+        
+        function highlightText(element, keyword) {
+            if (!element || !keyword) return;
+            // 如果已经高亮过，先恢复原始文本
+            if (element.dataset.originalText) {
+                element.textContent = element.dataset.originalText;
+            } else {
+                element.dataset.originalText = element.textContent;
+            }
+            const originalText = element.textContent;
+            // 转义特殊字符
+            const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escapedKeyword})`, 'gi');
+            const highlightedText = originalText.replace(regex, '<mark class="bg-yellow-200 text-yellow-900">$1</mark>');
+            element.innerHTML = highlightedText;
+        }
+        
+        function clearKnowledgeSearch() {
+            const searchInput = document.getElementById('knowledgeSearchInput');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            
+            // 恢复所有元素的显示
+            document.querySelectorAll('.knowledge-item').forEach(item => {
+                item.style.display = 'block';
+            });
+            
+            document.querySelectorAll('.file-checkbox').forEach(checkbox => {
+                const label = checkbox.closest('label');
+                if (label) label.style.display = 'flex';
+            });
+            
+            // 恢复原始文本（移除高亮）
+            document.querySelectorAll('.font-medium, .text-xs.text-gray-700').forEach(element => {
+                if (element.dataset.originalText) {
+                    element.textContent = element.dataset.originalText;
+                    element.removeAttribute('data-original-text');
+                } else if (element.innerHTML.includes('<mark>')) {
+                    element.textContent = element.textContent || element.innerText;
+                }
+            });
+            
+            // 隐藏清除按钮和结果计数
+            const clearBtn = document.getElementById('clearSearchBtn');
+            const resultCount = document.getElementById('searchResultCount');
+            if (clearBtn) clearBtn.classList.add('hidden');
+            if (resultCount) resultCount.classList.add('hidden');
         }
     </script>
 </body>
