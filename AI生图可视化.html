@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 生图 / 可视化</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .style-option:hover { transform: scale(1.05); }
+        .style-option.selected { border-color: #2563eb; background: #eff6ff; }
+        .image-card { transition: all 0.3s ease; }
+        .image-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <section class="p-6 space-y-6 max-w-7xl mx-auto">
+        <!-- 顶部标题栏 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button onclick="navigateToPage('智能工具箱.html')" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-2xl font-semibold text-gray-800">AI 生图 / 可视化</h1>
+                        <p class="text-sm text-gray-500 mt-1">封面设计 · 工程示意 · 流程图</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- 左侧：生成设置 -->
+            <div class="lg:col-span-1 space-y-4">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">生成设置</h2>
+                    
+                    <!-- 提示词输入 -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">提示词</label>
+                        <textarea 
+                            id="promptInput" 
+                            placeholder="描述您想要生成的图片..." 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                            rows="4"
+                        >现代智慧园区 + 夜景 + 高科技蓝紫</textarea>
+                        <p class="text-xs text-gray-500 mt-1">详细描述有助于生成更准确的图片</p>
+                    </div>
+
+                    <!-- 风格选择 -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">图片风格</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="style-option border-2 border-blue-200 bg-blue-50 rounded-lg p-3 cursor-pointer selected" onclick="selectStyle(this, 'illustration')">
+                                <div class="text-center">
+                                    <i class="fas fa-paint-brush text-blue-600 text-xl mb-1"></i>
+                                    <p class="text-xs font-medium text-gray-800">插画</p>
+                                </div>
+                            </div>
+                            <div class="style-option border-2 border-gray-200 rounded-lg p-3 cursor-pointer hover:border-blue-300" onclick="selectStyle(this, 'photo')">
+                                <div class="text-center">
+                                    <i class="fas fa-camera text-gray-600 text-xl mb-1"></i>
+                                    <p class="text-xs font-medium text-gray-800">实拍</p>
+                                </div>
+                            </div>
+                            <div class="style-option border-2 border-gray-200 rounded-lg p-3 cursor-pointer hover:border-blue-300" onclick="selectStyle(this, 'wireframe')">
+                                <div class="text-center">
+                                    <i class="fas fa-project-diagram text-gray-600 text-xl mb-1"></i>
+                                    <p class="text-xs font-medium text-gray-800">线框</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 图片尺寸 -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">图片尺寸</label>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option>16:9 (1920×1080)</option>
+                            <option>4:3 (1600×1200)</option>
+                            <option>1:1 (1024×1024)</option>
+                            <option>自定义</option>
+                        </select>
+                    </div>
+
+                    <!-- 生成数量 -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">生成数量</label>
+                        <input type="number" value="4" min="1" max="8" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <button onclick="generateImage()" class="w-full px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold">
+                        <i class="fas fa-magic mr-2"></i>开始生成
+                    </button>
+                </div>
+
+                <!-- 提示词模板 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">提示词模板</h2>
+                    <div class="space-y-2">
+                        <button onclick="useTemplate('智慧城市 + 现代建筑 + 夜景 + 蓝紫色调')" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg border border-gray-200">
+                            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>智慧城市场景
+                        </button>
+                        <button onclick="useTemplate('工程项目 + 施工现场 + 专业设备 + 日景')" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg border border-gray-200">
+                            <i class="fas fa-building text-blue-500 mr-2"></i>工程项目场景
+                        </button>
+                        <button onclick="useTemplate('流程图 + 系统架构 + 简洁线条 + 蓝色')" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg border border-gray-200">
+                            <i class="fas fa-sitemap text-green-500 mr-2"></i>系统架构图
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：生成结果 -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">生成结果</h2>
+                        <div class="flex items-center gap-2">
+                            <button onclick="viewGallery()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">
+                                <i class="fas fa-images mr-2"></i>查看图片库
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 生成中状态 -->
+                    <div id="generatingState" class="hidden">
+                        <div class="text-center py-12">
+                            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                            <p class="text-gray-600">AI 正在生成图片，请稍候...</p>
+                        </div>
+                    </div>
+
+                    <!-- 图片网格 -->
+                    <div id="imageGrid" class="grid grid-cols-2 gap-4">
+                        <div class="image-card bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
+                            <div class="aspect-video bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
+                                <i class="fas fa-image text-white text-4xl opacity-50"></i>
+                            </div>
+                            <div class="p-3">
+                                <p class="text-sm font-medium text-gray-800 mb-1">智慧园区夜景</p>
+                                <p class="text-xs text-gray-500 mb-2">插画风格 · 1920×1080</p>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="downloadImage()" class="flex-1 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                        <i class="fas fa-download mr-1"></i>下载
+                                    </button>
+                                    <button onclick="insertToDoc()" class="flex-1 px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded hover:bg-gray-200">
+                                        <i class="fas fa-file-import mr-1"></i>插入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="image-card bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
+                            <div class="aspect-video bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                                <i class="fas fa-image text-white text-4xl opacity-50"></i>
+                            </div>
+                            <div class="p-3">
+                                <p class="text-sm font-medium text-gray-800 mb-1">智慧园区夜景</p>
+                                <p class="text-xs text-gray-500 mb-2">插画风格 · 1920×1080</p>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="downloadImage()" class="flex-1 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                        <i class="fas fa-download mr-1"></i>下载
+                                    </button>
+                                    <button onclick="insertToDoc()" class="flex-1 px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded hover:bg-gray-200">
+                                        <i class="fas fa-file-import mr-1"></i>插入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="image-card bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
+                            <div class="aspect-video bg-gradient-to-br from-purple-400 to-pink-600 flex items-center justify-center">
+                                <i class="fas fa-image text-white text-4xl opacity-50"></i>
+                            </div>
+                            <div class="p-3">
+                                <p class="text-sm font-medium text-gray-800 mb-1">智慧园区夜景</p>
+                                <p class="text-xs text-gray-500 mb-2">插画风格 · 1920×1080</p>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="downloadImage()" class="flex-1 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                        <i class="fas fa-download mr-1"></i>下载
+                                    </button>
+                                    <button onclick="insertToDoc()" class="flex-1 px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded hover:bg-gray-200">
+                                        <i class="fas fa-file-import mr-1"></i>插入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="image-card bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
+                            <div class="aspect-video bg-gradient-to-br from-orange-400 to-red-600 flex items-center justify-center">
+                                <i class="fas fa-image text-white text-4xl opacity-50"></i>
+                            </div>
+                            <div class="p-3">
+                                <p class="text-sm font-medium text-gray-800 mb-1">智慧园区夜景</p>
+                                <p class="text-xs text-gray-500 mb-2">插画风格 · 1920×1080</p>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="downloadImage()" class="flex-1 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                        <i class="fas fa-download mr-1"></i>下载
+                                    </button>
+                                    <button onclick="insertToDoc()" class="flex-1 px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded hover:bg-gray-200">
+                                        <i class="fas fa-file-import mr-1"></i>插入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                            生成的图片会自动保存到图片库，您可以直接插入到标书中使用。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let selectedStyle = 'illustration';
+
+        function selectStyle(element, style) {
+            document.querySelectorAll('.style-option').forEach(opt => {
+                opt.classList.remove('selected', 'border-blue-200', 'bg-blue-50');
+                opt.classList.add('border-gray-200');
+            });
+            element.classList.add('selected', 'border-blue-200', 'bg-blue-50');
+            element.classList.remove('border-gray-200');
+            selectedStyle = style;
+        }
+
+        function useTemplate(template) {
+            document.getElementById('promptInput').value = template;
+        }
+
+        function generateImage() {
+            const generatingState = document.getElementById('generatingState');
+            const imageGrid = document.getElementById('imageGrid');
+            
+            generatingState.classList.remove('hidden');
+            imageGrid.classList.add('hidden');
+            
+            // 模拟生成过程
+            setTimeout(() => {
+                generatingState.classList.add('hidden');
+                imageGrid.classList.remove('hidden');
+                alert('图片生成完成（演示页面，实际使用时将调用AI生图接口）');
+            }, 2000);
+        }
+
+        function downloadImage() {
+            alert('下载功能（演示页面，实际使用时将下载图片文件）');
+        }
+
+        function insertToDoc() {
+            alert('插入文档功能（演示页面，实际使用时将插入到当前标书文档）');
+        }
+
+        function viewGallery() {
+            alert('查看图片库功能（演示页面，实际使用时将跳转到图片库）');
+        }
+
+        function navigateToPage(page) {
+            try {
+                if (window.parent && window.parent.loadPage) {
+                    window.parent.loadPage(page, 'top');
+                } else if (window.top && window.top.loadPage) {
+                    window.top.loadPage(page, 'top');
+                } else {
+                    window.location.href = page;
+                }
+            } catch (e) {
+                console.error('跳转失败:', e);
+                window.location.href = page;
+            }
+        }
+    </script>
+</body>
+</html>
+

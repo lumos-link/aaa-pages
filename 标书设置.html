@@ -29,13 +29,14 @@
                         标书标题 <span class="text-red-500">*</span>
                     </label>
                     <input type="text" id="bookTitle" value="城市运行数字底座建设项目投标书" 
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           onchange="saveSettingsToLocal()">
                     <p class="text-xs text-gray-500 mt-1">默认读取招标文件中的项目名称，可修改</p>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        行业类型 <span class="text-red-500">*</span>
+                        标书类型 <span class="text-red-500">*</span>
                     </label>
                     <div class="grid grid-cols-2 gap-3">
                         <button class="industry-btn px-4 py-3 border-2 border-blue-600 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium" data-industry="it">
@@ -64,7 +65,7 @@
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">选择格式模板</label>
-                    <select id="formatSelect" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <select id="formatSelect" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" onchange="saveSettingsToLocal(); updateFormatPreview();">
                         <option value="default">默认格式（三号仿宋）</option>
                         <option value="standard">标准格式（小四号宋体）</option>
                         <option value="custom1">自定义格式1</option>
@@ -73,13 +74,32 @@
                     <p class="text-xs text-gray-500 mt-1">可选择已有格式或创建新格式</p>
                 </div>
 
-                <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <p class="text-xs text-gray-500 mb-2">当前格式预览</p>
-                    <div class="text-sm text-gray-700 space-y-1">
-                        <p>字体：三号仿宋</p>
-                        <p>行距：1.5倍</p>
-                        <p>页边距：上下2.5cm，左右3cm</p>
-                        <p>页眉页脚：已启用</p>
+                <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4">
+                    <div>
+                        <p class="text-xs text-gray-500 mb-2">正文排版要求</p>
+                        <div class="text-sm text-gray-700 space-y-1" id="bodyFormatPreview">
+                            <p>字体：三号仿宋</p>
+                            <p>行距：1.5倍</p>
+                            <p>页边距：上下2.5cm，左右3cm</p>
+                            <p>页眉页脚：启用</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-xs text-gray-500">标题层级规范</p>
+                            <span class="text-[10px] text-gray-400">自动随模板切换</span>
+                        </div>
+                        <div class="overflow-hidden border border-gray-200 rounded-lg">
+                            <div class="grid grid-cols-4 bg-white text-[11px] font-semibold text-gray-600 border-b border-gray-200">
+                                <div class="py-2 px-2">层级</div>
+                                <div class="py-2 px-2">字体</div>
+                                <div class="py-2 px-2">字号</div>
+                                <div class="py-2 px-2">段前/段后</div>
+                            </div>
+                            <div id="headingSpec" class="bg-white text-xs text-gray-700 divide-y divide-gray-100">
+                                <!-- 由JS填充 -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -175,39 +195,154 @@
                 <h3 class="text-lg font-semibold">新建格式模板</h3>
                 <button onclick="closeFormatModal()" class="text-gray-400"><i class="fas fa-times"></i></button>
             </div>
-            <div class="space-y-4">
+            <div class="space-y-6 max-h-[80vh] overflow-y-auto pr-2">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">格式名称</label>
                     <input type="text" placeholder="请输入格式名称" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">字体</label>
-                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                            <option>仿宋</option>
-                            <option>宋体</option>
-                            <option>黑体</option>
-                            <option>微软雅黑</option>
-                        </select>
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">正文排版设置</p>
+                        <span class="text-[11px] text-gray-400">应用于正文段落</span>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">字号</label>
-                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                            <option>三号</option>
-                            <option>四号</option>
-                            <option>小四号</option>
-                        </select>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">正文字体</label>
+                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                <option>仿宋</option>
+                                <option>宋体</option>
+                                <option>黑体</option>
+                                <option>微软雅黑</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">正文字号</label>
+                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                <option>三号</option>
+                                <option>四号</option>
+                                <option>小四号</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">行距</label>
+                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                <option>单倍行距</option>
+                                <option>1.5倍行距</option>
+                                <option>2倍行距</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">正文段前 / 段后</label>
+                            <input type="text" value="0行 / 0行" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm">
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">页边距</label>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="text-gray-500">上下</span>
+                                <input type="text" value="2.5cm" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-gray-500">左右</span>
+                                <input type="text" value="3cm" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <label class="block text-sm font-medium text-gray-700">页眉 / 页脚</label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="form-checkbox text-blue-600" checked>
+                            <span>启用页眉（项目名称 + 章节标题）</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="form-checkbox text-blue-600" checked>
+                            <span>启用页脚（页码 + 投标单位）</span>
+                        </label>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">行距</label>
-                    <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                        <option>单倍行距</option>
-                        <option>1.5倍行距</option>
-                        <option>2倍行距</option>
-                    </select>
+                <div class="pt-4 border-t border-gray-200 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-semibold text-gray-800">标题层级规范</h4>
+                        <span class="text-[11px] text-gray-400">至少包含三级标题</span>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        <div class="grid grid-cols-4 gap-3 items-center p-3 border border-gray-200 rounded-lg bg-gray-50">
+                            <span class="font-medium text-gray-800">一级标题</span>
+                            <div>
+                                <label class="text-xs text-gray-500">字体</label>
+                                <select class="w-full px-2 py-1 border border-gray-300 rounded text-xs">
+                                    <option>黑体</option>
+                                    <option>宋体</option>
+                                    <option>微软雅黑</option>
+                                    <option>仿宋</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500">字号</label>
+                                <select class="w-full px-2 py-1 border border-gray-300 rounded text-xs">
+                                    <option>小二号</option>
+                                    <option>三号</option>
+                                    <option>小三号</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500">段前/段后</label>
+                                <input type="text" value="1行 / 0.5行" class="w-full px-2 py-1 border border-gray-300 rounded text-xs">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-4 gap-3 items-center p-3 border border-gray-200 rounded-lg bg-white">
+                            <span class="font-medium text-gray-800">二级标题</span>
+                            <div>
+                                <label class="text-xs text-gray-500">字体</label>
+                                <select class="w-full px-2 py-1 border border-gray-300 rounded text-xs">
+                                    <option>黑体</option>
+                                    <option>宋体</option>
+                                    <option>微软雅黑</option>
+                                    <option>仿宋</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500">字号</label>
+                                <select class="w-full px-2 py-1 border border-gray-300 rounded text-xs">
+                                    <option>三号</option>
+                                    <option>小三号</option>
+                                    <option>四号</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500">段前/段后</label>
+                                <input type="text" value="0.5行 / 0行" class="w-full px-2 py-1 border border-gray-300 rounded text-xs">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-4 gap-3 items-center p-3 border border-gray-200 rounded-lg bg-gray-50">
+                            <span class="font-medium text-gray-800">三级标题</span>
+                            <div>
+                                <label class="text-xs text-gray-500">字体</label>
+                                <select class="w-full px-2 py-1 border border-gray-300 rounded text-xs">
+                                    <option>宋体</option>
+                                    <option>仿宋</option>
+                                    <option>微软雅黑</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500">字号</label>
+                                <select class="w-full px-2 py-1 border border-gray-300 rounded text-xs">
+                                    <option>小三号</option>
+                                    <option>四号</option>
+                                    <option>小四号</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500">段前/段后</label>
+                                <input type="text" value="0.5行 / 0行" class="w-full px-2 py-1 border border-gray-300 rounded text-xs">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex gap-3">
+                <div class="flex gap-3 pt-2">
                     <button onclick="closeFormatModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700">取消</button>
                     <button onclick="saveFormat()" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">保存</button>
                 </div>
@@ -299,6 +434,21 @@
     </div>
 
     <script>
+        // 页面加载时恢复设置
+        window.addEventListener('load', function() {
+            restoreSettings();
+            
+            // 自动保存（每30秒）
+            setInterval(function() {
+                saveSettingsToLocal();
+            }, 30000);
+            
+            // 页面关闭前保存
+            window.addEventListener('beforeunload', function() {
+                saveSettingsToLocal();
+            });
+        });
+        
         document.querySelectorAll('.industry-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.industry-btn').forEach(b => {
@@ -310,6 +460,99 @@
             });
         });
 
+        const formatPresets = {
+            'default': {
+                body: {
+                    font: '仿宋',
+                    size: '三号',
+                    lineHeight: '1.5倍',
+                    margins: '上下2.5cm，左右3cm',
+                    headerFooter: '启用'
+                },
+                headings: [
+                    { level: '一级标题', font: '黑体', size: '三号', spacing: '段前1行 / 段后0.5行' },
+                    { level: '二级标题', font: '黑体', size: '小三号', spacing: '段前0.5行 / 段后0行' },
+                    { level: '三级标题', font: '宋体', size: '四号', spacing: '段前0.5行 / 段后0行' },
+                    { level: '正文', font: '仿宋', size: '三号', spacing: '段前0行 / 段后0行' }
+                ]
+            },
+            'standard': {
+                body: {
+                    font: '宋体',
+                    size: '小四号',
+                    lineHeight: '1.75倍',
+                    margins: '上下2.54cm，左右3.17cm',
+                    headerFooter: '启用（含投标方信息）'
+                },
+                headings: [
+                    { level: '一级标题', font: '黑体', size: '小二号', spacing: '段前1.5行 / 段后0.5行' },
+                    { level: '二级标题', font: '黑体', size: '三号', spacing: '段前1行 / 段后0.5行' },
+                    { level: '三级标题', font: '宋体', size: '小三号', spacing: '段前0.5行 / 段后0行' },
+                    { level: '正文', font: '宋体', size: '小四号', spacing: '段前0行 / 段后0行' }
+                ]
+            },
+            'custom1': {
+                body: {
+                    font: '仿宋',
+                    size: '四号',
+                    lineHeight: '1.5倍',
+                    margins: '上下2cm，左右2.5cm',
+                    headerFooter: '关闭'
+                },
+                headings: [
+                    { level: '一级标题', font: '方正小标宋', size: '三号', spacing: '段前1行 / 段后0.5行' },
+                    { level: '二级标题', font: '黑体', size: '小三号', spacing: '段前0.5行 / 段后0行' },
+                    { level: '三级标题', font: '仿宋', size: '四号', spacing: '段前0.5行 / 段后0行' },
+                    { level: '正文', font: '仿宋', size: '四号', spacing: '段前0行 / 段后0行' }
+                ]
+            },
+            'custom2': {
+                body: {
+                    font: '微软雅黑',
+                    size: '小四号',
+                    lineHeight: '1.8倍',
+                    margins: '上下2.5cm，左右2.5cm',
+                    headerFooter: '启用（LOGO+页码）'
+                },
+                headings: [
+                    { level: '一级标题', font: '微软雅黑', size: '小二号', spacing: '段前2行 / 段后1行' },
+                    { level: '二级标题', font: '微软雅黑', size: '三号', spacing: '段前1行 / 段后0.5行' },
+                    { level: '三级标题', font: '微软雅黑', size: '小三号', spacing: '段前0.5行 / 段后0行' },
+                    { level: '正文', font: '微软雅黑', size: '小四号', spacing: '段前0行 / 段后0行' }
+                ]
+            }
+        };
+
+        function updateFormatPreview() {
+            const select = document.getElementById('formatSelect');
+            const preset = formatPresets[select.value] || formatPresets['default'];
+            const bodyContainer = document.getElementById('bodyFormatPreview');
+            const headingContainer = document.getElementById('headingSpec');
+
+            if (bodyContainer && preset.body) {
+                bodyContainer.innerHTML = `
+                    <p>字体：${preset.body.font}（${preset.body.size}）</p>
+                    <p>行距：${preset.body.lineHeight}</p>
+                    <p>页边距：${preset.body.margins}</p>
+                    <p>页眉页脚：${preset.body.headerFooter}</p>
+                `;
+            }
+
+            if (headingContainer && preset.headings) {
+                headingContainer.innerHTML = preset.headings.map(item => `
+                    <div class="grid grid-cols-4">
+                        <div class="py-2 px-2 font-medium text-gray-800">${item.level}</div>
+                        <div class="py-2 px-2">${item.font}</div>
+                        <div class="py-2 px-2">${item.size}</div>
+                        <div class="py-2 px-2">${item.spacing}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        document.getElementById('formatSelect').addEventListener('change', updateFormatPreview);
+        updateFormatPreview();
+
         function showFormatModal() {
             document.getElementById('formatModal').classList.remove('hidden');
         }
@@ -320,8 +563,132 @@
             alert('格式模板已保存');
             closeFormatModal();
         }
+        // 保存设置到本地存储
+        function saveSettingsToLocal() {
+            try {
+                const settings = {
+                    bookTitle: document.getElementById('bookTitle')?.value || '',
+                    bookType: document.querySelector('.industry-btn.border-blue-600')?.dataset.industry || '',
+                    formatTemplate: document.getElementById('formatSelect')?.value || 'default',
+                    catalogData: window.catalogData || [],
+                    savedAt: new Date().toISOString()
+                };
+                localStorage.setItem('bidding_settings_data', JSON.stringify(settings));
+                
+                // 同时保存目录数据到标书编写页面可以访问的键
+                if (window.catalogData) {
+                    localStorage.setItem('bidding_catalog_data', JSON.stringify(window.catalogData));
+                }
+                
+                return true;
+            } catch (e) {
+                console.error('保存设置失败:', e);
+                return false;
+            }
+        }
+        
+        // 恢复设置
+        function restoreSettings() {
+            try {
+                const saved = localStorage.getItem('bidding_settings_data');
+                if (saved) {
+                    const settings = JSON.parse(saved);
+                    
+                    // 恢复标书标题
+                    if (settings.bookTitle && document.getElementById('bookTitle')) {
+                        document.getElementById('bookTitle').value = settings.bookTitle;
+                    }
+                    
+                    // 恢复标书类型
+                    if (settings.bookType) {
+                        const btn = document.querySelector(`.industry-btn[data-industry="${settings.bookType}"]`);
+                        if (btn) btn.click();
+                    }
+                    
+                    // 恢复格式模板
+                    if (settings.formatTemplate && document.getElementById('formatSelect')) {
+                        document.getElementById('formatSelect').value = settings.formatTemplate;
+                        updateFormatPreview();
+                    }
+                    
+                    // 恢复目录数据
+                    if (settings.catalogData && settings.catalogData.length > 0) {
+                        window.catalogData = settings.catalogData;
+                        if (typeof updateCatalogDisplay === 'function') {
+                            updateCatalogDisplay();
+                        }
+                    }
+                    
+                    console.log('已恢复保存的标书设置');
+                }
+            } catch (e) {
+                console.error('恢复设置失败:', e);
+            }
+        }
+        
         function saveSettings() {
-            alert('标书设置已保存');
+            const success = saveSettingsToLocal();
+            if (success) {
+                // 同时更新目录数据到标书编写页面
+                if (window.catalogData) {
+                    localStorage.setItem('bidding_catalog_data', JSON.stringify(window.catalogData));
+                }
+                showToast('标书设置已保存', 'success');
+            } else {
+                showToast('保存失败，请重试', 'error');
+            }
+        }
+        
+        function goBack() {
+            try {
+                // 先保存当前设置
+                saveSettingsToLocal();
+                
+                // 尝试返回到标书制作页面（如果在iframe中）
+                if (window.parent && window.parent !== window) {
+                    // 如果在标书制作页面的iframe中，切换到招标解读步骤
+                    if (window.parent.document) {
+                        const step1Btn = window.parent.document.querySelector('.step-tab[onclick*="step1"]');
+                        if (step1Btn) {
+                            step1Btn.click();
+                            return;
+                        }
+                    }
+                    // 如果无法切换步骤，返回到标书工厂
+                    if (window.parent.loadPage) {
+                        window.parent.loadPage('标书工厂.html', 'top');
+                        return;
+                    }
+                }
+                // 直接跳转到标书工厂
+                window.location.href = '标书工厂.html';
+            } catch (e) {
+                console.error('返回失败:', e);
+                window.location.href = '标书工厂.html';
+            }
+        }
+        
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const bgColor = {
+                'success': 'bg-green-500',
+                'warning': 'bg-yellow-500',
+                'error': 'bg-red-500',
+                'info': 'bg-blue-500'
+            }[type] || 'bg-blue-500';
+            
+            toast.className = `fixed top-4 right-4 ${bgColor} text-white px-4 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
         function editCatalog() {
             document.getElementById('catalogEditModal').classList.remove('hidden');
@@ -405,6 +772,7 @@
                 children: []
             });
             renderCatalogEdit();
+            saveSettingsToLocal();
         }
         function addSubChapter(parentId) {
             const parent = window.catalogData.find(item => item.id === parentId);
@@ -417,6 +785,7 @@
                     title: `${partNum}.${subNum} 新子章节`
                 });
                 renderCatalogEdit();
+                saveSettingsToLocal();
             }
         }
         function removeChapter(id) {
@@ -427,6 +796,7 @@
             if (confirm('确定要删除此章节及其所有子章节吗？')) {
                 window.catalogData = window.catalogData.filter(item => item.id !== id);
                 renderCatalogEdit();
+                saveSettingsToLocal();
             }
         }
         function removeSubChapter(parentId, childId) {
@@ -434,17 +804,26 @@
             if (parent) {
                 parent.children = parent.children.filter(child => child.id !== childId);
                 renderCatalogEdit();
+                saveSettingsToLocal();
             }
         }
         function updateCatalogTitle(id, title) {
             const item = window.catalogData.find(i => i.id === id);
-            if (item) item.title = title;
+            if (item) {
+                item.title = title;
+                // 自动保存
+                saveSettingsToLocal();
+            }
         }
         function updateSubChapterTitle(parentId, childId, title) {
             const parent = window.catalogData.find(item => item.id === parentId);
             if (parent) {
                 const child = parent.children.find(c => c.id === childId);
-                if (child) child.title = title;
+                if (child) {
+                    child.title = title;
+                    // 自动保存
+                    saveSettingsToLocal();
+                }
             }
         }
         function saveCatalog() {
@@ -454,7 +833,19 @@
             }
             updateCatalogDisplay();
             closeCatalogEdit();
-            alert('目录已保存');
+            
+            // 保存到本地存储
+            try {
+                localStorage.setItem('bidding_catalog_data', JSON.stringify(window.catalogData));
+                localStorage.setItem('bidding_settings_data', JSON.stringify({
+                    ...JSON.parse(localStorage.getItem('bidding_settings_data') || '{}'),
+                    catalogData: window.catalogData
+                }));
+            } catch (e) {
+                console.error('保存目录失败:', e);
+            }
+            
+            showToast('目录已保存', 'success');
         }
         function updateCatalogDisplay() {
             // 如果已有分配信息，使用带分配的显示
@@ -486,6 +877,7 @@
             if (index > 0) {
                 [window.catalogData[index], window.catalogData[index - 1]] = [window.catalogData[index - 1], window.catalogData[index]];
                 renderCatalogEdit();
+                saveSettingsToLocal();
             }
         }
         function moveChapterDown(id) {
@@ -493,6 +885,7 @@
             if (index < window.catalogData.length - 1) {
                 [window.catalogData[index], window.catalogData[index + 1]] = [window.catalogData[index + 1], window.catalogData[index]];
                 renderCatalogEdit();
+                saveSettingsToLocal();
             }
         }
         function resetCatalog() {
@@ -522,7 +915,8 @@
                 ];
                 window.catalogData = defaultCatalog;
                 updateCatalogDisplay();
-                alert('已恢复默认目录');
+                saveSettingsToLocal();
+                showToast('已恢复默认目录', 'success');
             }
         }
         

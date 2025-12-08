@@ -61,8 +61,14 @@
                 <h1 class="text-2xl font-semibold text-gray-800">标书编写</h1>
                 <p class="text-sm text-gray-500">使用AI写作、格式工具、素材库等功能完成标书内容编写。</p>
             </div>
-            <div class="flex items-center gap-3 text-sm">
-                <button class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-600"><i class="fas fa-save mr-2"></i> 保存</button>
+            <div class="flex items-center gap-3 text-sm flex-wrap justify-end">
+                <div class="flex items-center gap-2 text-xs text-gray-500" id="saveStatus">
+                    <i class="fas fa-check-circle text-green-500"></i>
+                    <span>已自动保存</span>
+                </div>
+                <button onclick="manualSave()" class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">
+                    <i class="fas fa-save mr-2"></i> 保存
+                </button>
                 <button class="px-4 py-2 bg-purple-600 text-white rounded-lg" onclick="showExportModal()">
                     <i class="fas fa-download mr-2"></i> 导出
                 </button>
@@ -118,9 +124,19 @@
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-sm font-medium text-gray-700">当前章节：</span>
-                        <span class="text-sm text-purple-600 font-semibold" id="currentChapter">请选择章节</span>
+                    <div class="flex flex-col gap-2 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-medium text-gray-700">当前章节：</span>
+                            <span class="text-sm text-purple-600 font-semibold" id="currentChapter">请选择章节</span>
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap text-xs text-gray-500">
+                            <button class="px-3 py-1.5 border border-gray-200 rounded text-xs text-gray-600 hover:bg-gray-50" onclick="previewCurrentChapter()">
+                                <i class="fas fa-eye mr-1 text-blue-500"></i> 预览Word格式
+                            </button>
+                            <button id="confirmChapterBtn" class="px-3 py-1.5 border border-gray-200 rounded text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="confirmChapterCompletion()">
+                                <i class="fas fa-check-circle mr-1 text-green-500"></i> 标记已完成
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="mb-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
@@ -396,6 +412,29 @@
         </div>
     </div>
 
+    <!-- 章节预览模态框 -->
+    <div id="previewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="px-6 py-4 border-b flex items-center justify-between">
+                <div>
+                    <p class="text-[11px] text-gray-400 uppercase tracking-wide">章节预览</p>
+                    <h3 class="text-lg font-semibold text-gray-900" id="previewTitle">章节标题</h3>
+                </div>
+                <button class="text-gray-400 hover:text-gray-600" onclick="closePreviewModal()"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            <div class="flex-1 overflow-auto bg-gray-100 p-6">
+                <div id="previewContent" class="mx-auto bg-white rounded-2xl border border-gray-200 shadow p-10 w-[740px] min-h-[880px] text-gray-800 leading-relaxed">
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t flex items-center justify-between text-sm">
+                <div class="text-gray-500">
+                    <p>预览为Word格式排版示意，导出时将自动应用页眉页脚、字体字号等规范。</p>
+                </div>
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg" onclick="closePreviewModal()">关闭预览</button>
+            </div>
+        </div>
+    </div>
+
     <!-- AI操作模态框 -->
     <div id="aiModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl p-6 max-w-lg w-full">
@@ -585,14 +624,57 @@
     </div>
 
     <script>
+        // 存储键名
+        const STORAGE_KEY = 'bidding_draft_data';
+        const STORAGE_CATALOG_KEY = 'bidding_catalog_data';
+        const STORAGE_SETTINGS_KEY = 'bidding_settings_data';
+        
         // 章节数据存储
         window.chapterContents = {};
+        window.chapterStates = {}; // { chapterId: { confirmed: boolean, confirmedAt: timestamp } }
         window.currentChapterId = null;
+        let autoSaveTimer = null;
+        let lastSaveTime = null;
         
         // 初始化页面
         window.addEventListener('load', function() {
+            // 恢复保存的数据
+            restoreSavedData();
+            
             loadCatalogStructure();
             updateWritingStatus();
+            updateConfirmButtonState();
+            
+            // 如果恢复了当前章节，自动选中
+            if (window.currentChapterId && window.catalogData) {
+                const findChapter = (chapters, id) => {
+                    for (const chapter of chapters) {
+                        if (chapter.id === id) {
+                            return { chapter, title: chapter.title };
+                        }
+                        if (chapter.children) {
+                            for (const sub of chapter.children) {
+                                if (sub.id === id) {
+                                    return { chapter: sub, title: sub.title };
+                                }
+                            }
+                        }
+                    }
+                    return null;
+                };
+                const found = findChapter(window.catalogData, window.currentChapterId);
+                if (found) {
+                    selectChapter(window.currentChapterId, found.title);
+                }
+            }
+            
+            // 启动自动保存（每30秒保存一次）
+            startAutoSave();
+            
+            // 页面关闭前保存
+            window.addEventListener('beforeunload', function() {
+                saveToLocalStorage();
+            });
             
             // 点击外部区域关闭工具面板
             document.addEventListener('click', function(e) {
@@ -606,8 +688,131 @@
             });
         });
         
+        // 恢复保存的数据
+        function restoreSavedData() {
+            try {
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    if (data.chapterContents) {
+                        window.chapterContents = data.chapterContents;
+                    }
+                    if (data.chapterStates) {
+                        window.chapterStates = data.chapterStates;
+                    }
+                    if (data.currentChapterId) {
+                        window.currentChapterId = data.currentChapterId;
+                    }
+                    if (data.selectedKnowledgeFiles) {
+                        window.selectedKnowledgeFiles = data.selectedKnowledgeFiles;
+                    }
+                    console.log('已恢复保存的标书内容');
+                }
+                
+                // 恢复目录数据
+                const savedCatalog = localStorage.getItem(STORAGE_CATALOG_KEY);
+                if (savedCatalog) {
+                    window.catalogData = JSON.parse(savedCatalog);
+                    console.log('已恢复保存的目录结构');
+                }
+            } catch (e) {
+                console.error('恢复数据失败:', e);
+            }
+        }
+        
+        // 保存到本地存储
+        function saveToLocalStorage() {
+            try {
+                const dataToSave = {
+                    chapterContents: window.chapterContents,
+                    chapterStates: window.chapterStates,
+                    currentChapterId: window.currentChapterId,
+                    selectedKnowledgeFiles: window.selectedKnowledgeFiles || {},
+                    savedAt: new Date().toISOString()
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+                
+                // 保存目录数据
+                if (window.catalogData) {
+                    localStorage.setItem(STORAGE_CATALOG_KEY, JSON.stringify(window.catalogData));
+                }
+                
+                lastSaveTime = new Date();
+                updateSaveStatus('saved');
+                return true;
+            } catch (e) {
+                console.error('保存失败:', e);
+                updateSaveStatus('error');
+                return false;
+            }
+        }
+        
+        // 启动自动保存
+        function startAutoSave() {
+            // 每30秒自动保存一次
+            autoSaveTimer = setInterval(function() {
+                if (Object.keys(window.chapterContents).length > 0 || window.catalogData) {
+                    saveToLocalStorage();
+                }
+            }, 30000);
+        }
+        
+        // 手动保存
+        function manualSave() {
+            const success = saveToLocalStorage();
+            if (success) {
+                showToast('保存成功', 'success');
+            } else {
+                showToast('保存失败，请重试', 'error');
+            }
+        }
+        
+        // 更新保存状态显示
+        function updateSaveStatus(status) {
+            const statusEl = document.getElementById('saveStatus');
+            if (!statusEl) return;
+            
+            if (status === 'saving') {
+                statusEl.innerHTML = '<i class="fas fa-spinner fa-spin text-blue-500"></i><span>保存中...</span>';
+                statusEl.classList.remove('hidden');
+            } else if (status === 'saved') {
+                const timeStr = lastSaveTime ? formatTime(lastSaveTime) : '刚刚';
+                statusEl.innerHTML = `<i class="fas fa-check-circle text-green-500"></i><span>已保存 ${timeStr}</span>`;
+                statusEl.classList.remove('hidden');
+                // 3秒后淡出
+                setTimeout(() => {
+                    statusEl.style.opacity = '0.5';
+                }, 3000);
+            } else if (status === 'error') {
+                statusEl.innerHTML = '<i class="fas fa-exclamation-circle text-red-500"></i><span>保存失败</span>';
+                statusEl.classList.remove('hidden');
+            }
+        }
+        
+        // 格式化时间
+        function formatTime(date) {
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+            if (diff < 60) return '刚刚';
+            if (diff < 3600) return `${Math.floor(diff / 60)}分钟前`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}小时前`;
+            return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+        
         function loadCatalogStructure() {
-            // 从标书设置获取目录数据，如果没有则使用默认
+            // 优先使用恢复的目录数据，如果没有则从标书设置获取，最后使用默认
+            if (!window.catalogData || window.catalogData.length === 0) {
+                // 尝试从localStorage恢复
+                try {
+                    const savedCatalog = localStorage.getItem(STORAGE_CATALOG_KEY);
+                    if (savedCatalog) {
+                        window.catalogData = JSON.parse(savedCatalog);
+                    }
+                } catch (e) {
+                    console.error('恢复目录数据失败:', e);
+                }
+            }
+            
             if (!window.catalogData || window.catalogData.length === 0) {
                 window.catalogData = [
                     { id: 1, title: '第一部分 投标函及投标函附录', children: [
@@ -696,10 +901,11 @@
         }
         
         function getChapterStatus(chapterId) {
+            const state = window.chapterStates[chapterId];
+            if (state && state.confirmed) return 'completed';
             const content = window.chapterContents[chapterId];
             if (!content || content.trim() === '') return 'pending';
-            if (content.length < 100) return 'writing';
-            return 'completed';
+            return 'writing';
         }
         
         function getStatusText(status) {
@@ -725,14 +931,98 @@
             document.getElementById('currentChapter').textContent = chapterTitle;
             document.getElementById('chapterContent').value = window.chapterContents[chapterId] || '';
             renderChapterTree();
+            updateConfirmButtonState();
         }
         
         function updateChapterContent() {
             if (window.currentChapterId) {
                 window.chapterContents[window.currentChapterId] = document.getElementById('chapterContent').value;
+                if (window.chapterStates[window.currentChapterId] && window.chapterStates[window.currentChapterId].confirmed) {
+                    window.chapterStates[window.currentChapterId].confirmed = false;
+                }
                 updateWritingStatus();
                 renderChapterTree();
+                updateConfirmButtonState();
+                
+                // 内容变化时更新保存状态
+                updateSaveStatus('saving');
+                // 防抖保存（2秒后保存）
+                clearTimeout(window.saveDebounceTimer);
+                window.saveDebounceTimer = setTimeout(function() {
+                    saveToLocalStorage();
+                }, 2000);
             }
+        }
+
+        function updateConfirmButtonState() {
+            const btn = document.getElementById('confirmChapterBtn');
+            if (!btn) return;
+            if (!window.currentChapterId) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> 标记已完成';
+                return;
+            }
+            const state = window.chapterStates[window.currentChapterId];
+            if (state && state.confirmed) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> 已确认完成';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> 标记已完成';
+            }
+        }
+
+        function confirmChapterCompletion() {
+            if (!window.currentChapterId) {
+                showToast('请先选择章节', 'warning');
+                return;
+            }
+            const content = window.chapterContents[window.currentChapterId];
+            if (!content || content.trim().length < 50) {
+                showToast('内容太少，无法标记为完成', 'warning');
+                return;
+            }
+            if (!window.chapterStates[window.currentChapterId]) {
+                window.chapterStates[window.currentChapterId] = {};
+            }
+            window.chapterStates[window.currentChapterId].confirmed = true;
+            window.chapterStates[window.currentChapterId].confirmedAt = Date.now();
+            showToast('章节已标记为完成', 'success');
+            updateConfirmButtonState();
+            updateWritingStatus();
+            renderChapterTree();
+        }
+
+        function previewCurrentChapter() {
+            if (!window.currentChapterId) {
+                showToast('请先选择章节', 'warning');
+                return;
+            }
+            const content = window.chapterContents[window.currentChapterId];
+            if (!content || content.trim() === '') {
+                showToast('当前章节暂无内容', 'warning');
+                return;
+            }
+            const previewTitle = document.getElementById('previewTitle');
+            const previewContent = document.getElementById('previewContent');
+            previewTitle.textContent = document.getElementById('currentChapter').textContent;
+
+            const paragraphs = content.split(/\n+/).filter(line => line.trim() !== '');
+            previewContent.innerHTML = paragraphs.map((paragraph, index) => {
+                if (/^第[一二三四五六七八九十]+/.test(paragraph.trim())) {
+                    return `<p class="text-xl font-bold text-gray-900 mb-4">${paragraph.trim()}</p>`;
+                }
+                if (/^\d+(\.\d+)*\s/.test(paragraph.trim())) {
+                    return `<p class="text-base font-semibold text-gray-800 mb-3">${paragraph.trim()}</p>`;
+                }
+                return `<p class="text-base text-gray-700 leading-relaxed mb-3">${paragraph.trim()}</p>`;
+            }).join('');
+
+            document.getElementById('previewModal').classList.remove('hidden');
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.add('hidden');
         }
         
         function updateWritingStatus() {
@@ -1347,6 +1637,8 @@
             renderKnowledgeList();
             closeKnowledgeModal();
             showToast('知识库文件已选择', 'success');
+            // 自动保存
+            saveToLocalStorage();
         }
         
         function renderKnowledgeList() {
@@ -1503,6 +1795,35 @@
             const regex = new RegExp(`(${escapedKeyword})`, 'gi');
             const highlightedText = originalText.replace(regex, '<mark class="bg-yellow-200 text-yellow-900">$1</mark>');
             element.innerHTML = highlightedText;
+        }
+        
+        function goBack() {
+            try {
+                // 先保存当前内容
+                saveToLocalStorage();
+                
+                // 尝试返回到标书制作页面（如果在iframe中）
+                if (window.parent && window.parent !== window) {
+                    // 如果在标书制作页面的iframe中，切换到招标解读步骤
+                    if (window.parent.document) {
+                        const step1Btn = window.parent.document.querySelector('.step-tab[onclick*="step1"]');
+                        if (step1Btn) {
+                            step1Btn.click();
+                            return;
+                        }
+                    }
+                    // 如果无法切换步骤，返回到标书工厂
+                    if (window.parent.loadPage) {
+                        window.parent.loadPage('标书工厂.html', 'top');
+                        return;
+                    }
+                }
+                // 直接跳转到标书工厂
+                window.location.href = '标书工厂.html';
+            } catch (e) {
+                console.error('返回失败:', e);
+                window.location.href = '标书工厂.html';
+            }
         }
         
         function clearKnowledgeSearch() {

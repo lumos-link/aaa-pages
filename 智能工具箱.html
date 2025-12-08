@@ -9,15 +9,9 @@
 </head>
 <body class="bg-gray-50">
     <section class="p-6 space-y-6">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-semibold text-gray-800">智能工具箱</h1>
-                <p class="text-sm text-gray-500">集中所有 AI 写作、校对、格式、数据工具，按需调用。</p>
-            </div>
-            <div class="flex items-center gap-3 text-sm">
-                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg"><i class="fas fa-robot mr-2"></i> 启动 AI 助手</button>
-                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg"><i class="fas fa-book mr-2"></i> 操作手册</button>
-            </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h1 class="text-2xl font-semibold text-gray-800">智能工具箱</h1>
+            <p class="text-sm text-gray-500 mt-1">集中所有 AI 写作、校对、格式、数据工具，按需调用。</p>
         </div>
 
         <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -34,23 +28,24 @@
                     <p><span class="text-blue-500">问：</span>本项目暗标要求是什么？</p>
                     <p><span class="text-purple-500">答：</span>暗标部分需隐藏企业 logo，并单独提交电子版。</p>
                 </div>
-                <button class="mt-auto text-sm text-blue-600 flex items-center gap-1">立即咨询 <i class="fas fa-arrow-right text-xs"></i></button>
+                <button onclick="navigateToPage('对话式AI助手.html')" class="mt-auto text-sm text-blue-600 flex items-center gap-1 hover:text-blue-700">立即咨询 <i class="fas fa-arrow-right text-xs"></i></button>
             </div>
 
             <div class="bg-white rounded-2xl border border-gray-100 p-5 flex flex-col gap-3">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center"><i class="fas fa-spell-check"></i></div>
+                    <div class="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center"><i class="fas fa-clipboard-check"></i></div>
                     <div>
-                        <p class="font-semibold text-gray-800">AI 校对 / 合规检查</p>
-                        <p class="text-xs text-gray-500">评分匹配 · 术语统一 · 风险提示</p>
+                        <p class="font-semibold text-gray-800">标书评审功能</p>
+                        <p class="text-xs text-gray-500">AI校对 · 合规检查 · 评分策略</p>
                     </div>
                 </div>
                 <ul class="text-xs text-gray-600 space-y-2">
                     <li>· 检测 17 项格式规范（字体/段落/编号）</li>
                     <li>· AI 对照评分标准给出扣分风险</li>
+                    <li>· 根据评分表给出加分策略建议</li>
                     <li>· 支持一键应用修改建议</li>
                 </ul>
-                <button class="mt-auto text-sm text-blue-600 flex items-center gap-1">开始校对 <i class="fas fa-arrow-right text-xs"></i></button>
+                <button onclick="navigateToPage('标书评审功能.html')" class="mt-auto text-sm text-blue-600 flex items-center gap-1 hover:text-blue-700">开始评审 <i class="fas fa-arrow-right text-xs"></i></button>
             </div>
 
             <div class="bg-white rounded-2xl border border-gray-100 p-5 flex flex-col gap-3">
@@ -70,7 +65,7 @@
                         <button class="border border-gray-200 text-gray-600 rounded-lg py-2 text-[11px]">成本结构</button>
                     </div>
                 </div>
-                <button class="mt-auto text-sm text-blue-600 flex items-center gap-1">生成表格 <i class="fas fa-arrow-right text-xs"></i></button>
+                <button onclick="navigateToPage('数据表格生成.html')" class="mt-auto text-sm text-blue-600 flex items-center gap-1 hover:text-blue-700">生成表格 <i class="fas fa-arrow-right text-xs"></i></button>
             </div>
 
             <div class="bg-white rounded-2xl border border-gray-100 p-5 flex flex-col gap-3">
@@ -88,45 +83,30 @@
                     </div>
                     <p>支持选择风格（插画/实拍/线框），生成后自动进入图片库。</p>
                 </div>
-                <button class="mt-auto text-sm text-blue-600 flex items-center gap-1">开始生成 <i class="fas fa-arrow-right text-xs"></i></button>
+                <button onclick="navigateToPage('AI生图可视化.html')" class="mt-auto text-sm text-blue-600 flex items-center gap-1 hover:text-blue-700">开始生成 <i class="fas fa-arrow-right text-xs"></i></button>
             </div>
 
-            <div class="bg-white rounded-2xl border border-gray-100 p-5 flex flex-col gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center"><i class="fas fa-cogs"></i></div>
-                    <div>
-                        <p class="font-semibold text-gray-800">一键格式化</p>
-                        <p class="text-xs text-gray-500">标题、编号、目录、页眉页脚</p>
-                    </div>
-                </div>
-                <ul class="text-xs text-gray-600 space-y-2">
-                    <li>· 对齐招标格式规范模板</li>
-                    <li>· 自动生成目录与交叉引用</li>
-                    <li>· 支持暗标/明标双版本同步</li>
-                </ul>
-                <button class="mt-auto text-sm text-blue-600 flex items-center gap-1">应用模板 <i class="fas fa-arrow-right text-xs"></i></button>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-gray-100 p-5 flex flex-col gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center"><i class="fas fa-lightbulb"></i></div>
-                    <div>
-                        <p class="font-semibold text-gray-800">评分策略助手</p>
-                        <p class="text-xs text-gray-500">根据评分表给出加分策略</p>
-                    </div>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3 text-xs text-gray-600">
-                    <p class="font-semibold text-gray-800 mb-1">推荐动作：</p>
-                    <ul class="space-y-1">
-                        <li>· 增补“运维保障”章节，可补齐 8 分</li>
-                        <li>· 建议引用“市政类特级资质”，匹配度 +12%</li>
-                        <li>· 暗标部分需隐藏品牌色，以免扣分</li>
-                    </ul>
-                </div>
-                <button class="mt-auto text-sm text-blue-600 flex items-center gap-1">生成策略 <i class="fas fa-arrow-right text-xs"></i></button>
-            </div>
         </div>
     </section>
+    <script>
+        function navigateToPage(page) {
+            try {
+                // 尝试使用父窗口的 loadPage 函数
+                if (window.parent && window.parent.loadPage) {
+                    window.parent.loadPage(page, 'top');
+                } else if (window.top && window.top.loadPage) {
+                    window.top.loadPage(page, 'top');
+                } else {
+                    // 如果不在 iframe 中，直接跳转
+                    window.location.href = page;
+                }
+            } catch (e) {
+                // 如果跨域或其他错误，直接跳转
+                console.error('跳转失败:', e);
+                window.location.href = page;
+            }
+        }
+    </script>
 </body>
 </html>
 

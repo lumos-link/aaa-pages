@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据表格生成</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .template-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .template-card.selected { border-color: #2563eb; background: #eff6ff; }
+        .param-row { display: flex; gap: 8px; align-items: center; }
+        .param-row input { flex: 1; }
+        
+        /* 可编辑单元格样式 */
+        .editable-cell {
+            min-height: 2.5rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .editable-cell:hover {
+            background-color: #f0f9ff !important;
+            cursor: text;
+        }
+        .editable-cell:focus {
+            background-color: #dbeafe !important;
+            box-shadow: inset 0 0 0 2px #3b82f6;
+        }
+        .editable-cell[contenteditable="false"] {
+            cursor: default;
+        }
+        .editable-cell[contenteditable="false"]:hover {
+            background-color: inherit !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <section class="p-6 space-y-6 max-w-7xl mx-auto">
+        <!-- 顶部标题栏 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button onclick="navigateToPage('智能工具箱.html')" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-2xl font-semibold text-gray-800">数据表格生成</h1>
+                        <p class="text-sm text-gray-500 mt-1">预算、进度、BIM 数据图</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- 左侧：生成方式选择 -->
+            <div class="lg:col-span-1 space-y-4">
+                <!-- 生成方式选择 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">选择生成方式</h2>
+                    <div class="space-y-3">
+                        <button id="smartModeBtn" onclick="selectGenerateMode('smart')" class="w-full p-4 border-2 border-blue-200 bg-blue-50 rounded-xl text-left hover:bg-blue-100 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-magic text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-800">AI智能生成</p>
+                                    <p class="text-xs text-gray-500">描述需求，AI自动生成</p>
+                                </div>
+                            </div>
+                        </button>
+                        <button id="templateModeBtn" onclick="selectGenerateMode('template')" class="w-full p-4 border-2 border-gray-200 rounded-xl text-left hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gray-300 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-cog text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-800">手动配置</p>
+                                    <p class="text-xs text-gray-500">选择模板，手动配置参数</p>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI智能生成区域 -->
+                <div id="smartModeArea" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+                    <h2 class="text-lg font-semibold text-gray-800">AI智能生成</h2>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">描述您的表格需求</label>
+                        <textarea id="smartDescription" placeholder="例如：我需要一个预算对比表，包含5个项目，显示项目名称、预算金额、完成时间三列&#10;&#10;或者：生成一个里程碑计划表，包含项目启动、需求分析、系统设计等6个阶段..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows="4"></textarea>
+                        <p class="text-xs text-gray-500 mt-1">AI会根据您的描述自动选择合适的模板并生成表格</p>
+                    </div>
+                    <button onclick="smartGenerate()" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+                        <i class="fas fa-magic mr-2"></i>AI智能生成
+                    </button>
+                </div>
+
+                <!-- 手动配置区域 -->
+                <div id="templateModeArea" class="hidden space-y-4">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-4">选择模板</h2>
+                        <p class="text-xs text-gray-500 mb-4">不同模板提供不同的默认结构和数据生成逻辑</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="template-card border-2 border-blue-200 bg-blue-50 rounded-xl p-4 cursor-pointer selected" onclick="selectTemplate(this, 'budget')" title="适用于项目预算对比、费用分析等场景">
+                                <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                                    <i class="fas fa-table text-white text-xl"></i>
+                                </div>
+                                <p class="text-sm font-medium text-center text-gray-800 mb-1">预算对比表</p>
+                                <p class="text-xs text-gray-500 text-center">默认：项目名称、预算金额、完成时间</p>
+                                <p class="text-xs text-gray-400 text-center mt-1">自动生成金额和日期</p>
+                            </div>
+                            <div class="template-card border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-300" onclick="selectTemplate(this, 'milestone')" title="适用于项目进度计划、阶段管理">
+                                <div class="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                                    <i class="fas fa-calendar-alt text-white text-xl"></i>
+                                </div>
+                                <p class="text-sm font-medium text-center text-gray-800 mb-1">里程碑计划</p>
+                                <p class="text-xs text-gray-500 text-center">默认：序号、里程碑、计划日期、工期</p>
+                                <p class="text-xs text-gray-400 text-center mt-1">自动生成日期和工期</p>
+                            </div>
+                            <div class="template-card border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-300" onclick="selectTemplate(this, 'risk')" title="适用于风险识别、风险评估">
+                                <div class="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                                    <i class="fas fa-exclamation-triangle text-white text-xl"></i>
+                                </div>
+                                <p class="text-sm font-medium text-center text-gray-800 mb-1">风险矩阵</p>
+                                <p class="text-xs text-gray-500 text-center">默认：序号、风险项、概率、影响、等级</p>
+                                <p class="text-xs text-gray-400 text-center mt-1">自动生成风险等级标签</p>
+                            </div>
+                            <div class="template-card border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-300" onclick="selectTemplate(this, 'cost')" title="适用于成本分析、费用结构">
+                                <div class="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                                    <i class="fas fa-chart-pie text-white text-xl"></i>
+                                </div>
+                                <p class="text-sm font-medium text-center text-gray-800 mb-1">成本结构</p>
+                                <p class="text-xs text-gray-500 text-center">默认：成本类别、金额、占比</p>
+                                <p class="text-xs text-gray-400 text-center mt-1">自动计算占比和合计</p>
+                            </div>
+                        </div>
+                        <div id="templateDescription" class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <p class="text-xs text-gray-600">
+                                <i class="fas fa-info-circle text-blue-500 mr-1"></i>
+                                <span id="templateDescText">选择模板后，系统会提供对应的默认表头和数据结构，您可以根据需要自定义修改所有内容。</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 参数设置 -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">参数设置</h2>
+                            <div id="templateFeatureBadge" class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                                <!-- 模板特点标签将动态显示 -->
+                            </div>
+                        </div>
+                        <div id="templateFeatureHint" class="mb-4 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                            <p class="text-xs text-gray-600">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
+                                <span id="templateFeatureText">当前模板会根据您设置的行列数自动生成相应的数据内容</span>
+                            </p>
+                        </div>
+                        <div class="space-y-4" id="templateParams">
+                            <!-- 参数内容将通过JavaScript动态生成 -->
+                        </div>
+                        <button onclick="generateTable()" class="w-full mt-4 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold">
+                            <i class="fas fa-magic mr-2"></i>生成表格
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：预览区域 -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">表格预览</h2>
+                        <div class="flex items-center gap-2">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="editModeToggle" class="sr-only peer" checked onchange="toggleEditMode()">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                <span class="ml-3 text-sm text-gray-700">编辑模式</span>
+                            </label>
+                            <button onclick="exportTable()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">
+                                <i class="fas fa-download mr-2"></i>导出
+                            </button>
+                            <button onclick="showSaveModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                                <i class="fas fa-save mr-2"></i>保存到平台
+                            </button>
+                        </div>
+                    </div>
+                    <div id="previewArea" class="border border-gray-200 rounded-lg overflow-hidden min-h-[400px] flex items-center justify-center bg-gray-50">
+                        <div class="text-center text-gray-400">
+                            <i class="fas fa-table text-4xl mb-2"></i>
+                            <p>请选择模板并设置参数后生成表格</p>
+                        </div>
+                    </div>
+                    <div id="editModeHint" class="mt-3 p-2 bg-blue-50 rounded-lg border border-blue-200 hidden">
+                        <p class="text-xs text-gray-600">
+                            <i class="fas fa-info-circle text-blue-500 mr-1"></i>
+                            编辑模式已开启，点击表格中的任意单元格即可直接编辑内容
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 保存到平台模态框 -->
+    <div id="saveModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-gray-800">保存到平台</h3>
+                <button onclick="closeSaveModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">选择保存位置 *</label>
+                    <select id="saveLocation" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- 请选择库 --</option>
+                        <option value="resource">资源资产库</option>
+                        <option value="project1">智慧城市平台建设项目</option>
+                        <option value="project2">市政道路工程投标</option>
+                        <option value="project3">医疗信息化运维项目</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">表格名称 *</label>
+                    <input type="text" id="tableName" placeholder="请输入表格名称" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">资源描述</label>
+                    <textarea id="tableDescription" rows="3" placeholder="请输入资源描述（可选）" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">有效期</label>
+                        <div class="space-y-2">
+                            <select id="tableExpiryType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="toggleTableExpiryField()">
+                                <option value="none">长期有效（无固定到期时间）</option>
+                                <option value="date">设置到期日期</option>
+                            </select>
+                            <input type="date" id="tableExpiry" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">到期提醒</label>
+                        <select id="tableReminder" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="none">不提醒</option>
+                            <option value="30d">提前30天</option>
+                            <option value="6m">提前6个月</option>
+                            <option value="1y">提前1年</option>
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">仅当设置了到期日期时才会生效。</p>
+                    </div>
+                </div>
+                <div class="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <p class="text-xs text-gray-600">
+                        <i class="fas fa-info-circle text-blue-500 mr-1"></i>
+                        保存后可在对应库中查看和使用此表格
+                    </p>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-200 flex justify-end gap-3">
+                <button onclick="closeSaveModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                    取消
+                </button>
+                <button onclick="confirmSave()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    确认保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedTemplate = 'budget';
+        let tableGenerated = false;
+
+        // 模板参数配置
+        const templateConfigs = {
+            budget: {
+                name: '预算对比表',
+                params: [
+                    { type: 'text', label: '图表名称', id: 'chartName', value: '预算对比表' },
+                    { type: 'number', label: '行数（数据项）', id: 'rowCount', value: 3, min: 1, max: 20 },
+                    { type: 'number', label: '列数（字段）', id: 'colCount', value: 3, min: 2, max: 10 },
+                    { type: 'custom', label: '表头（列名）', id: 'headers', type: 'headers', defaultHeaders: ['项目名称', '预算金额（万元）', '完成时间'] },
+                    { type: 'custom', label: '数据行内容', id: 'rows', type: 'rows', defaultRows: ['硬件设备采购', '软件开发实施', '系统集成调试'] }
+                ]
+            },
+            milestone: {
+                name: '里程碑计划',
+                params: [
+                    { type: 'text', label: '图表名称', id: 'chartName', value: '里程碑计划表' },
+                    { type: 'number', label: '行数（里程碑数）', id: 'rowCount', value: 5, min: 1, max: 20 },
+                    { type: 'number', label: '列数（字段）', id: 'colCount', value: 4, min: 3, max: 6 },
+                    { type: 'custom', label: '表头（列名）', id: 'headers', type: 'headers', defaultHeaders: ['序号', '里程碑', '计划日期', '工期'] },
+                    { type: 'custom', label: '里程碑名称', id: 'rows', type: 'rows', defaultRows: ['项目启动', '需求分析', '系统设计', '开发实施', '测试验收'] }
+                ]
+            },
+            risk: {
+                name: '风险矩阵',
+                params: [
+                    { type: 'text', label: '图表名称', id: 'chartName', value: '风险矩阵表' },
+                    { type: 'number', label: '行数（风险项）', id: 'rowCount', value: 8, min: 1, max: 30 },
+                    { type: 'number', label: '列数（字段）', id: 'colCount', value: 5, min: 4, max: 6 },
+                    { type: 'custom', label: '表头（列名）', id: 'headers', type: 'headers', defaultHeaders: ['序号', '风险项', '发生概率', '影响程度', '风险等级'] },
+                    { type: 'custom', label: '风险项名称', id: 'rows', type: 'rows', defaultRows: ['技术风险', '进度风险', '成本风险', '质量风险', '人员风险'] }
+                ]
+            },
+            cost: {
+                name: '成本结构',
+                params: [
+                    { type: 'text', label: '图表名称', id: 'chartName', value: '成本结构表' },
+                    { type: 'number', label: '行数（成本类别）', id: 'rowCount', value: 5, min: 1, max: 15 },
+                    { type: 'number', label: '列数（字段）', id: 'colCount', value: 3, min: 2, max: 4 },
+                    { type: 'custom', label: '表头（列名）', id: 'headers', type: 'headers', defaultHeaders: ['成本类别', '金额（万元）', '占比'] },
+                    { type: 'custom', label: '成本类别名称', id: 'rows', type: 'rows', defaultRows: ['人力成本', '设备采购', '软件许可', '差旅费用', '培训费用'] }
+                ]
+            }
+        };
+
+        // 模板说明配置
+        const templateDescriptions = {
+            budget: {
+                title: '预算对比表',
+                desc: '适用于项目预算对比、费用分析等场景。系统会自动生成预算金额和完成时间数据，并自动计算合计行。',
+                feature: '自动生成金额和日期',
+                featureHint: '系统会根据行数自动生成预算金额（万元）和完成时间，并自动计算合计行。'
+            },
+            milestone: {
+                title: '里程碑计划',
+                desc: '适用于项目进度计划、阶段管理。系统会自动生成序号、计划日期和工期，按时间顺序排列。',
+                feature: '自动生成日期和工期',
+                featureHint: '系统会根据行数自动生成序号、计划日期（从2025-01-01开始递增）和工期（默认30天），按时间顺序排列。'
+            },
+            risk: {
+                title: '风险矩阵',
+                desc: '适用于风险识别、风险评估。系统会自动生成风险概率、影响程度和风险等级（带颜色标签：高/中/低）。',
+                feature: '自动生成风险等级',
+                featureHint: '系统会根据行数自动生成风险概率、影响程度和风险等级（带颜色标签：高/中/低），帮助您快速识别风险。'
+            },
+            cost: {
+                title: '成本结构',
+                desc: '适用于成本分析、费用结构。系统会自动计算各成本类别的金额占比，并自动生成合计行和总占比。',
+                feature: '自动计算占比',
+                featureHint: '系统会根据行数自动计算各成本类别的金额和占比（默认总预算2500万元），并自动生成合计行和总占比。'
+            }
+        };
+
+        // 选择模板
+        function selectTemplate(element, template) {
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.remove('selected', 'border-blue-200', 'bg-blue-50');
+                card.classList.add('border-gray-200');
+                card.querySelector('div').classList.remove('bg-blue-600');
+                card.querySelector('div').classList.add('bg-gray-300');
+            });
+
+            element.classList.add('selected', 'border-blue-200', 'bg-blue-50');
+            element.classList.remove('border-gray-200');
+            element.querySelector('div').classList.remove('bg-gray-300');
+            element.querySelector('div').classList.add('bg-blue-600');
+
+            selectedTemplate = template;
+            
+            // 更新模板说明
+            const descText = document.getElementById('templateDescText');
+            if (descText && templateDescriptions[template]) {
+                descText.textContent = templateDescriptions[template].desc;
+            }
+            
+            // 更新模板特点标签和提示
+            const featureBadge = document.getElementById('templateFeatureBadge');
+            const featureText = document.getElementById('templateFeatureText');
+            if (templateDescriptions[template]) {
+                if (featureBadge) {
+                    featureBadge.textContent = templateDescriptions[template].feature;
+                }
+                if (featureText) {
+                    featureText.textContent = templateDescriptions[template].featureHint;
+                }
+            }
+            
+            updateParams();
+        }
+
+        // 更新参数设置
+        function updateParams() {
+            const paramsDiv = document.getElementById('templateParams');
+            const config = templateConfigs[selectedTemplate];
+            
+            paramsDiv.innerHTML = config.params.map(param => {
+                if (param.type === 'text') {
+                    return `
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">${param.label}</label>
+                            <input type="text" id="${param.id}" value="${param.value}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    `;
+                } else if (param.type === 'number') {
+                    return `
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">${param.label}</label>
+                            <input type="number" id="${param.id}" value="${param.value}" min="${param.min || ''}" max="${param.max || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updateCustomFields('${selectedTemplate}')">
+                        </div>
+                    `;
+                } else if (param.type === 'custom') {
+                    const isHeaders = param.id === 'headers';
+                    const defaults = isHeaders ? (param.defaultHeaders || []) : (param.defaultRows || []);
+                    const countId = isHeaders ? 'colCount' : 'rowCount';
+                    return `
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-sm font-medium text-gray-700">${param.label}</label>
+                                <button onclick="smartFill('${param.id}')" class="text-xs text-blue-600 hover:text-blue-700">
+                                    <i class="fas fa-magic mr-1"></i>智能填充
+                                </button>
+                            </div>
+                            <div id="${param.id}_container" class="space-y-2">
+                                ${generateCustomInputs(param.id, defaults, countId)}
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        // 生成自定义输入框
+        function generateCustomInputs(id, defaults, countId) {
+            const count = parseInt(document.getElementById(countId)?.value || defaults.length);
+            const maxCount = countId === 'colCount' ? 10 : 20;
+            const actualCount = Math.min(count, maxCount);
+            
+            let html = '';
+            for (let i = 0; i < actualCount; i++) {
+                const value = defaults[i] || (id === 'headers' ? `列${i + 1}` : `项目${i + 1}`);
+                const label = id === 'headers' ? `列${i + 1}` : `行${i + 1}`;
+                html += `
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-500 w-8">${label}:</span>
+                        <input type="text" id="${id}_${i}" value="${value}" placeholder="请输入内容" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                    </div>
+                `;
+            }
+            return html;
+        }
+
+        // 更新自定义字段
+        function updateCustomFields(template) {
+            const config = templateConfigs[template];
+            
+            // 重新渲染自定义字段
+            config.params.forEach(param => {
+                if (param.type === 'custom') {
+                    const container = document.getElementById(`${param.id}_container`);
+                    if (container) {
+                        const currentValues = [];
+                        const inputs = container.querySelectorAll('input');
+                        inputs.forEach(input => {
+                            if (input.value) currentValues.push(input.value);
+                        });
+                        
+                        const isHeaders = param.id === 'headers';
+                        const countId = isHeaders ? 'colCount' : 'rowCount';
+                        const defaults = isHeaders ? (param.defaultHeaders || []) : (param.defaultRows || []);
+                        const count = parseInt(document.getElementById(countId)?.value || defaults.length);
+                        container.innerHTML = generateCustomInputs(param.id, currentValues.length > 0 ? currentValues : defaults, countId);
+                    }
+                }
+            });
+        }
+
+        // 选择生成方式
+        function selectGenerateMode(mode) {
+            const smartBtn = document.getElementById('smartModeBtn');
+            const templateBtn = document.getElementById('templateModeBtn');
+            const smartArea = document.getElementById('smartModeArea');
+            const templateArea = document.getElementById('templateModeArea');
+            
+            if (mode === 'smart') {
+                // AI智能生成模式
+                smartBtn.classList.add('border-blue-200', 'bg-blue-50');
+                smartBtn.classList.remove('border-gray-200');
+                templateBtn.classList.remove('border-blue-200', 'bg-blue-50');
+                templateBtn.classList.add('border-gray-200');
+                
+                smartArea.classList.remove('hidden');
+                templateArea.classList.add('hidden');
+            } else {
+                // 模板选择模式
+                templateBtn.classList.add('border-blue-200', 'bg-blue-50');
+                templateBtn.classList.remove('border-gray-200');
+                smartBtn.classList.remove('border-blue-200', 'bg-blue-50');
+                smartBtn.classList.add('border-gray-200');
+                
+                smartArea.classList.add('hidden');
+                templateArea.classList.remove('hidden');
+                
+                // 初始化模板参数和说明
+                if (!tableGenerated) {
+                    // 初始化默认模板说明
+                    const descText = document.getElementById('templateDescText');
+                    const featureBadge = document.getElementById('templateFeatureBadge');
+                    const featureText = document.getElementById('templateFeatureText');
+                    if (templateDescriptions[selectedTemplate]) {
+                        if (descText) {
+                            descText.textContent = templateDescriptions[selectedTemplate].desc;
+                        }
+                        if (featureBadge) {
+                            featureBadge.textContent = templateDescriptions[selectedTemplate].feature;
+                        }
+                        if (featureText) {
+                            featureText.textContent = templateDescriptions[selectedTemplate].featureHint;
+                        }
+                    }
+                    updateParams();
+                }
+            }
+        }
+
+        // AI智能生成
+        function smartGenerate() {
+            const description = document.getElementById('smartDescription').value.trim();
+            if (!description) {
+                alert('请描述您的表格需求');
+                return;
+            }
+
+            // 显示加载状态
+            const previewArea = document.getElementById('previewArea');
+            previewArea.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                    <p class="text-gray-600">AI 正在分析您的需求...</p>
+                    <p class="text-sm text-gray-400 mt-2">自动识别表格类型并生成</p>
+                </div>
+            `;
+
+            // 模拟AI分析（实际应用中应该调用AI接口）
+            setTimeout(() => {
+                // 首先根据描述自动选择合适的模板
+                const detectedTemplate = detectTemplateFromDescription(description);
+                selectedTemplate = detectedTemplate;
+                
+                // 更新模板选择UI（如果用户切换到模板模式可以看到）
+                updateTemplateSelectionUI(detectedTemplate);
+                
+                // 解析描述并生成表格
+                const result = parseSmartDescription(description, detectedTemplate);
+                applySmartResult(result);
+                generateTable();
+                
+                // 显示AI识别的模板
+                previewArea.innerHTML = `
+                    <div class="w-full overflow-x-auto">
+                        ${document.getElementById('previewArea').innerHTML}
+                    </div>
+                    <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-check-circle text-blue-500 mr-2"></i>
+                            AI已自动识别并选择"${templateConfigs[detectedTemplate].name}"模板
+                        </p>
+                    </div>
+                `;
+            }, 2000);
+        }
+
+        // 根据描述自动识别模板
+        function detectTemplateFromDescription(description) {
+            const desc = description.toLowerCase();
+            
+            // 预算相关关键词
+            if (desc.includes('预算') || desc.includes('金额') || desc.includes('费用') || desc.includes('成本对比')) {
+                return 'budget';
+            }
+            // 里程碑相关关键词
+            if (desc.includes('里程碑') || desc.includes('阶段') || desc.includes('计划') || desc.includes('进度')) {
+                return 'milestone';
+            }
+            // 风险相关关键词
+            if (desc.includes('风险') || desc.includes('矩阵') || desc.includes('概率') || desc.includes('影响')) {
+                return 'risk';
+            }
+            // 成本结构相关关键词
+            if (desc.includes('成本结构') || desc.includes('成本分类') || desc.includes('成本组成') || desc.includes('成本占比')) {
+                return 'cost';
+            }
+            
+            // 默认返回预算对比表
+            return 'budget';
+        }
+
+        // 更新模板选择UI
+        function updateTemplateSelectionUI(template) {
+            const templateMap = {
+                'budget': 0,
+                'milestone': 1,
+                'risk': 2,
+                'cost': 3
+            };
+            
+            const cards = document.querySelectorAll('.template-card');
+            const index = templateMap[template];
+            if (cards[index]) {
+                selectTemplate(cards[index], template);
+            }
+        }
+
+        // 解析智能描述
+        function parseSmartDescription(description, template) {
+            // 模拟AI解析结果
+            const result = {
+                chartName: extractChartName(description) || templateConfigs[template].name,
+                rowCount: extractNumber(description, ['行', '项', '个']) || 3,
+                colCount: extractNumber(description, ['列', '字段']) || 3,
+                headers: extractHeaders(description, template),
+                rows: extractRows(description, template)
+            };
+            return result;
+        }
+
+        // 提取图表名称
+        function extractChartName(description) {
+            const patterns = [
+                /(?:生成|创建|制作)(?:一个|一份)?(.+?)(?:表|表格)/,
+                /(.+?)(?:对比表|计划表|矩阵表|结构表)/
+            ];
+            for (let pattern of patterns) {
+                const match = description.match(pattern);
+                if (match && match[1]) {
+                    return match[1].trim();
+                }
+            }
+            return null;
+        }
+
+        // 提取数字
+        function extractNumber(text, keywords) {
+            for (let keyword of keywords) {
+                const regex = new RegExp(`(\\d+)\\s*${keyword}`, 'i');
+                const match = text.match(regex);
+                if (match) {
+                    return parseInt(match[1]);
+                }
+            }
+            return null;
+        }
+
+        // 提取表头
+        function extractHeaders(description, template) {
+            const headerKeywords = {
+                budget: ['项目名称', '预算', '金额', '完成时间', '时间', '备注'],
+                milestone: ['序号', '里程碑', '日期', '计划日期', '工期', '时间'],
+                risk: ['序号', '风险', '风险项', '概率', '影响', '等级'],
+                cost: ['类别', '成本类别', '金额', '预算', '占比', '比例']
+            };
+
+            const keywords = headerKeywords[template] || [];
+            const found = [];
+            
+            keywords.forEach(keyword => {
+                if (description.includes(keyword)) {
+                    found.push(keyword);
+                }
+            });
+
+            // 如果没有找到，使用默认值
+            if (found.length === 0) {
+                return templateConfigs[template].params.find(p => p.id === 'headers')?.defaultHeaders || [];
+            }
+
+            return found;
+        }
+
+        // 提取行内容
+        function extractRows(description, template) {
+            const rowKeywords = {
+                budget: ['硬件', '软件', '设备', '采购', '开发', '实施', '集成', '测试'],
+                milestone: ['启动', '需求', '分析', '设计', '开发', '实施', '测试', '验收', '部署', '培训'],
+                risk: ['技术', '进度', '成本', '质量', '人员', '沟通', '需求', '变更', '外部', '依赖'],
+                cost: ['人力', '设备', '软件', '差旅', '培训', '其他', '材料', '服务']
+            };
+
+            const keywords = rowKeywords[template] || [];
+            const found = [];
+            
+            keywords.forEach(keyword => {
+                if (description.includes(keyword)) {
+                    found.push(keyword + (template === 'budget' ? '项目' : template === 'milestone' ? '阶段' : template === 'risk' ? '风险' : '成本'));
+                }
+            });
+
+            // 如果没有找到，使用默认值
+            if (found.length === 0) {
+                return templateConfigs[template].params.find(p => p.id === 'rows')?.defaultRows || [];
+            }
+
+            return found;
+        }
+
+        // 应用智能生成结果
+        function applySmartResult(result) {
+            // 如果当前是智能模式，切换到模板模式以显示生成的参数
+            const smartArea = document.getElementById('smartModeArea');
+            const templateArea = document.getElementById('templateModeArea');
+            
+            if (!smartArea.classList.contains('hidden')) {
+                // 切换到模板模式，让用户可以看到和调整参数
+                selectGenerateMode('template');
+            }
+
+            // 等待DOM更新
+            setTimeout(() => {
+                // 填充参数
+                if (document.getElementById('chartName')) {
+                    document.getElementById('chartName').value = result.chartName;
+                }
+                if (document.getElementById('rowCount')) {
+                    document.getElementById('rowCount').value = result.rowCount;
+                }
+                if (document.getElementById('colCount')) {
+                    document.getElementById('colCount').value = result.colCount;
+                }
+
+                // 更新自定义字段
+                updateCustomFields(selectedTemplate);
+
+                // 填充表头和行内容
+                setTimeout(() => {
+                    if (result.headers && result.headers.length > 0) {
+                        result.headers.forEach((header, index) => {
+                            const input = document.getElementById(`headers_${index}`);
+                            if (input) {
+                                input.value = header;
+                            }
+                        });
+                    }
+
+                    if (result.rows && result.rows.length > 0) {
+                        result.rows.forEach((row, index) => {
+                            const input = document.getElementById(`rows_${index}`);
+                            if (input) {
+                                input.value = row;
+                            }
+                        });
+                    }
+                }, 100);
+            }, 100);
+        }
+
+        // 智能填充单个字段
+        function smartFill(fieldId) {
+            const isHeaders = fieldId === 'headers';
+            const container = document.getElementById(`${fieldId}_container`);
+            const inputs = container.querySelectorAll('input');
+            
+            if (inputs.length === 0) return;
+
+            // 显示加载提示
+            const loadingText = isHeaders ? '正在智能生成表头...' : '正在智能生成行内容...';
+            alert(loadingText + '\n（演示页面，实际使用时将调用AI接口）');
+
+            // 根据模板类型智能生成
+            const config = templateConfigs[selectedTemplate];
+            const defaults = isHeaders 
+                ? (config.params.find(p => p.id === 'headers')?.defaultHeaders || [])
+                : (config.params.find(p => p.id === 'rows')?.defaultRows || []);
+
+            inputs.forEach((input, index) => {
+                if (!input.value.trim() && defaults[index]) {
+                    input.value = defaults[index];
+                }
+            });
+        }
+
+        // 生成表格
+        function generateTable() {
+            const previewArea = document.getElementById('previewArea');
+            const config = templateConfigs[selectedTemplate];
+            
+            // 获取参数值
+            const params = {};
+            config.params.forEach(param => {
+                if (param.type === 'custom') {
+                    const container = document.getElementById(`${param.id}_container`);
+                    if (container) {
+                        const values = [];
+                        const inputs = container.querySelectorAll('input');
+                        inputs.forEach(input => {
+                            if (input.value.trim()) {
+                                values.push(input.value.trim());
+                            }
+                        });
+                        params[param.id] = values;
+                    }
+                } else {
+                    const element = document.getElementById(param.id);
+                    if (element) {
+                        params[param.id] = element.value;
+                    }
+                }
+            });
+
+            // 根据模板生成表格
+            let tableHTML = generateGenericTable(params, selectedTemplate);
+
+            previewArea.innerHTML = `
+                <div class="w-full overflow-x-auto">
+                    ${tableHTML}
+                </div>
+            `;
+            
+            tableGenerated = true;
+            
+            // 初始化编辑模式
+            const editModeToggle = document.getElementById('editModeToggle');
+            if (editModeToggle && editModeToggle.checked) {
+                enableEditMode();
+            } else {
+                disableEditMode();
+            }
+            
+            // 显示编辑模式提示
+            const editHint = document.getElementById('editModeHint');
+            if (editHint) {
+                editHint.classList.remove('hidden');
+            }
+            
+            // 更新保存模态框的默认名称
+            const chartName = params.chartName || config.name;
+            document.getElementById('tableName').value = `${chartName}_${new Date().toISOString().split('T')[0]}`;
+        }
+        
+        // 切换编辑模式
+        function toggleEditMode() {
+            const toggle = document.getElementById('editModeToggle');
+            if (toggle && toggle.checked) {
+                enableEditMode();
+            } else {
+                disableEditMode();
+            }
+        }
+        
+        // 启用编辑模式
+        function enableEditMode() {
+            const cells = document.querySelectorAll('.editable-cell');
+            cells.forEach(cell => {
+                cell.setAttribute('contenteditable', 'true');
+            });
+        }
+        
+        // 禁用编辑模式
+        function disableEditMode() {
+            const cells = document.querySelectorAll('.editable-cell');
+            cells.forEach(cell => {
+                cell.setAttribute('contenteditable', 'false');
+            });
+        }
+
+        // 通用表格生成函数
+        function generateGenericTable(params, template) {
+            const headers = params.headers || [];
+            const rows = params.rows || [];
+            const rowCount = parseInt(params.rowCount) || rows.length || 3;
+            const colCount = parseInt(params.colCount) || headers.length || 3;
+
+            // 确保表头数量匹配
+            while (headers.length < colCount) {
+                headers.push(`列${headers.length + 1}`);
+            }
+            if (headers.length > colCount) {
+                headers.splice(colCount);
+            }
+
+            // 确保行数据数量匹配
+            while (rows.length < rowCount) {
+                rows.push(`项目${rows.length + 1}`);
+            }
+            if (rows.length > rowCount) {
+                rows.splice(rowCount);
+            }
+
+            // 生成表头（可编辑）
+            const headerHTML = headers.map((h, idx) => 
+                `<th class="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-800 editable-cell" data-row="header" data-col="${idx}" contenteditable="true">${h || '列'}</th>`
+            ).join('');
+
+            // 生成数据行
+            let rowsHTML = '';
+            for (let i = 0; i < rowCount; i++) {
+                const rowName = rows[i] || `项目${i + 1}`;
+                let rowData = '';
+                
+                // 根据模板类型生成不同的数据
+                if (template === 'budget') {
+                    rowData = generateBudgetRowData(i, colCount, rowName);
+                } else if (template === 'milestone') {
+                    rowData = generateMilestoneRowData(i, colCount, rowName);
+                } else if (template === 'risk') {
+                    rowData = generateRiskRowData(i, colCount, rowName);
+                } else if (template === 'cost') {
+                    rowData = generateCostRowData(i, colCount, rowName, params);
+                } else {
+                    // 默认生成
+                    rowData = generateDefaultRowData(i, colCount, rowName);
+                }
+                
+                rowsHTML += `<tr${i % 2 === 1 ? ' class="bg-gray-50"' : ''}>${rowData}</tr>`;
+            }
+
+            // 生成合计行（如果需要，合计行也可编辑）
+            let totalRow = '';
+            if (template === 'budget' || template === 'cost') {
+                totalRow = generateTotalRow(template, colCount, params);
+            }
+
+            return `
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-blue-50">
+                            ${headerHTML}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHTML}
+                        ${totalRow}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // 生成预算表行数据（可编辑）
+        function generateBudgetRowData(index, colCount, rowName) {
+            const budgets = [1200, 800, 500, 300, 200];
+            const dates = ['2025-03-31', '2025-06-30', '2025-08-31', '2025-10-31', '2025-12-31'];
+            
+            let html = '';
+            for (let i = 0; i < colCount; i++) {
+                let cellContent = '';
+                if (i === 0) {
+                    cellContent = rowName;
+                } else if (i === 1) {
+                    cellContent = (budgets[index] || 0).toLocaleString();
+                } else if (i === 2) {
+                    cellContent = dates[index] || '-';
+                } else {
+                    cellContent = '-';
+                }
+                html += `<td class="border border-gray-300 px-4 py-3 text-gray-700 editable-cell" data-row="${index}" data-col="${i}" contenteditable="true">${cellContent}</td>`;
+            }
+            return html;
+        }
+
+        // 生成里程碑表行数据（可编辑）
+        function generateMilestoneRowData(index, colCount, rowName) {
+            const startDate = new Date('2025-01-01');
+            const milestoneDate = new Date(startDate.getTime() + (index * 30 * 24 * 60 * 60 * 1000));
+            const dateStr = milestoneDate.toISOString().split('T')[0];
+            
+            let html = '';
+            for (let i = 0; i < colCount; i++) {
+                let cellContent = '';
+                if (i === 0) {
+                    cellContent = index + 1;
+                } else if (i === 1) {
+                    cellContent = rowName;
+                } else if (i === 2) {
+                    cellContent = dateStr;
+                } else if (i === 3) {
+                    cellContent = '30天';
+                } else {
+                    cellContent = '-';
+                }
+                html += `<td class="border border-gray-300 px-4 py-3 text-gray-700 editable-cell" data-row="${index}" data-col="${i}" contenteditable="true">${cellContent}</td>`;
+            }
+            return html;
+        }
+
+        // 生成风险表行数据（可编辑）
+        function generateRiskRowData(index, colCount, rowName) {
+            const probabilities = ['低', '中', '高'];
+            const impacts = ['低', '中', '高'];
+            const prob = probabilities[Math.floor(Math.random() * probabilities.length)];
+            const impact = impacts[Math.floor(Math.random() * impacts.length)];
+            const level = (prob === '高' && impact === '高') ? '高' : 
+                         (prob === '中' && impact === '中') ? '中' : '低';
+            const color = level === '高' ? 'bg-red-100 text-red-700' : 
+                         level === '中' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700';
+            
+            let html = '';
+            for (let i = 0; i < colCount; i++) {
+                let cellContent = '';
+                if (i === 0) {
+                    cellContent = index + 1;
+                } else if (i === 1) {
+                    cellContent = rowName;
+                } else if (i === 2) {
+                    cellContent = prob;
+                } else if (i === 3) {
+                    cellContent = impact;
+                } else if (i === 4) {
+                    cellContent = `<span class="px-2 py-1 rounded text-xs font-medium ${color}">${level}</span>`;
+                } else {
+                    cellContent = '-';
+                }
+                html += `<td class="border border-gray-300 px-4 py-3 text-gray-700 editable-cell" data-row="${index}" data-col="${i}" contenteditable="true">${cellContent}</td>`;
+            }
+            return html;
+        }
+
+        // 生成成本表行数据（可编辑）
+        function generateCostRowData(index, colCount, rowName, params) {
+            const total = parseFloat(params.totalBudget) || 2500;
+            const percentages = [0.4, 0.3, 0.15, 0.08, 0.05];
+            const percent = percentages[index] || (1 / (parseInt(params.rowCount) || 5));
+            const amount = total * percent;
+            
+            let html = '';
+            for (let i = 0; i < colCount; i++) {
+                let cellContent = '';
+                if (i === 0) {
+                    cellContent = rowName;
+                } else if (i === 1) {
+                    cellContent = amount.toFixed(2);
+                } else if (i === 2) {
+                    cellContent = (percent * 100).toFixed(1) + '%';
+                } else {
+                    cellContent = '-';
+                }
+                html += `<td class="border border-gray-300 px-4 py-3 text-gray-700 editable-cell" data-row="${index}" data-col="${i}" contenteditable="true">${cellContent}</td>`;
+            }
+            return html;
+        }
+
+        // 生成默认行数据（可编辑）
+        function generateDefaultRowData(index, colCount, rowName) {
+            let html = '';
+            for (let i = 0; i < colCount; i++) {
+                const cellContent = i === 0 ? rowName : `数据${i}`;
+                html += `<td class="border border-gray-300 px-4 py-3 text-gray-700 editable-cell" data-row="${index}" data-col="${i}" contenteditable="true">${cellContent}</td>`;
+            }
+            return html;
+        }
+
+        // 生成合计行（可编辑）
+        function generateTotalRow(template, colCount, params) {
+            if (template === 'budget') {
+                let cells = '<td class="border border-gray-300 px-4 py-3 font-semibold text-gray-800 editable-cell" data-row="total" data-col="0" contenteditable="true">合计</td>';
+                cells += `<td class="border border-gray-300 px-4 py-3 font-semibold text-gray-800 editable-cell" data-row="total" data-col="1" contenteditable="true">${(1200 + 800 + 500).toLocaleString()}</td>`;
+                for (let i = 2; i < colCount; i++) {
+                    cells += `<td class="border border-gray-300 px-4 py-3 text-gray-700 editable-cell" data-row="total" data-col="${i}" contenteditable="true">-</td>`;
+                }
+                return `<tr class="bg-blue-50">${cells}</tr>`;
+            } else if (template === 'cost') {
+                const total = parseFloat(params.totalBudget) || 2500;
+                let cells = '<td class="border border-gray-300 px-4 py-3 font-semibold text-gray-800 editable-cell" data-row="total" data-col="0" contenteditable="true">合计</td>';
+                cells += `<td class="border border-gray-300 px-4 py-3 font-semibold text-gray-800 editable-cell" data-row="total" data-col="1" contenteditable="true">${total.toFixed(2)}</td>`;
+                if (colCount > 2) {
+                    cells += `<td class="border border-gray-300 px-4 py-3 font-semibold text-gray-800 editable-cell" data-row="total" data-col="2" contenteditable="true">100%</td>`;
+                }
+                for (let i = 3; i < colCount; i++) {
+                    cells += `<td class="border border-gray-300 px-4 py-3 text-gray-700 editable-cell" data-row="total" data-col="${i}" contenteditable="true">-</td>`;
+                }
+                return `<tr class="bg-blue-50">${cells}</tr>`;
+            }
+            return '';
+        }
+
+
+        // 导出表格
+        function exportTable() {
+            if (!tableGenerated) {
+                alert('请先生成表格');
+                return;
+            }
+            alert('导出功能（演示页面，实际使用时将导出表格文件）');
+        }
+
+
+        // 显示保存模态框
+        function showSaveModal() {
+            if (!tableGenerated) {
+                alert('请先生成表格后再保存');
+                return;
+            }
+            document.getElementById('saveModal').classList.remove('hidden');
+        }
+
+        // 切换有效期字段显示
+        function toggleTableExpiryField() {
+            const type = document.getElementById('tableExpiryType')?.value;
+            const dateInput = document.getElementById('tableExpiry');
+            if (!dateInput) return;
+            if (type === 'date') {
+                dateInput.classList.remove('hidden');
+            } else {
+                dateInput.classList.add('hidden');
+                dateInput.value = '';
+            }
+        }
+
+        // 关闭保存模态框
+        function closeSaveModal() {
+            document.getElementById('saveModal').classList.add('hidden');
+            // 重置表单
+            document.getElementById('saveLocation').value = '';
+            document.getElementById('tableName').value = '';
+            document.getElementById('tableDescription').value = '';
+            document.getElementById('tableExpiryType').value = 'none';
+            document.getElementById('tableExpiry').value = '';
+            document.getElementById('tableExpiry').classList.add('hidden');
+            document.getElementById('tableReminder').value = 'none';
+        }
+
+        // 确认保存
+        function confirmSave() {
+            const location = document.getElementById('saveLocation').value;
+            const name = document.getElementById('tableName').value.trim();
+            const description = document.getElementById('tableDescription').value.trim();
+            const expiryType = document.getElementById('tableExpiryType').value;
+            const expiry = document.getElementById('tableExpiry').value;
+            const reminder = document.getElementById('tableReminder').value;
+
+            if (!location) {
+                alert('请选择保存位置');
+                return;
+            }
+
+            if (!name) {
+                alert('请输入表格名称');
+                return;
+            }
+
+            if (expiryType === 'date' && !expiry) {
+                alert('请选择到期日期，或切换为长期有效');
+                return;
+            }
+
+            const locationName = document.getElementById('saveLocation').options[document.getElementById('saveLocation').selectedIndex].text;
+            const expiryText = expiryType === 'date' ? `有效期至：${expiry}` : '长期有效';
+            const reminderText = expiryType === 'date' && reminder !== 'none' 
+                ? `到期提醒：${reminder === '30d' ? '提前30天' : reminder === '6m' ? '提前6个月' : '提前1年'}`
+                : '到期提醒：不提醒';
+            
+            alert(`表格已保存到：${locationName}\n表格名称：${name}\n资源描述：${description || '无'}\n${expiryText}\n${reminderText}\n\n（演示页面，实际使用时将保存到平台）`);
+            closeSaveModal();
+        }
+
+        function navigateToPage(page) {
+            try {
+                if (window.parent && window.parent.loadPage) {
+                    window.parent.loadPage(page, 'top');
+                } else if (window.top && window.top.loadPage) {
+                    window.top.loadPage(page, 'top');
+                } else {
+                    window.location.href = page;
+                }
+            } catch (e) {
+                console.error('跳转失败:', e);
+                window.location.href = page;
+            }
+        }
+
+        // 初始化
+        window.addEventListener('load', () => {
+            // 默认选择AI智能生成模式
+            selectGenerateMode('smart');
+        });
+    </script>
+</body>
+</html>

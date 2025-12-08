@@ -201,6 +201,24 @@
 
     </section>
     <script>
+        function goBack() {
+            try {
+                // 尝试返回到标书制作页面（如果在iframe中）
+                if (window.parent && window.parent !== window) {
+                    // 如果在标书制作页面的iframe中，返回到标书工厂
+                    if (window.parent.loadPage) {
+                        window.parent.loadPage('标书工厂.html', 'top');
+                        return;
+                    }
+                }
+                // 直接跳转到标书工厂
+                window.location.href = '标书工厂.html';
+            } catch (e) {
+                console.error('返回失败:', e);
+                window.location.href = '标书工厂.html';
+            }
+        }
+        
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const tabId = this.getAttribute('data-tab');

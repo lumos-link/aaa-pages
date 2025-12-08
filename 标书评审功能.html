@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标书评审功能</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .risk-high { border-left-color: #ef4444; }
+        .risk-medium { border-left-color: #f59e0b; }
+        .risk-low { border-left-color: #10b981; }
+        .suggestion-item:hover { background: #f9fafb; }
+        #fileInput:focus + #uploadArea,
+        #uploadArea:hover {
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <section class="p-6 space-y-6 max-w-7xl mx-auto">
+        <!-- 顶部标题栏 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button onclick="navigateToPage('智能工具箱.html')" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-2xl font-semibold text-gray-800">标书评审功能</h1>
+                        <p class="text-sm text-gray-500 mt-1">AI校对 · 合规检查 · 评分策略</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="startReviewBtn" onclick="startReview()" class="px-4 py-2 bg-gray-300 text-gray-500 rounded-lg text-sm cursor-not-allowed" disabled>
+                        <i class="fas fa-play mr-2"></i>开始评审
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 标书上传区域 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6" id="uploadSection">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">上传标书文件</h2>
+            <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-400 transition">
+                <input type="file" id="fileInput" accept=".doc,.docx,.pdf" class="hidden" onchange="handleFileUpload(event)">
+                <div id="uploadArea" onclick="document.getElementById('fileInput').click()" class="cursor-pointer">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 mb-2">点击上传或拖拽文件到此处</p>
+                    <p class="text-sm text-gray-400 mb-4">支持格式：Word (.doc, .docx)、PDF (.pdf)，最大 50MB</p>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-file-upload mr-2"></i>选择文件
+                    </button>
+                </div>
+                <div id="fileInfo" class="hidden mt-4 p-4 bg-blue-50 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-file-word text-blue-600 text-2xl"></i>
+                            <div class="text-left">
+                                <p class="font-medium text-gray-800" id="fileName">标书文件.docx</p>
+                                <p class="text-xs text-gray-500" id="fileSize">2.5 MB</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="removeFile()" class="text-gray-400 hover:text-red-500">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 评审标准选择 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6" id="standardSection">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">评审标准</h2>
+                <button onclick="showStandardModal()" class="text-sm text-blue-600 hover:text-blue-700">
+                    <i class="fas fa-info-circle mr-1"></i>查看标准详情
+                </button>
+            </div>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center gap-3 mb-3">
+                        <input type="radio" name="standardSource" value="bid" checked onchange="updateStandardSource('bid')" class="w-4 h-4 text-blue-600">
+                        <label class="font-medium text-gray-800 cursor-pointer">从招标文件提取</label>
+                    </div>
+                    <p class="text-xs text-gray-500 ml-7 mb-3">自动从已上传的招标文件中提取评分标准</p>
+                    
+                    <!-- 选择招标文件 -->
+                    <div id="bidFileSelector" class="ml-7">
+                        <div id="noBidFile" class="p-3 border border-dashed border-gray-300 rounded-lg">
+                            <p class="text-xs text-gray-500 mb-2">选择招标文件：</p>
+                            <div class="flex items-center gap-2">
+                                <select id="bidFileSelect" onchange="selectBidFile(this.value)" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">-- 请选择招标文件 --</option>
+                                    <option value="1">智慧城市平台建设项目 - 招标文件.pdf</option>
+                                    <option value="2">市政道路工程投标 - 招标文件.docx</option>
+                                    <option value="3">医疗信息化运维项目 - 招标文件.pdf</option>
+                                </select>
+                                <button onclick="showBidFileUpload()" class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200">
+                                    <i class="fas fa-upload mr-1"></i>上传
+                                </button>
+                            </div>
+                        </div>
+                        <div id="selectedBidFile" class="hidden p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-file-pdf text-red-500"></i>
+                                    <span class="text-sm font-medium text-gray-800" id="selectedBidFileName">智慧城市平台建设项目 - 招标文件.pdf</span>
+                                </div>
+                                <button onclick="removeBidFile()" class="text-gray-400 hover:text-red-500">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-4 text-xs text-gray-600">
+                                <span><i class="fas fa-calendar mr-1"></i>上传时间：2024-12-20</span>
+                                <span><i class="fas fa-check-circle text-green-500 mr-1"></i>评分标准已提取</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center gap-3 mb-3">
+                        <input type="radio" name="standardSource" value="upload" onchange="updateStandardSource('upload')" class="w-4 h-4 text-blue-600">
+                        <label class="font-medium text-gray-800 cursor-pointer">手动上传评分标准</label>
+                    </div>
+                    <p class="text-xs text-gray-500 ml-7">上传评分标准文件（Word/PDF/Excel）</p>
+                    <div id="uploadStandardArea" class="hidden mt-3 ml-7">
+                        <input type="file" id="standardFileInput" accept=".doc,.docx,.pdf,.xls,.xlsx" class="hidden" onchange="handleStandardUpload(event)">
+                        <button onclick="document.getElementById('standardFileInput').click()" class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200">
+                            <i class="fas fa-upload mr-1"></i>上传文件
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <p class="text-sm font-medium text-gray-800 mb-2">当前评审标准包含：</p>
+                <div class="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                    <div><i class="fas fa-check text-blue-500 mr-1"></i>格式规范（17项检查点）</div>
+                    <div><i class="fas fa-check text-blue-500 mr-1"></i>内容完整性（8项检查点）</div>
+                    <div><i class="fas fa-check text-blue-500 mr-1"></i>技术方案评分（5个维度）</div>
+                    <div><i class="fas fa-check text-blue-500 mr-1"></i>商务评分（3个维度）</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6" id="reviewSection" style="display: none;">
+            <!-- 左侧：评审选项 -->
+            <div class="lg:col-span-1 space-y-4">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">评审选项</h2>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded">
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">格式规范检查</p>
+                                <p class="text-xs text-gray-500">检测17项格式规范</p>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded">
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">评分标准匹配</p>
+                                <p class="text-xs text-gray-500">对照评分标准分析</p>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded">
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">合规性检查</p>
+                                <p class="text-xs text-gray-500">检查标书合规要求</p>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded">
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">加分策略建议</p>
+                                <p class="text-xs text-gray-500">根据评分表给出建议</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 评审统计 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">评审统计</h2>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">发现问题</span>
+                            <span class="text-lg font-semibold text-red-600">12</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">建议优化</span>
+                            <span class="text-lg font-semibold text-orange-600">8</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">加分机会</span>
+                            <span class="text-lg font-semibold text-green-600">5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：评审结果 -->
+            <div class="lg:col-span-2 space-y-4">
+                <!-- 扣分风险 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                            <i class="fas fa-exclamation-triangle text-red-500"></i>
+                            扣分风险
+                        </h2>
+                        <span class="text-sm text-gray-500">共 12 项</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="risk-high border-l-4 bg-red-50 p-4 rounded-lg suggestion-item">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="px-2 py-1 bg-red-600 text-white text-xs rounded">高风险</span>
+                                        <span class="text-sm font-medium text-gray-800">格式规范</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700 mb-2">第3章标题字体不符合要求，应使用"黑体"，当前为"微软雅黑"</p>
+                                    <p class="text-xs text-gray-500 mb-2">位置：第3章 技术方案</p>
+                                    <div class="flex items-center gap-2">
+                                        <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                            <i class="fas fa-magic mr-1"></i>一键修复
+                                        </button>
+                                        <button class="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">
+                                            查看详情
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="risk-medium border-l-4 bg-orange-50 p-4 rounded-lg suggestion-item">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="px-2 py-1 bg-orange-600 text-white text-xs rounded">中风险</span>
+                                        <span class="text-sm font-medium text-gray-800">内容缺失</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700 mb-2">缺少"项目组织架构"章节，评分标准中要求提供（占5分）</p>
+                                    <p class="text-xs text-gray-500 mb-2">位置：建议在第4章后添加</p>
+                                    <div class="flex items-center gap-2">
+                                        <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                            <i class="fas fa-plus mr-1"></i>生成章节
+                                        </button>
+                                        <button class="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">
+                                            查看详情
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="risk-low border-l-4 bg-green-50 p-4 rounded-lg suggestion-item">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="px-2 py-1 bg-green-600 text-white text-xs rounded">低风险</span>
+                                        <span class="text-sm font-medium text-gray-800">编号规范</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700 mb-2">第2.3节编号格式不一致，建议统一为"2.3"格式</p>
+                                    <p class="text-xs text-gray-500 mb-2">位置：第2章 项目概述</p>
+                                    <div class="flex items-center gap-2">
+                                        <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                            <i class="fas fa-magic mr-1"></i>一键修复
+                                        </button>
+                                        <button class="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">
+                                            查看详情
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 加分策略 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                            <i class="fas fa-lightbulb text-yellow-500"></i>
+                            加分策略建议
+                        </h2>
+                        <span class="text-sm text-gray-500">共 5 项</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg suggestion-item">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-star text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-800 mb-1">增补"运维保障"章节</p>
+                                    <p class="text-sm text-gray-600 mb-2">评分标准中"运维保障方案"占8分，当前标书未涉及此内容</p>
+                                    <div class="flex items-center gap-4 text-xs text-gray-500 mb-2">
+                                        <span><i class="fas fa-chart-line mr-1"></i>预计加分：8分</span>
+                                        <span><i class="fas fa-clock mr-1"></i>建议优先级：高</span>
+                                    </div>
+                                    <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                        <i class="fas fa-plus mr-1"></i>生成章节内容
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg suggestion-item">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-star text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-800 mb-1">引用"市政类特级资质"</p>
+                                    <p class="text-sm text-gray-600 mb-2">在技术方案中突出展示企业资质，可提升匹配度12%</p>
+                                    <div class="flex items-center gap-4 text-xs text-gray-500 mb-2">
+                                        <span><i class="fas fa-chart-line mr-1"></i>预计加分：3-5分</span>
+                                        <span><i class="fas fa-clock mr-1"></i>建议优先级：中</span>
+                                    </div>
+                                    <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                        <i class="fas fa-edit mr-1"></i>插入资质说明
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 招标文件上传模态框 -->
+    <div id="bidFileUploadModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-gray-800">上传招标文件</h3>
+                <button onclick="closeBidFileUpload()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center">
+                    <input type="file" id="bidFileInput" accept=".doc,.docx,.pdf" class="hidden" onchange="handleBidFileUpload(event)">
+                    <div onclick="document.getElementById('bidFileInput').click()" class="cursor-pointer">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 mb-2">点击上传或拖拽文件到此处</p>
+                        <p class="text-sm text-gray-400 mb-4">支持格式：Word (.doc, .docx)、PDF (.pdf)，最大 50MB</p>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-file-upload mr-2"></i>选择文件
+                        </button>
+                    </div>
+                </div>
+                <div id="bidFileUploadInfo" class="hidden mt-4 p-4 bg-blue-50 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
+                            <div class="text-left">
+                                <p class="font-medium text-gray-800" id="bidFileUploadName">招标文件.pdf</p>
+                                <p class="text-xs text-gray-500" id="bidFileUploadSize">2.5 MB</p>
+                            </div>
+                        </div>
+                        <button onclick="removeBidFileUpload()" class="text-gray-400 hover:text-red-500">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-200 flex justify-end gap-3">
+                <button onclick="closeBidFileUpload()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                    取消
+                </button>
+                <button id="confirmBidFileBtn" onclick="confirmBidFileUpload()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" disabled>
+                    确认上传
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 评审标准详情模态框 -->
+    <div id="standardModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-gray-800">评审标准详情</h3>
+                <button onclick="closeStandardModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-6">
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">格式规范检查（17项）</h4>
+                    <div class="grid grid-cols-2 gap-2 text-sm text-gray-600">
+                        <div>• 字体规范（标题/正文）</div>
+                        <div>• 字号规范（各级标题）</div>
+                        <div>• 行距规范（1.5倍）</div>
+                        <div>• 页边距规范</div>
+                        <div>• 页码格式</div>
+                        <div>• 目录格式</div>
+                        <div>• 章节编号规范</div>
+                        <div>• 表格格式</div>
+                        <div>• 图片格式</div>
+                        <div>• 页眉页脚</div>
+                        <div>• 封面格式</div>
+                        <div>• 装订要求</div>
+                        <div>• 文件命名</div>
+                        <div>• 暗标要求</div>
+                        <div>• 签名盖章</div>
+                        <div>• 附件格式</div>
+                        <div>• 其他格式要求</div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">内容完整性检查（8项）</h4>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div>• 必需章节完整性（技术方案、商务方案等）</div>
+                        <div>• 评分项对应内容完整性</div>
+                        <div>• 资质证明材料完整性</div>
+                        <div>• 业绩证明材料完整性</div>
+                        <div>• 人员配置信息完整性</div>
+                        <div>• 设备配置信息完整性</div>
+                        <div>• 实施方案完整性</div>
+                        <div>• 其他必需内容</div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">技术方案评分标准（5个维度）</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <span class="text-gray-700">技术方案完整性</span>
+                            <span class="font-semibold text-blue-600">30分</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <span class="text-gray-700">技术创新性</span>
+                            <span class="font-semibold text-blue-600">25分</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <span class="text-gray-700">实施方案可行性</span>
+                            <span class="font-semibold text-blue-600">20分</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <span class="text-gray-700">质量保障措施</span>
+                            <span class="font-semibold text-blue-600">15分</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <span class="text-gray-700">运维保障方案</span>
+                            <span class="font-semibold text-blue-600">10分</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">商务评分标准（3个维度）</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <span class="text-gray-700">企业资质</span>
+                            <span class="font-semibold text-blue-600">20分</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <span class="text-gray-700">类似项目业绩</span>
+                            <span class="font-semibold text-blue-600">15分</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <span class="text-gray-700">团队配置</span>
+                            <span class="font-semibold text-blue-600">10分</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-200 flex justify-end">
+                <button onclick="closeStandardModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    确定
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let uploadedFile = null;
+        let standardSource = 'bid';
+        let selectedBidFileId = null;
+        let bidFileToUpload = null;
+
+        // 模拟的招标文件列表（实际应从服务器获取）
+        const bidFiles = [
+            { id: '1', name: '智慧城市平台建设项目 - 招标文件.pdf', date: '2024-12-20', extracted: true },
+            { id: '2', name: '市政道路工程投标 - 招标文件.docx', date: '2024-12-19', extracted: true },
+            { id: '3', name: '医疗信息化运维项目 - 招标文件.pdf', date: '2024-12-18', extracted: false }
+        ];
+
+        // 选择招标文件
+        function selectBidFile(fileId) {
+            if (!fileId) {
+                document.getElementById('noBidFile').classList.remove('hidden');
+                document.getElementById('selectedBidFile').classList.add('hidden');
+                selectedBidFileId = null;
+                return;
+            }
+
+            const file = bidFiles.find(f => f.id === fileId);
+            if (!file) return;
+
+            selectedBidFileId = fileId;
+            document.getElementById('selectedBidFileName').textContent = file.name;
+            document.getElementById('noBidFile').classList.add('hidden');
+            document.getElementById('selectedBidFile').classList.remove('hidden');
+            
+            // 如果评分标准未提取，显示提取按钮
+            if (!file.extracted) {
+                updateExtractStatus(false);
+            } else {
+                updateExtractStatus(true);
+            }
+        }
+
+        // 更新提取状态
+        function updateExtractStatus(extracted) {
+            const statusHtml = extracted 
+                ? '<span><i class="fas fa-check-circle text-green-500 mr-1"></i>评分标准已提取</span>'
+                : '<button onclick="extractStandard()" class="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"><i class="fas fa-magic mr-1"></i>提取评分标准</button>';
+            
+            const statusDiv = document.querySelector('#selectedBidFile .flex.items-center.gap-4');
+            if (statusDiv) {
+                statusDiv.innerHTML = `
+                    <span><i class="fas fa-calendar mr-1"></i>上传时间：${bidFiles.find(f => f.id === selectedBidFileId)?.date || ''}</span>
+                    ${statusHtml}
+                `;
+            }
+        }
+
+        // 提取评分标准
+        function extractStandard() {
+            if (!selectedBidFileId) return;
+            
+            // 显示加载状态
+            const statusDiv = document.querySelector('#selectedBidFile .flex.items-center.gap-4');
+            if (statusDiv) {
+                statusDiv.innerHTML = `
+                    <span><i class="fas fa-calendar mr-1"></i>上传时间：${bidFiles.find(f => f.id === selectedBidFileId)?.date || ''}</span>
+                    <span><i class="fas fa-spinner fa-spin text-blue-500 mr-1"></i>正在提取评分标准...</span>
+                `;
+            }
+            
+            // 模拟提取过程
+            setTimeout(() => {
+                const file = bidFiles.find(f => f.id === selectedBidFileId);
+                if (file) {
+                    file.extracted = true;
+                }
+                updateExtractStatus(true);
+                alert('评分标准提取完成！');
+            }, 2000);
+        }
+
+        // 移除选中的招标文件
+        function removeBidFile() {
+            selectedBidFileId = null;
+            document.getElementById('bidFileSelect').value = '';
+            document.getElementById('noBidFile').classList.remove('hidden');
+            document.getElementById('selectedBidFile').classList.add('hidden');
+        }
+
+        // 显示招标文件上传模态框
+        function showBidFileUpload() {
+            document.getElementById('bidFileUploadModal').classList.remove('hidden');
+        }
+
+        // 关闭招标文件上传模态框
+        function closeBidFileUpload() {
+            document.getElementById('bidFileUploadModal').classList.add('hidden');
+            removeBidFileUpload();
+        }
+
+        // 处理招标文件上传
+        function handleBidFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const validTypes = ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/pdf'];
+            if (!validTypes.includes(file.type)) {
+                alert('请上传 Word 或 PDF 格式的文件');
+                return;
+            }
+
+            if (file.size > 50 * 1024 * 1024) {
+                alert('文件大小不能超过 50MB');
+                return;
+            }
+
+            bidFileToUpload = file;
+            const fileInfo = document.getElementById('bidFileUploadInfo');
+            const fileName = document.getElementById('bidFileUploadName');
+            const fileSize = document.getElementById('bidFileUploadSize');
+            const confirmBtn = document.getElementById('confirmBidFileBtn');
+
+            fileName.textContent = file.name;
+            fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            fileInfo.classList.remove('hidden');
+            confirmBtn.disabled = false;
+            confirmBtn.classList.remove('bg-gray-300', 'cursor-not-allowed');
+            confirmBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'cursor-pointer');
+        }
+
+        // 移除待上传的招标文件
+        function removeBidFileUpload() {
+            bidFileToUpload = null;
+            document.getElementById('bidFileInput').value = '';
+            document.getElementById('bidFileUploadInfo').classList.add('hidden');
+            const confirmBtn = document.getElementById('confirmBidFileBtn');
+            confirmBtn.disabled = true;
+            confirmBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'cursor-pointer');
+            confirmBtn.classList.add('bg-gray-300', 'cursor-not-allowed');
+        }
+
+        // 确认上传招标文件
+        function confirmBidFileUpload() {
+            if (!bidFileToUpload) return;
+
+            // 模拟上传和添加到列表
+            const newFile = {
+                id: String(bidFiles.length + 1),
+                name: bidFileToUpload.name,
+                date: new Date().toISOString().split('T')[0],
+                extracted: false
+            };
+            bidFiles.push(newFile);
+
+            // 更新下拉选择框
+            const select = document.getElementById('bidFileSelect');
+            const option = document.createElement('option');
+            option.value = newFile.id;
+            option.textContent = newFile.name;
+            select.appendChild(option);
+
+            // 自动选择新上传的文件
+            select.value = newFile.id;
+            selectBidFile(newFile.id);
+
+            // 关闭模态框
+            closeBidFileUpload();
+            
+            alert('招标文件上传成功！');
+        }
+
+        // 处理文件上传
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 验证文件类型
+            const validTypes = ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/pdf'];
+            if (!validTypes.includes(file.type)) {
+                alert('请上传 Word 或 PDF 格式的文件');
+                return;
+            }
+
+            // 验证文件大小（50MB）
+            if (file.size > 50 * 1024 * 1024) {
+                alert('文件大小不能超过 50MB');
+                return;
+            }
+
+            uploadedFile = file;
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const uploadArea = document.getElementById('uploadArea');
+            const startReviewBtn = document.getElementById('startReviewBtn');
+
+            fileName.textContent = file.name;
+            fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            fileInfo.classList.remove('hidden');
+            uploadArea.classList.add('hidden');
+            
+            // 启用开始评审按钮
+            startReviewBtn.disabled = false;
+            startReviewBtn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+            startReviewBtn.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700', 'cursor-pointer');
+        }
+
+        // 移除文件
+        function removeFile() {
+            uploadedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileInfo').classList.add('hidden');
+            document.getElementById('uploadArea').classList.remove('hidden');
+            
+            // 禁用开始评审按钮
+            const startReviewBtn = document.getElementById('startReviewBtn');
+            startReviewBtn.disabled = true;
+            startReviewBtn.classList.remove('bg-blue-600', 'text-white', 'hover:bg-blue-700', 'cursor-pointer');
+            startReviewBtn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+        }
+
+        // 更新评审标准来源
+        function updateStandardSource(source) {
+            standardSource = source;
+            const uploadStandardArea = document.getElementById('uploadStandardArea');
+            const bidFileSelector = document.getElementById('bidFileSelector');
+            
+            if (source === 'upload') {
+                uploadStandardArea.classList.remove('hidden');
+                bidFileSelector.classList.add('hidden');
+            } else {
+                uploadStandardArea.classList.add('hidden');
+                bidFileSelector.classList.remove('hidden');
+            }
+        }
+
+        // 处理评分标准文件上传
+        function handleStandardUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const validTypes = ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+                               'application/pdf', 'application/vnd.ms-excel', 
+                               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+            if (!validTypes.includes(file.type)) {
+                alert('请上传 Word、PDF 或 Excel 格式的文件');
+                return;
+            }
+
+            alert('评分标准文件已上传，正在解析...\n（演示页面，实际使用时将解析文件内容）');
+        }
+
+        // 显示评审标准详情模态框
+        function showStandardModal() {
+            document.getElementById('standardModal').classList.remove('hidden');
+        }
+
+        // 关闭评审标准详情模态框
+        function closeStandardModal() {
+            document.getElementById('standardModal').classList.add('hidden');
+        }
+
+        // 开始评审
+        function startReview() {
+            if (!uploadedFile) {
+                alert('请先上传标书文件');
+                return;
+            }
+
+            // 显示评审区域
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('standardSection').style.display = 'none';
+            document.getElementById('reviewSection').style.display = 'grid';
+
+            // 显示加载状态
+            alert('正在评审中，请稍候...\n（演示页面，实际使用时将调用评审接口）');
+            
+            // 模拟评审完成后的结果展示
+            setTimeout(() => {
+                // 评审结果已经在页面中，这里可以添加一些动画效果
+            }, 1000);
+        }
+
+        function navigateToPage(page) {
+            try {
+                if (window.parent && window.parent.loadPage) {
+                    window.parent.loadPage(page, 'top');
+                } else if (window.top && window.top.loadPage) {
+                    window.top.loadPage(page, 'top');
+                } else {
+                    window.location.href = page;
+                }
+            } catch (e) {
+                console.error('跳转失败:', e);
+                window.location.href = page;
+            }
+        }
+    </script>
+</body>
+</html>
+

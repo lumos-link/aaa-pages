@@ -6,119 +6,1511 @@
     <title>资源资产库</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .category-item.active {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-left: 3px solid #2563eb;
+        }
+        .expiring-soon {
+            border-left: 3px solid #f59e0b;
+        }
+        .expired {
+            border-left: 3px solid #ef4444;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
-    <section class="p-6 space-y-6">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-                <p class="text-xs text-gray-400 uppercase tracking-widest mb-2">素材中台</p>
-                <h1 class="text-xl font-semibold text-gray-800 mb-1">企业库 · 素材库 · 图片库 一体协同</h1>
-                <p class="text-sm text-gray-500">统一管理资质材料、案例模板与视觉素材，AI 生成时自动引用。</p>
-            </div>
-            <div class="flex items-center gap-3 text-xs">
-                <button class="px-4 py-2 bg-blue-600 text-white rounded-full flex items-center gap-2"><i class="fas fa-upload"></i> 批量上传</button>
-                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full flex items-center gap-2"><i class="fas fa-sync-alt"></i> 同步企业库</button>
-            </div>
-        </div>
-
-        <div class="grid xl:grid-cols-3 gap-6">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-lg font-semibold text-gray-800">企业库</h2>
-                    <span class="text-xs text-gray-400">共 136 条</span>
+    <section class="p-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-4">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-widest mb-2">资源资产库</p>
+                    <h1 class="text-xl font-semibold text-gray-800 mb-1">统一管理平台资源</h1>
+                    <p class="text-sm text-gray-500">图片库、企业素材、案例库、知识库等资源的集中管理与维护</p>
                 </div>
-                <div class="space-y-3 text-sm text-gray-700">
-                    <div class="p-3 border border-gray-100 rounded-xl">
-                        <p class="font-semibold text-gray-800">资质证书</p>
-                        <p class="text-xs text-gray-500 mt-1">建造总承包壹级 · 安全生产许可证 · 2026/05 到期</p>
-                    </div>
-                    <div class="p-3 border border-gray-100 rounded-xl">
-                        <p class="font-semibold text-gray-800">核心业绩</p>
-                        <p class="text-xs text-gray-500 mt-1">智慧园区、轨道交通、医院信息化等 42 个案例</p>
-                    </div>
-                    <div class="p-3 border border-gray-100 rounded-xl">
-                        <p class="font-semibold text-gray-800">专家团队</p>
-                        <p class="text-xs text-gray-500 mt-1">注册建造师 12 人 · BIM 专家 6 人 · 技术骨干 38 人</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-lg font-semibold text-gray-800">素材库</h2>
-                    <button class="text-xs text-blue-600">新建模板</button>
-                </div>
-                <div class="space-y-3 text-sm text-gray-700">
-                    <div class="flex items-center justify-between p-3 border border-gray-100 rounded-xl">
-                        <div>
-                            <p class="font-semibold text-gray-800">评分策略段落</p>
-                            <p class="text-xs text-gray-500 mt-1">针对 100 分制评分，自动给出差异化亮点</p>
-                        </div>
-                        <span class="text-xs text-gray-400">使用 128 次</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 border border-gray-100 rounded-xl">
-                        <div>
-                            <p class="font-semibold text-gray-800">项目管理组织图</p>
-                            <p class="text-xs text-gray-500 mt-1">Visio / PPT / SVG 多版本</p>
-                        </div>
-                        <span class="text-xs text-gray-400">使用 76 次</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 border border-gray-100 rounded-xl">
-                        <div>
-                            <p class="font-semibold text-gray-800">施工工艺说明</p>
-                            <p class="text-xs text-gray-500 mt-1">包含流程、设备、质控要点</p>
-                        </div>
-                        <span class="text-xs text-gray-400">使用 54 次</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-lg font-semibold text-gray-800">图片 / AI 生图</h2>
-                    <button class="text-xs text-blue-600"><i class="fas fa-plus mr-1"></i>生成图片</button>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="rounded-xl overflow-hidden relative">
-                        <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=600&q=60" alt="智慧城市" class="w-full h-28 object-cover">
-                        <span class="absolute bottom-2 left-2 text-white text-xs bg-black/40 px-2 py-0.5 rounded">智慧城市</span>
-                    </div>
-                    <div class="rounded-xl overflow-hidden relative">
-                        <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=600&q=60" alt="工程建设" class="w-full h-28 object-cover">
-                        <span class="absolute bottom-2 left-2 text-white text-xs bg-black/40 px-2 py-0.5 rounded">工程建设</span>
-                    </div>
-                    <div class="rounded-xl overflow-hidden relative">
-                        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=60" alt="生态园林" class="w-full h-28 object-cover">
-                        <span class="absolute bottom-2 left-2 text-white text-xs bg-black/40 px-2 py-0.5 rounded">生态园林</span>
-                    </div>
-                    <div class="rounded-xl overflow-hidden relative border border-dashed border-gray-300 flex items-center justify-center h-28 text-gray-400 text-sm">
-                        <i class="fas fa-magic mr-2"></i>AI 生图
-                    </div>
+                <div class="text-xs text-gray-500">
+                    <p>先在左侧选择资源库，再在当前资源库中新增或批量上传资源。</p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-semibold text-gray-800">素材缺口提醒</h2>
-                <span class="text-xs text-gray-400">自动关联招标需求</span>
+        <!-- 全局到期提醒（汇总所有资源库） -->
+        <div id="expiryAlert" class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4 hidden cursor-pointer hover:bg-yellow-100 transition" onclick="viewExpiringResources()">
+            <div class="flex items-start gap-3">
+                <i class="fas fa-exclamation-triangle text-yellow-600 mt-0.5"></i>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-yellow-800 mb-1">到期提醒 <span class="text-xs text-yellow-600">（点击查看全部即将到期资源）</span></p>
+                    <p class="text-xs text-yellow-700" id="expiryAlertText"></p>
+                </div>
+                <button onclick="event.stopPropagation(); document.getElementById('expiryAlert').classList.add('hidden')" class="text-yellow-600 hover:text-yellow-800">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div class="grid md:grid-cols-3 gap-4 text-sm">
-                <div class="p-4 border border-yellow-200 rounded-xl bg-yellow-50">
-                    <p class="font-semibold text-yellow-700 mb-1">缺失暗标案例</p>
-                    <p class="text-yellow-600">市政道路项目缺少“智慧排水”案例，请补充。</p>
+        </div>
+
+        <div class="grid lg:grid-cols-[240px_1fr] gap-6">
+            <!-- 左侧资源库导航 -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="text-xs font-semibold text-gray-400 tracking-wider">资源库</div>
+                    <button type="button" onclick="showAddCategoryModal()" class="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50">
+                        <i class="fas fa-cog text-[10px]"></i>
+                        <span>资源库管理</span>
+                    </button>
                 </div>
-                <div class="p-4 border border-red-200 rounded-xl bg-red-50">
-                    <p class="font-semibold text-red-700 mb-1">证件即将过期</p>
-                    <p class="text-red-600">安全生产许可证 30 天后到期，需更新扫描件。</p>
+                <nav class="space-y-1" id="categoryNav">
+                    <!-- 分类导航将动态生成 -->
+                </nav>
+            </div>
+
+            <!-- 右侧资源列表 -->
+            <div class="space-y-6">
+                <!-- 搜索和筛选 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                    <div class="flex flex-col md:flex-row gap-3">
+                        <div class="flex-1 relative">
+                            <input type="text" id="searchInput" placeholder="搜索资源名称、标签..." class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="searchResources()">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <select id="filterSelect" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="filterResources()">
+                            <option value="all">全部状态</option>
+                            <option value="normal">正常</option>
+                            <option value="expiring">即将到期</option>
+                            <option value="expired">已过期</option>
+                        </select>
+                        <select id="sortSelect" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="sortResources()">
+                            <option value="time-desc">最新优先</option>
+                            <option value="time-asc">最早优先</option>
+                            <option value="name-asc">名称A-Z</option>
+                            <option value="name-desc">名称Z-A</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="p-4 border border-blue-200 rounded-xl bg-blue-50">
-                    <p class="font-semibold text-blue-700 mb-1">AI 推荐</p>
-                    <p class="text-blue-600">建议补充“数字孪生平台” PPT 模板，可提升评分。</p>
+
+                <!-- 资源列表 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-800" id="categoryTitle">图片库</h2>
+                            <span class="text-xs text-gray-400" id="resourceCount">共 128 项</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs sm:text-sm flex-wrap justify-end">
+                            <button onclick="showAddModal()" class="px-3 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700">
+                                <i class="fas fa-plus"></i> 新增资源
+                            </button>
+                            <button onclick="showBatchUploadModal()" class="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg flex items-center gap-2 hover:bg-gray-50">
+                                <i class="fas fa-upload"></i> 批量上传到本库
+                            </button>
+                        </div>
+                    </div>
+                    <div id="resourceList" class="space-y-3">
+                        <!-- 资源项将动态生成 -->
+                    </div>
+                    <div id="emptyState" class="text-center py-12 hidden">
+                        <i class="fas fa-inbox text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-500 text-sm">暂无资源</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- 新增/编辑资源模态框 -->
+    <div id="resourceModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-800" id="modalTitle">新增资源</h3>
+                <button onclick="closeResourceModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="resourceForm" class="p-6 space-y-4" onsubmit="saveResource(event)">
+                <input type="hidden" id="resourceId">
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">资源库 *</label>
+                    <p class="text-xs text-gray-500 mb-1" id="currentLibraryHint">新增资源将保存在当前选中的资源库中</p>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <select id="resourceCategory" required class="flex-1 min-w-[200px] px-4 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500 cursor-not-allowed" disabled>
+                            <option value="image">图片库</option>
+                            <option value="material">企业素材库</option>
+                            <option value="case">企业案例库</option>
+                            <option value="knowledge">行业知识库</option>
+                            <option value="certificate">资质证件</option>
+                            <option value="template">标书模板</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">资源名称 *</label>
+                    <input type="text" id="resourceName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">资源描述</label>
+                    <textarea id="resourceDescription" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div id="expiryDateGroup">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            有效期
+                        </label>
+                        <div class="space-y-2">
+                            <select id="resourceExpiryType" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="toggleExpiryField()">
+                                <option value="none">长期有效（无固定到期时间）</option>
+                                <option value="date">设置到期日期</option>
+                            </select>
+                            <input type="date" id="resourceExpiry" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 hidden">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            到期提醒
+                        </label>
+                        <select id="resourceReminder" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="none">不提醒</option>
+                            <option value="30d">提前30天</option>
+                            <option value="6m">提前6个月</option>
+                            <option value="1y">提前1年</option>
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">仅当设置了到期日期时才会生效。</p>
+                    </div>
+                </div>
+
+                <div id="fileUploadGroup">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">上传文件</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                        <p id="uploadHint" class="text-sm text-gray-600 mb-2">点击或拖拽文件到此处上传</p>
+                        <input type="file" id="resourceFile" class="hidden" onchange="handleFileSelect(event)">
+                        <button type="button" id="uploadButton" onclick="document.getElementById('resourceFile').click()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
+                            选择文件
+                        </button>
+                        <div id="fileInfo" class="mt-2 hidden text-left">
+                            <p id="fileName" class="text-xs text-gray-700 font-medium"></p>
+                            <p id="fileSize" class="text-xs text-gray-500"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+                    <button type="button" onclick="closeResourceModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                        取消
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        保存
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 批量上传模态框 -->
+    <div id="batchUploadModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-xl w-full">
+            <div class="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-800">批量上传</h3>
+                <button onclick="closeBatchUploadModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                    <p class="text-sm text-gray-600 mb-2">拖拽多个文件到此处，或点击选择</p>
+                    <input type="file" id="batchFiles" multiple class="hidden" onchange="handleBatchFiles(event)">
+                    <button type="button" onclick="document.getElementById('batchFiles').click()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
+                        选择文件
+                    </button>
+                </div>
+                <div id="batchFileList" class="mt-4 space-y-2 max-h-60 overflow-y-auto bg-gray-50 rounded-lg p-2"></div>
+
+                <!-- 批量设置有效期和提醒 -->
+                <div class="mt-4 grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">有效期（应用于本次批量所有文件）</label>
+                        <div class="space-y-2">
+                            <select id="batchExpiryType" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="toggleBatchExpiry()">
+                                <option value="none">长期有效（无固定到期时间）</option>
+                                <option value="date">设置到期日期</option>
+                            </select>
+                            <input type="date" id="batchExpiry" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 hidden">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">到期提醒</label>
+                        <select id="batchReminder" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="none">不提醒</option>
+                            <option value="30d">提前30天</option>
+                            <option value="6m">提前6个月</option>
+                            <option value="1y">提前1年</option>
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">仅当设置了到期日期时才会生效。</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                    <button onclick="closeBatchUploadModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                        取消
+                    </button>
+                    <button onclick="uploadBatchFiles()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        开始上传
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 默认数据（基础库结构）
+        const defaultResourceData = {
+            image: [
+                { id: 1, name: '系统架构图', description: '智慧城市系统整体架构示意图', tags: ['架构', '系统'], file: 'architecture.jpg', uploadTime: '2024-01-15', expiry: null },
+                { id: 2, name: '业务流程图', description: '核心业务流程可视化图表', tags: ['流程', '业务'], file: 'process.jpg', uploadTime: '2024-01-10', expiry: null },
+                { id: 3, name: '数据可视化图', description: '数据统计与分析图表', tags: ['数据', '图表'], file: 'data.jpg', uploadTime: '2024-01-08', expiry: null }
+            ],
+            material: [],
+            case: [
+                { id: 1, name: '智慧城市项目', description: '某市智慧城市整体解决方案', tags: ['智慧城市', '解决方案'], file: 'case1.pdf', uploadTime: '2024-01-14', expiry: null },
+                { id: 2, name: '轨道交通项目', description: '地铁信息化系统建设案例', tags: ['轨道交通', '信息化'], file: 'case2.pdf', uploadTime: '2024-01-11', expiry: null }
+            ],
+            knowledge: [
+                { id: 1, name: 'IT信息化标准', description: '行业信息化建设标准与规范', tags: ['标准', '规范'], file: 'knowledge1.pdf', uploadTime: '2024-01-13', expiry: null },
+                { id: 2, name: '工程建设指南', description: '工程建设项目管理指南', tags: ['工程', '管理'], file: 'knowledge2.pdf', uploadTime: '2024-01-09', expiry: null }
+            ],
+            certificate: [],
+            template: [
+                { id: 1, name: '评分策略段落模板', description: '针对100分制评分的差异化亮点模板', tags: ['评分', '策略'], file: 'template1.docx', uploadTime: '2024-01-16', expiry: null },
+                { id: 2, name: '项目管理组织图', description: 'Visio/PPT/SVG多版本组织图', tags: ['组织', '管理'], file: 'template2.pptx', uploadTime: '2024-01-12', expiry: null }
+            ]
+        };
+
+        // 从localStorage恢复数据或使用默认数据
+        function loadResourceData() {
+            try {
+                const saved = localStorage.getItem('resource_asset_library');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    // 合并保存的数据和默认数据，优先使用保存的数据（如果非空）
+                    const merged = JSON.parse(JSON.stringify(defaultResourceData)); // 先复制默认数据
+                    Object.keys(parsed).forEach(key => {
+                        if (Array.isArray(parsed[key]) && parsed[key].length > 0) {
+                            // 只有当保存的数据非空时才使用
+                            merged[key] = parsed[key];
+                        }
+                    });
+                    return merged;
+                }
+            } catch (e) {
+                console.error('加载数据失败:', e);
+            }
+            // 没有数据或出错时，返回默认数据
+            return JSON.parse(JSON.stringify(defaultResourceData)); // 深拷贝默认数据
+        }
+
+        let resourceData = loadResourceData();
+        
+        // 确保所有默认分类都存在且是数组
+        Object.keys(defaultResourceData).forEach(key => {
+            if (!resourceData[key] || !Array.isArray(resourceData[key])) {
+                resourceData[key] = JSON.parse(JSON.stringify(defaultResourceData[key]));
+            }
+        });
+
+        // 保存数据到localStorage
+        function saveResourceData() {
+            localStorage.setItem('resource_asset_library', JSON.stringify(resourceData));
+        }
+
+        const categoryNames = {
+            image: '图片库',
+            material: '企业素材库',
+            case: '企业案例库',
+            knowledge: '行业知识库',
+            certificate: '资质证件',
+            template: '标书模板'
+        };
+
+        // 示例数据：用于演示不同有效期与提醒逻辑
+        const demoResources = [
+            // 企业素材库示例
+            {
+                category: 'material',
+                name: '企业宣传画册（最新版）',
+                description: '用于技术与商务标书附录的企业宣传画册PDF',
+                file: 'brochure_2025.pdf',
+                uploadTime: '2025-01-02',
+                expiry: null,
+                reminder: 'none'
+            },
+            {
+                category: 'material',
+                name: '银行资信证明（2025）',
+                description: '本年度投标使用的银行资信证明扫描件',
+                file: 'bank_credit_2025.pdf',
+                uploadTime: '2025-01-05',
+                expiry: '2025-12-31',
+                reminder: '30d'
+            },
+            {
+                category: 'material',
+                name: '安全生产许可证（2026版）',
+                description: '用于工程类项目投标的安全生产许可证扫描件',
+                file: 'safe_license_2026.pdf',
+                uploadTime: '2025-01-10',
+                expiry: '2026-12-31',
+                reminder: '6m'
+            },
+            // 资质证件示例
+            {
+                category: 'certificate',
+                name: '安全生产许可证（2023版，历史）',
+                description: '历史版本，仅用于留档备查',
+                file: 'safe_license_2023_old.pdf',
+                uploadTime: '2023-01-10',
+                expiry: '2024-01-10',
+                reminder: '30d'
+            },
+            {
+                category: 'certificate',
+                name: 'ISO9001认证（2025-2028）',
+                description: '质量管理体系认证证书（三年有效期）',
+                file: 'iso9001_2028.pdf',
+                uploadTime: '2025-01-08',
+                expiry: '2028-01-08',
+                reminder: '6m'
+            },
+            {
+                category: 'certificate',
+                name: '建造总承包壹级资质（长期）',
+                description: '建筑工程施工总承包壹级资质证书',
+                file: 'general_contract_grade1.pdf',
+                uploadTime: '2024-10-10',
+                expiry: '2030-10-10',
+                reminder: '1y'
+            }
+        ];
+
+        // 从localStorage恢复自定义分类
+        function loadCustomCategories() {
+            try {
+                const saved = localStorage.getItem('custom_categories');
+                if (saved) {
+                    const custom = JSON.parse(saved);
+                    Object.keys(custom).forEach(key => {
+                        categoryNames[key] = custom[key];
+                        if (!resourceData[key]) {
+                            resourceData[key] = [];
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('加载自定义分类失败:', e);
+            }
+        }
+
+        // 保存自定义分类
+        function saveCustomCategories() {
+            try {
+                const custom = {};
+                Object.keys(categoryNames).forEach(key => {
+                    if (!['image', 'material', 'case', 'knowledge', 'certificate', 'template'].includes(key)) {
+                        custom[key] = categoryNames[key];
+                    }
+                });
+                localStorage.setItem('custom_categories', JSON.stringify(custom));
+            } catch (e) {
+                console.error('保存自定义分类失败:', e);
+            }
+        }
+
+        let currentCategory = 'image';
+        let currentResources = [];
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 确保resourceData存在
+            if (!resourceData) {
+                resourceData = JSON.parse(JSON.stringify(defaultResourceData));
+            }
+            
+            // 检查是否需要初始化默认数据
+            let needsInit = false;
+            Object.keys(defaultResourceData).forEach(key => {
+                if (!resourceData[key] || !Array.isArray(resourceData[key]) || resourceData[key].length === 0) {
+                    needsInit = true;
+                    resourceData[key] = JSON.parse(JSON.stringify(defaultResourceData[key]));
+                }
+            });
+            
+            // 如果初始化了默认数据，保存到localStorage
+            if (needsInit) {
+                saveResourceData();
+            }
+            
+            // 确保示例资源存在（按名称去重，避免重复插入）
+            demoResources.forEach(demo => {
+                const cat = demo.category;
+                if (!resourceData[cat]) {
+                    resourceData[cat] = [];
+                }
+                const exists = resourceData[cat].some(r => r.name === demo.name);
+                if (!exists) {
+                    resourceData[cat].push({
+                        id: Date.now() + Math.floor(Math.random() * 100000),
+                        name: demo.name,
+                        description: demo.description,
+                        file: demo.file,
+                        uploadTime: demo.uploadTime,
+                        expiry: demo.expiry,
+                        reminder: demo.reminder || 'none'
+                    });
+                }
+            });
+            saveResourceData();
+            
+            // 确保所有默认分类在resourceData中存在
+            Object.keys(defaultResourceData).forEach(key => {
+                if (!resourceData[key] || !Array.isArray(resourceData[key])) {
+                    resourceData[key] = JSON.parse(JSON.stringify(defaultResourceData[key]));
+                }
+            });
+            
+            // 加载自定义分类
+            loadCustomCategories();
+            
+            // 初始化当前分类的资源
+            currentResources = [...(resourceData[currentCategory] || [])];
+            
+            // 渲染界面
+            renderCategoryNav();
+            updateCategoryCounts();
+            renderResources();
+            checkExpiryAlerts();
+        });
+
+        // 更新分类数量
+        function updateCategoryCounts() {
+            Object.keys(categoryNames).forEach(category => {
+                const count = resourceData[category] ? resourceData[category].length : 0;
+                const countSpan = document.querySelector(`.category-count[data-category="${category}"]`);
+                if (countSpan) {
+                    const expiringCount = resourceData[category] ? resourceData[category].filter(r => r.expiry && getExpiryStatus(r.expiry) === 'expiring').length : 0;
+                    const expiredCount = resourceData[category] ? resourceData[category].filter(r => r.expiry && getExpiryStatus(r.expiry) === 'expired').length : 0;
+                    
+                    if (expiredCount > 0) {
+                        countSpan.className = 'ml-auto text-xs text-red-500';
+                        countSpan.textContent = `${count} (${expiredCount}过期)`;
+                    } else if (expiringCount > 0) {
+                        countSpan.className = 'ml-auto text-xs text-yellow-500';
+                        countSpan.textContent = `${count} (${expiringCount}即将到期)`;
+                    } else {
+                        countSpan.className = 'ml-auto text-xs text-gray-400';
+                        countSpan.textContent = count;
+                    }
+                }
+            });
+        }
+
+        // 渲染分类导航
+        function renderCategoryNav() {
+            const nav = document.getElementById('categoryNav');
+            const categoryIcons = {
+                image: { icon: 'fa-images', color: 'text-blue-600' },
+                material: { icon: 'fa-folder-open', color: 'text-green-600' },
+                case: { icon: 'fa-briefcase', color: 'text-purple-600' },
+                knowledge: { icon: 'fa-book', color: 'text-orange-600' },
+                certificate: { icon: 'fa-certificate', color: 'text-red-600' },
+                template: { icon: 'fa-file-alt', color: 'text-indigo-600' }
+            };
+            
+            nav.innerHTML = Object.keys(categoryNames).map(category => {
+                const count = resourceData[category] ? resourceData[category].length : 0;
+                const icon = categoryIcons[category] || { icon: 'fa-folder', color: 'text-gray-600' };
+                const isActive = category === currentCategory ? 'active' : '';
+                return `
+                    <button class="category-item ${isActive} w-full text-left px-4 py-2.5 rounded-lg flex items-center gap-2 text-sm" onclick="switchCategory('${category}')">
+                        <i class="fas ${icon.icon} ${icon.color} w-5"></i>
+                        <span>${categoryNames[category]}</span>
+                        <span class="ml-auto text-xs text-gray-400 category-count" data-category="${category}">${count}</span>
+                    </button>
+                `;
+            }).join('');
+            
+            updateCategoryCounts();
+        }
+
+        // 切换分类
+        function switchCategory(category) {
+            currentCategory = category;
+            currentResources = [...(resourceData[category] || [])];
+            
+            // 更新导航状态
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.category-item').classList.add('active');
+            
+            // 清空搜索和筛选
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterSelect').value = 'all';
+            
+            // 更新标题和列表
+            document.getElementById('categoryTitle').textContent = categoryNames[category];
+            updateCategoryCounts();
+            renderResources();
+            checkExpiryAlerts();
+        }
+
+        // 渲染资源列表
+        function renderResources() {
+            const list = document.getElementById('resourceList');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (currentResources.length === 0) {
+                list.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                document.getElementById('resourceCount').textContent = '共 0 项';
+                return;
+            }
+            
+            list.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            document.getElementById('resourceCount').textContent = `共 ${currentResources.length} 项`;
+            
+            list.innerHTML = currentResources.map(resource => {
+                const expiryStatus = getExpiryStatus(resource.expiry);
+                const expiryClass = expiryStatus === 'expired' ? 'expired' : (expiryStatus === 'expiring' ? 'expiring-soon' : '');
+                const expiryBadge = resource.expiry ? getExpiryBadge(resource.expiry) : '';
+                const reminderText = getReminderText(resource.reminder);
+                
+                const fileSize = resource.fileSize ? `(${(resource.fileSize / 1024).toFixed(2)} KB)` : '';
+                const fileType = resource.file ? resource.file.split('.').pop().toUpperCase() : '';
+                
+                return `
+                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition ${expiryClass}">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="flex-1 cursor-pointer" onclick="viewResourceDetail(${resource.id})">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-semibold text-gray-800">${resource.name}</h3>
+                                    ${expiryBadge}
+                                </div>
+                                <p class="text-sm text-gray-600 mb-2">${resource.description || '无描述'}</p>
+                                <div class="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
+                                    <span><i class="fas fa-file mr-1"></i> ${resource.file} ${fileSize}</span>
+                                    ${fileType ? `<span class="px-1.5 py-0.5 bg-gray-100 rounded text-xs">${fileType}</span>` : ''}
+                                    <span><i class="fas fa-clock mr-1"></i> ${resource.uploadTime}</span>
+                                    ${resource.expiry ? `<span><i class="fas fa-calendar-alt mr-1"></i> 有效期至 ${resource.expiry}</span>` : '<span><i class="fas fa-infinity mr-1"></i> 长期有效</span>'}
+                                    ${reminderText ? `<span><i class="fas fa-bell mr-1"></i> ${reminderText}</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="event.stopPropagation(); downloadResource(${resource.id})" class="p-2 text-green-600 hover:bg-green-50 rounded-lg" title="下载">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button onclick="event.stopPropagation(); editResource(${resource.id})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg" title="编辑">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="event.stopPropagation(); deleteResource(${resource.id})" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" title="删除">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 获取到期状态
+        function getExpiryStatus(expiry) {
+            if (!expiry) return 'normal';
+            const today = new Date();
+            const expiryDate = new Date(expiry);
+            const daysDiff = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff < 0) return 'expired';
+            if (daysDiff <= 30) return 'expiring';
+            return 'normal';
+        }
+
+        // 获取到期徽章
+        function getExpiryBadge(expiry) {
+            const status = getExpiryStatus(expiry);
+            if (status === 'expired') {
+                return '<span class="px-2 py-0.5 bg-red-100 text-red-600 rounded text-xs font-semibold">已过期</span>';
+            } else if (status === 'expiring') {
+                const today = new Date();
+                const expiryDate = new Date(expiry);
+                const daysDiff = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                return `<span class="px-2 py-0.5 bg-yellow-100 text-yellow-600 rounded text-xs font-semibold">${daysDiff}天后到期</span>`;
+            }
+            return '';
+        }
+
+        // 根据提醒配置获取提醒文案
+        function getReminderText(reminder) {
+            if (!reminder || reminder === 'none') return '';
+            if (reminder === '30d') return '提前30天提醒';
+            if (reminder === '6m') return '提前6个月提醒';
+            if (reminder === '1y') return '提前1年提醒';
+            return '';
+        }
+
+        // 检查到期提醒
+        function checkExpiryAlerts() {
+            const expiringItems = [];
+            
+            Object.keys(resourceData).forEach(category => {
+                resourceData[category].forEach(resource => {
+                    if (resource.expiry) {
+                        // 已过期的资源不再进入“到期提醒”，只在卡片上标红即可
+                        const status = getExpiryStatus(resource.expiry);
+                        if (status === 'expired') return;
+
+                        // 根据提醒配置判断是否需要提前提醒
+                        const today = new Date();
+                        const expiryDate = new Date(resource.expiry);
+                        const daysDiff = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                        let threshold = 0;
+                        if (resource.reminder === '30d') threshold = 30;
+                        else if (resource.reminder === '6m') threshold = 180;
+                        else if (resource.reminder === '1y') threshold = 365;
+                        
+                        if (threshold > 0 && daysDiff <= threshold && daysDiff >= 0) {
+                            expiringItems.push({ ...resource, category: categoryNames[category] });
+                        }
+                    }
+                });
+            });
+            
+            // 挂到全局，供“查看详情”使用
+            window.expiringItems = expiringItems;
+            
+            const alertDiv = document.getElementById('expiryAlert');
+            const alertText = document.getElementById('expiryAlertText');
+            
+            if (expiringItems.length > 0) {
+                const text = `共有 ${expiringItems.length} 项资源即将到期（来自不同资源库），请及时更新或补充。`;
+                alertText.textContent = text;
+                alertDiv.classList.remove('hidden');
+            } else {
+                alertDiv.classList.add('hidden');
+            }
+        }
+
+        // 搜索资源（按名称和描述）
+        function searchResources() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            if (!query) {
+                // 如果搜索框为空，应用筛选
+                filterResources();
+                return;
+            }
+            const filtered = resourceData[currentCategory].filter(resource => {
+                return resource.name.toLowerCase().includes(query) ||
+                       (resource.description && resource.description.toLowerCase().includes(query));
+            });
+            currentResources = filtered;
+            renderResources();
+        }
+
+        // 筛选资源
+        function filterResources() {
+            const filter = document.getElementById('filterSelect').value;
+            let filtered = [...resourceData[currentCategory]];
+            
+            if (filter === 'expiring') {
+                filtered = filtered.filter(r => r.expiry && getExpiryStatus(r.expiry) === 'expiring');
+            } else if (filter === 'expired') {
+                filtered = filtered.filter(r => r.expiry && getExpiryStatus(r.expiry) === 'expired');
+            } else if (filter === 'normal') {
+                filtered = filtered.filter(r => !r.expiry || getExpiryStatus(r.expiry) === 'normal');
+            }
+            
+            currentResources = filtered;
+            renderResources();
+        }
+
+        // 排序资源
+        function sortResources() {
+            const sort = document.getElementById('sortSelect').value;
+            const sorted = [...currentResources];
+            
+            if (sort === 'time-desc') {
+                sorted.sort((a, b) => new Date(b.uploadTime) - new Date(a.uploadTime));
+            } else if (sort === 'time-asc') {
+                sorted.sort((a, b) => new Date(a.uploadTime) - new Date(b.uploadTime));
+            } else if (sort === 'name-asc') {
+                sorted.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (sort === 'name-desc') {
+                sorted.sort((a, b) => b.name.localeCompare(a.name));
+            }
+            
+            currentResources = sorted;
+            renderResources();
+        }
+
+        // 显示新增模态框（新增时资源库固定为当前选中的库）
+        function showAddModal() {
+            document.getElementById('modalTitle').textContent = '新增资源';
+            document.getElementById('resourceForm').reset();
+            document.getElementById('resourceId').value = '';
+            
+            const categorySelect = document.getElementById('resourceCategory');
+            const hint = document.getElementById('currentLibraryHint');
+            
+            // 仅在新增时：资源库由左侧当前选中库决定，用户不可修改
+            categorySelect.innerHTML = Object.keys(categoryNames).map(key => 
+                `<option value="${key}" ${key === currentCategory ? 'selected' : ''}>${categoryNames[key]}</option>`
+            ).join('');
+            categorySelect.value = currentCategory;
+            categorySelect.disabled = true;
+            categorySelect.classList.add('bg-gray-50', 'text-gray-500', 'cursor-not-allowed', 'border-gray-200');
+            
+            if (hint) {
+                hint.textContent = `新增资源将保存在当前资源库「${categoryNames[currentCategory]}」中`;
+            }
+            
+            document.getElementById('fileInfo').classList.add('hidden');
+            selectedFile = null;
+            // 恢复上传区域文案
+            const uploadHint = document.getElementById('uploadHint');
+            const uploadButton = document.getElementById('uploadButton');
+            if (uploadHint) uploadHint.textContent = '点击或拖拽文件到此处上传';
+            if (uploadButton) uploadButton.textContent = '选择文件';
+            // 有效期相关初始化
+            const expiryType = document.getElementById('resourceExpiryType');
+            const expiryInput = document.getElementById('resourceExpiry');
+            const reminderSelect = document.getElementById('resourceReminder');
+            if (expiryType) expiryType.value = 'none';
+            if (expiryInput) {
+                expiryInput.value = '';
+                expiryInput.classList.add('hidden');
+            }
+            if (reminderSelect) reminderSelect.value = 'none';
+            toggleExpiryField();
+            
+            document.getElementById('resourceModal').classList.remove('hidden');
+        }
+
+        // 切换有效期字段显示（所有分类都可以设置有效期）
+        function toggleExpiryField() {
+            const type = document.getElementById('resourceExpiryType')?.value;
+            const dateInput = document.getElementById('resourceExpiry');
+            if (!dateInput) return;
+            if (type === 'date') {
+                dateInput.classList.remove('hidden');
+            } else {
+                dateInput.classList.add('hidden');
+                dateInput.value = '';
+            }
+        }
+
+        // 编辑资源（编辑时可以调整所属资源库）
+        function editResource(id) {
+            const resource = resourceData[currentCategory].find(r => r.id === id);
+            if (!resource) return;
+            
+            document.getElementById('modalTitle').textContent = '编辑资源';
+            document.getElementById('resourceId').value = resource.id;
+            
+            // 更新分类下拉框并记录原分类
+            const categorySelect = document.getElementById('resourceCategory');
+            categorySelect.innerHTML = Object.keys(categoryNames).map(key => 
+                `<option value="${key}" ${key === currentCategory ? 'selected' : ''}>${categoryNames[key]}</option>`
+            ).join('');
+            categorySelect.value = currentCategory;
+            categorySelect.disabled = false;
+            categorySelect.classList.remove('bg-gray-50', 'text-gray-500', 'cursor-not-allowed', 'border-gray-200');
+            categorySelect.dataset.oldCategory = currentCategory;
+            
+            const hint = document.getElementById('currentLibraryHint');
+            if (hint) {
+                hint.textContent = '可以在此调整资源所属的资源库';
+            }
+            document.getElementById('resourceName').value = resource.name;
+            document.getElementById('resourceDescription').value = resource.description || '';
+
+            // 有效期类型和日期
+            const expiryType = document.getElementById('resourceExpiryType');
+            const expiryInput = document.getElementById('resourceExpiry');
+            const reminderSelect = document.getElementById('resourceReminder');
+            if (resource.expiry && expiryType && expiryInput) {
+                expiryType.value = 'date';
+                expiryInput.value = resource.expiry;
+                expiryInput.classList.remove('hidden');
+            } else if (expiryType && expiryInput) {
+                expiryType.value = 'none';
+                expiryInput.value = '';
+                expiryInput.classList.add('hidden');
+            }
+            if (reminderSelect) {
+                reminderSelect.value = resource.reminder || 'none';
+            }
+            
+            if (resource.file) {
+                document.getElementById('fileName').textContent = resource.file;
+                document.getElementById('fileSize').textContent = resource.fileSize ? `文件大小: ${(resource.fileSize / 1024).toFixed(2)} KB` : '文件大小: 未知';
+                document.getElementById('fileInfo').classList.remove('hidden');
+                const uploadHint = document.getElementById('uploadHint');
+                const uploadButton = document.getElementById('uploadButton');
+                if (uploadHint) uploadHint.textContent = '如需替换当前文件，请重新选择文件';
+                if (uploadButton) uploadButton.textContent = '更换文件';
+            } else {
+                document.getElementById('fileInfo').classList.add('hidden');
+                const uploadHint = document.getElementById('uploadHint');
+                const uploadButton = document.getElementById('uploadButton');
+                if (uploadHint) uploadHint.textContent = '点击或拖拽文件到此处上传';
+                if (uploadButton) uploadButton.textContent = '选择文件';
+            }
+            
+            selectedFile = null;
+            toggleExpiryField();
+            
+            document.getElementById('resourceModal').classList.remove('hidden');
+        }
+
+        // 删除资源
+        function deleteResource(id) {
+            if (!confirm('确定要删除这个资源吗？删除后无法恢复。')) return;
+            
+            const index = resourceData[currentCategory].findIndex(r => r.id === id);
+            if (index > -1) {
+                resourceData[currentCategory].splice(index, 1);
+                saveResourceData();
+                currentResources = [...resourceData[currentCategory]];
+                updateCategoryCounts();
+                renderResources();
+                checkExpiryAlerts();
+                showToast('资源已删除', 'success');
+            }
+        }
+
+        // 查看资源预览（点击资源卡片）
+        function viewResourceDetail(id) {
+            const resource = resourceData[currentCategory].find(r => r.id === id);
+            if (!resource) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                    <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800">资源预览</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <!-- 预览区域 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">预览</label>
+                            <div class="border border-gray-200 rounded-xl overflow-hidden bg-gray-50">
+                                ${
+                                    (resource.file || '').match(/\.(png|jpe?g|gif|webp|svg)$/i)
+                                        ? `<div class="h-64 flex items-center justify-center bg-black/5">
+                                                <div class="text-center text-xs text-gray-500">
+                                                    <div class="mb-2 inline-flex items-center justify-center w-16 h-16 rounded-full bg-white shadow">
+                                                        <i class="fas fa-image text-2xl text-gray-400"></i>
+                                                    </div>
+                                                    <p>此处为图片预览区域（原型示意）</p>
+                                                    <p class="mt-1 text-[11px] text-gray-400">${resource.file}</p>
+                                                </div>
+                                           </div>`
+                                        : `<div class="h-48 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                                                <div class="text-center text-xs text-gray-500 max-w-xs">
+                                                    <div class="mb-2 inline-flex items-center justify-center w-16 h-16 rounded-full bg-white shadow">
+                                                        <i class="fas fa-file-alt text-2xl text-gray-400"></i>
+                                                    </div>
+                                                    <p>当前资源为文档类文件（如 Word / PDF / PPT 等）。</p>
+                                                    <p class="mt-1">原型环境暂不做真实内容渲染，实际产品中可在此内嵌在线预览控件。</p>
+                                                    <p class="mt-1 text-[11px] text-gray-400">${resource.file}</p>
+                                                </div>
+                                           </div>`
+                                }
+                            </div>
+                        </div>
+
+                        <!-- 基本信息 -->
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">资源名称</label>
+                                <p class="text-gray-800">${resource.name}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">所属资源库</label>
+                                <p class="text-gray-600">${categoryNames[currentCategory] || '未知'}</p>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">资源描述</label>
+                                <p class="text-gray-600">${resource.description || '无描述'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">文件名称</label>
+                                <p class="text-gray-600">${resource.file}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">文件大小</label>
+                                <p class="text-gray-600">${resource.fileSize ? (resource.fileSize / 1024).toFixed(2) + ' KB' : '未知'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">上传时间</label>
+                                <p class="text-gray-600">${resource.uploadTime}</p>
+                            </div>
+                            ${resource.expiry ? `
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">有效期至</label>
+                                <p class="text-gray-600">${resource.expiry}</p>
+                            </div>
+                            ` : `
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">有效期</label>
+                                <p class="text-gray-600">长期有效</p>
+                            </div>
+                            `}
+                            ${resource.expiry ? `
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">到期提醒</label>
+                                <p class="text-gray-600">${getReminderText(resource.reminder) || '不提醒'}</p>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+                            <button onclick="downloadResource(${resource.id})" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                <i class="fas fa-download"></i>
+                                <span>下载</span>
+                            </button>
+                            <button onclick="this.closest('.fixed').remove(); editResource(${resource.id})" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                                <i class="fas fa-edit"></i>
+                                <span>编辑信息</span>
+                            </button>
+                            <button onclick="this.closest('.fixed').remove()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                                关闭
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) modal.remove();
+            });
+        }
+
+        // 下载资源
+        function downloadResource(id) {
+            const resource = resourceData[currentCategory].find(r => r.id === id);
+            if (!resource) return;
+            
+            // 模拟下载（实际应该从服务器下载）
+            showToast(`正在下载 ${resource.file}...`, 'info');
+            // 这里应该调用实际的下载API
+            setTimeout(() => {
+                showToast('下载完成', 'success');
+            }, 1000);
+        }
+
+        // 保存资源
+        function saveResource(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('resourceId').value;
+            const category = document.getElementById('resourceCategory').value;
+            const name = document.getElementById('resourceName').value.trim();
+            
+            if (!name) {
+                showToast('请输入资源名称', 'warning');
+                return;
+            }
+            
+            const description = document.getElementById('resourceDescription').value.trim();
+            const tags = tagList.length > 0 ? tagList : [];
+            const expiry = document.getElementById('resourceExpiry').value || null;
+            
+            // 处理文件
+            let file = '';
+            let fileSize = null;
+            if (selectedFile) {
+                file = selectedFile.name;
+                fileSize = selectedFile.size;
+            } else if (id) {
+                // 编辑时保留原文件
+                const oldResource = resourceData[category].find(r => r.id === parseInt(id));
+                if (oldResource) {
+                    file = oldResource.file || '';
+                    fileSize = oldResource.fileSize || null;
+                }
+            }
+            
+            if (!file && !id) {
+                showToast('请上传文件', 'warning');
+                return;
+            }
+            
+            const resource = {
+                id: id ? parseInt(id) : Date.now(),
+                name,
+                description,
+                tags,
+                file: file || '未命名文件',
+                fileSize,
+                uploadTime: id ? resourceData[category].find(r => r.id === parseInt(id))?.uploadTime || new Date().toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                expiry
+            };
+            
+            if (id) {
+                // 更新 - 需要检查是否切换了分类
+                const oldCategory = document.getElementById('resourceCategory').dataset.oldCategory || currentCategory;
+                
+                // 如果切换了分类，从旧分类删除，添加到新分类
+                if (oldCategory !== category) {
+                    const oldIndex = resourceData[oldCategory] ? resourceData[oldCategory].findIndex(r => r.id === parseInt(id)) : -1;
+                    if (oldIndex > -1) {
+                        resourceData[oldCategory].splice(oldIndex, 1);
+                    }
+                    if (!resourceData[category]) {
+                        resourceData[category] = [];
+                    }
+                    resourceData[category].push(resource);
+                } else {
+                    // 同一分类内更新
+                    const index = resourceData[category].findIndex(r => r.id === parseInt(id));
+                    if (index > -1) {
+                        resourceData[category][index] = resource;
+                    }
+                }
+                showToast('资源已更新', 'success');
+            } else {
+                // 新增
+                if (!resourceData[category]) {
+                    resourceData[category] = [];
+                }
+                resourceData[category].push(resource);
+                showToast('资源已添加', 'success');
+            }
+            
+            saveResourceData();
+            currentResources = [...resourceData[category]];
+            closeResourceModal();
+            updateCategoryCounts();
+            renderResources();
+            checkExpiryAlerts();
+        }
+
+        // 关闭资源模态框
+        function closeResourceModal() {
+            document.getElementById('resourceModal').classList.add('hidden');
+        }
+
+        // 处理文件选择
+        let selectedFile = null;
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = `文件大小: ${(file.size / 1024).toFixed(2)} KB`;
+                document.getElementById('fileInfo').classList.remove('hidden');
+            }
+        }
+
+        function clearFile() {
+            selectedFile = null;
+            document.getElementById('resourceFile').value = '';
+            document.getElementById('fileInfo').classList.add('hidden');
+        }
+
+        // 显示批量上传模态框
+        function showBatchUploadModal() {
+            document.getElementById('batchUploadModal').classList.remove('hidden');
+            document.getElementById('batchFileList').innerHTML = '';
+        }
+
+        // 关闭批量上传模态框
+        function closeBatchUploadModal() {
+            document.getElementById('batchUploadModal').classList.add('hidden');
+        }
+
+        // 处理批量文件选择
+        function handleBatchFiles(event) {
+            const files = Array.from(event.target.files);
+            const list = document.getElementById('batchFileList');
+            list.innerHTML = files.map((file, index) => `
+                <div class="batch-file-row flex flex-col gap-2 p-2 bg-white rounded-lg border border-gray-200" data-index="${index}">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs text-gray-500 truncate flex-1" title="${file.name}">
+                            <i class="fas fa-file mr-1 text-gray-400"></i>${file.name}
+                        </span>
+                        <span class="text-xs text-gray-400 whitespace-nowrap">${(file.size / 1024).toFixed(2)} KB</span>
+                    </div>
+                    <div class="grid md:grid-cols-[1.2fr_1.8fr] gap-2">
+                        <div>
+                            <label class="block text-[11px] text-gray-500 mb-1">资源名称</label>
+                            <input 
+                                type="text" 
+                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                value="${file.name.replace(/\.[^/.]+$/, '')}"
+                                data-field="name"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-gray-500 mb-1">资源描述（可选）</label>
+                            <input 
+                                type="text" 
+                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="例如：用于XX章节插图 / XX项目案例文档"
+                                value=""
+                                data-field="desc"
+                            >
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 批量上传有效期开关
+        function toggleBatchExpiry() {
+            const type = document.getElementById('batchExpiryType')?.value;
+            const dateInput = document.getElementById('batchExpiry');
+            if (!dateInput) return;
+            if (type === 'date') {
+                dateInput.classList.remove('hidden');
+            } else {
+                dateInput.classList.add('hidden');
+                dateInput.value = '';
+            }
+        }
+
+        // 上传批量文件
+        function uploadBatchFiles() {
+            const files = document.getElementById('batchFiles').files;
+            if (files.length === 0) {
+                showToast('请先选择文件', 'warning');
+                return;
+            }
+
+            const expiryType = document.getElementById('batchExpiryType')?.value || 'none';
+            const expiryDate = document.getElementById('batchExpiry')?.value || null;
+            const reminder = document.getElementById('batchReminder')?.value || 'none';
+
+            if (expiryType === 'date' && !expiryDate) {
+                showToast('请选择有效期日期，或切换为长期有效', 'warning');
+                return;
+            }
+            
+            // 从列表中读取每个文件的资源名称和描述
+            const rows = document.querySelectorAll('.batch-file-row');
+
+            // 模拟上传：本次批量中的所有文件使用同一套有效期和提醒设置
+            Array.from(files).forEach((file, index) => {
+                let name = file.name.replace(/\.[^/.]+$/, '');
+                let description = `批量上传的文件：${file.name}`;
+
+                const row = rows[index];
+                if (row) {
+                    const nameInput = row.querySelector('input[data-field="name"]');
+                    const descInput = row.querySelector('input[data-field="desc"]');
+                    if (nameInput && nameInput.value.trim()) {
+                        name = nameInput.value.trim();
+                    }
+                    if (descInput && descInput.value.trim()) {
+                        description = descInput.value.trim();
+                    }
+                }
+
+                const resource = {
+                    id: Date.now() + index,
+                    name,
+                    description,
+                    file: file.name,
+                    uploadTime: new Date().toISOString().split('T')[0],
+                    expiry: expiryType === 'date' ? expiryDate : null,
+                    reminder: expiryType === 'date' ? reminder : 'none'
+                };
+                resourceData[currentCategory].push(resource);
+            });
+            
+            currentResources = [...resourceData[currentCategory]];
+            saveResourceData();
+            updateCategoryCounts();
+            closeBatchUploadModal();
+            renderResources();
+            checkExpiryAlerts();
+            showToast(`成功上传 ${files.length} 个文件`, 'success');
+        }
+
+        // Toast 提示
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'warning' ? 'bg-yellow-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // 点击模态框外部关闭
+        document.getElementById('resourceModal').addEventListener('click', function(e) {
+            if (e.target === this) closeResourceModal();
+        });
+
+        document.getElementById('batchUploadModal').addEventListener('click', function(e) {
+            if (e.target === this) closeBatchUploadModal();
+        });
+
+        // 显示资源库管理模态框
+        function showAddCategoryModal() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full">
+                    <div class="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800">资源库管理</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <p class="text-xs text-gray-500">用于集中管理各类资源库。系统内置的资源库<span class="font-semibold">可以重命名</span>但不可删除，自定义资源库可以重命名和删除。</p>
+                        <div id="libraryManageList" class="space-y-2 max-h-72 overflow-y-auto border border-gray-100 rounded-lg p-2 bg-gray-50"></div>
+                        <div class="mt-2 pt-3 border-t border-gray-200 space-y-2">
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="newCategoryName" placeholder="新建资源库名称" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <button onclick="saveNewCategory()" class="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
+                                    <i class="fas fa-plus mr-1"></i> 新增
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-end gap-3">
+                                <button onclick="this.closest('.fixed').remove()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm">
+                                    关闭
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) modal.remove();
+            });
+            
+            renderLibraryManageList(modal);
+        }
+
+        // 渲染资源库管理列表
+        function renderLibraryManageList(modal) {
+            const container = modal.querySelector('#libraryManageList');
+            if (!container) return;
+            
+            const defaultKeys = ['image', 'material', 'case', 'knowledge', 'certificate', 'template'];
+            
+            container.innerHTML = Object.keys(categoryNames).map(key => {
+                const isDefault = defaultKeys.includes(key);
+                const count = resourceData[key] ? resourceData[key].length : 0;
+                const badge = isDefault
+                    ? '<span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 text-[10px]">系统内置</span>'
+                    : '<span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px]">自定义</span>';
+                
+                return `
+                    <div class="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-gray-200">
+                        <div class="flex-1 flex items-center gap-2">
+                            <input 
+                                type="text" 
+                                value="${categoryNames[key]}" 
+                                class="flex-1 px-2 py-1 border ${isDefault ? 'border-gray-200 bg-gray-50' : 'border-gray-300'} rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500" 
+                                onchange="updateLibraryName('${key}', this.value)"
+                            >
+                            ${badge}
+                            <span class="text-[11px] text-gray-400 ml-1">资源数：${count}</span>
+                        </div>
+                        ${isDefault ? '' : `
+                        <button onclick="deleteLibrary('${key}')" class="px-2 py-1 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 rounded">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 保存新资源库
+        function saveNewCategory() {
+            const name = document.getElementById('newCategoryName').value.trim();
+            if (!name) {
+                showToast('请输入分类名称', 'warning');
+                return;
+            }
+            
+            // 检查是否已存在
+            if (Object.values(categoryNames).includes(name)) {
+                showToast('该分类已存在', 'warning');
+                return;
+            }
+            
+            // 生成资源库key
+            const key = 'custom_' + Date.now();
+            categoryNames[key] = name;
+            resourceData[key] = [];
+            
+            saveCustomCategories();
+            saveResourceData();
+            renderCategoryNav();
+            updateCategoryCounts();
+            checkExpiryAlerts();
+            showToast('资源库已添加', 'success');
+            
+            // 重新渲染管理列表
+            const modal = document.querySelector('.fixed');
+            if (modal) {
+                const input = modal.querySelector('#newCategoryName');
+                if (input) input.value = '';
+                renderLibraryManageList(modal);
+            }
+        }
+
+        // 更新资源库名称（仅自定义库）
+        function updateLibraryName(key, newName) {
+            const name = (newName || '').trim();
+            if (!name) {
+                showToast('资源库名称不能为空', 'warning');
+                return;
+            }
+            
+            // 防止重名
+            if (Object.values(categoryNames).includes(name)) {
+                showToast('该名称已被其他资源库使用', 'warning');
+                // 重新渲染以恢复原值
+                const modal = document.querySelector('.fixed');
+                if (modal) renderLibraryManageList(modal);
+                return;
+            }
+            
+            categoryNames[key] = name;
+            saveCustomCategories();
+            renderCategoryNav();
+            updateCategoryCounts();
+            showToast('资源库名称已更新', 'success');
+        }
+
+        // 删除资源库（仅自定义库）
+        function deleteLibrary(key) {
+            const defaultKeys = ['image', 'material', 'case', 'knowledge', 'certificate', 'template'];
+            if (defaultKeys.includes(key)) {
+                showToast('系统内置资源库不可删除', 'warning');
+                return;
+            }
+            
+            const count = resourceData[key] ? resourceData[key].length : 0;
+            const confirmText = count > 0
+                ? `当前资源库中有 ${count} 条资源，删除后这些资源也会一并移除。确定要删除资源库「${categoryNames[key]}」吗？`
+                : `确定要删除资源库「${categoryNames[key]}」吗？`;
+            
+            if (!confirm(confirmText)) return;
+            
+            // 删除数据
+            delete categoryNames[key];
+            delete resourceData[key];
+            
+            saveCustomCategories();
+            saveResourceData();
+            
+            // 如果当前选中库被删了，切回默认库
+            if (currentCategory === key) {
+                currentCategory = 'image';
+                currentResources = [...(resourceData[currentCategory] || [])];
+            }
+            
+            renderCategoryNav();
+            updateCategoryCounts();
+            renderResources();
+            checkExpiryAlerts();
+            showToast('资源库已删除', 'success');
+            
+            // 重新渲染管理列表
+            const modal = document.querySelector('.fixed');
+            if (modal) {
+                renderLibraryManageList(modal);
+            }
+        }
+
+        // 查看到期资源（汇总所有资源库）
+        function viewExpiringResources() {
+            const items = window.expiringItems || [];
+            if (!items.length) {
+                showToast('当前暂无进入提醒区间的资源', 'info');
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                    <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800">即将到期的资源</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-xs text-gray-500">以下资源已进入各自的提前提醒区间（根据30天 / 6个月 / 1年的设置计算）。可点击“跳转到资源库”快速定位。</p>
+                        <div class="border border-gray-100 rounded-lg divide-y max-h-96 overflow-y-auto">
+                            ${items.map(item => {
+                                const daysLeft = Math.ceil((new Date(item.expiry) - new Date()) / (1000 * 60 * 60 * 24));
+                                return `
+                                <div class="px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">${categoryNames[item.category] || '未知库'}</span>
+                                            <span class="font-medium text-gray-800">${item.name}</span>
+                                        </div>
+                                        <div class="mt-1 text-xs text-gray-500 flex flex-wrap gap-3">
+                                            <span><i class="fas fa-calendar-alt mr-1"></i>有效期至 ${item.expiry}</span>
+                                            <span><i class="fas fa-bell mr-1"></i>${getReminderText(item.reminder) || '不提醒'}</span>
+                                            ${daysLeft >= 0 ? `<span><i class="fas fa-hourglass-half mr-1"></i>剩余约 ${daysLeft} 天</span>` : ''}
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 justify-end">
+                                        <button onclick="jumpToResource('${item.category}', ${item.id}); this.closest('.fixed').remove();" class="px-3 py-1.5 text-xs bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 flex items-center gap-1">
+                                            <i class="fas fa-arrow-right"></i>
+                                            跳转到资源库
+                                        </button>
+                                    </div>
+                                </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) modal.remove();
+            });
+        }
+
+        // 从提醒列表跳转到对应资源库
+        function jumpToResource(categoryKey, resourceId) {
+            // 切换左侧资源库
+            currentCategory = categoryKey;
+            currentResources = [...(resourceData[currentCategory] || [])];
+            renderCategoryNav();
+            updateCategoryCounts();
+            renderResources();
+            
+            // 滚动到资源列表
+            const list = document.getElementById('resourceList');
+            if (list) list.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
-

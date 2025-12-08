@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>对话式 AI 助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .message-user {
+            animation: slideInRight 0.3s ease;
+        }
+        .message-ai {
+            animation: slideInLeft 0.3s ease;
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .typing-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #9ca3af;
+            animation: typing 1.4s infinite;
+        }
+        .typing-indicator:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        .history-sidebar {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        .history-sidebar.open {
+            transform: translateX(0);
+        }
+        .history-item:hover {
+            background: #f3f4f6;
+        }
+        .history-item.active {
+            background: #eff6ff;
+            border-left: 3px solid #2563eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 历史对话侧边栏 -->
+    <div id="historySidebar" class="history-sidebar fixed right-0 top-0 h-full w-80 bg-white shadow-2xl z-50 flex flex-col">
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-800">历史对话</h2>
+            <button onclick="toggleHistorySidebar()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4">
+            <div id="historyList" class="space-y-2">
+                <!-- 历史对话列表将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        <div class="p-4 border-t border-gray-200">
+            <button onclick="newChat()" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                <i class="fas fa-plus mr-2"></i>新建对话
+            </button>
+        </div>
+    </div>
+    <!-- 遮罩层 -->
+    <div id="historyOverlay" onclick="toggleHistorySidebar()" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+    <section class="p-6 space-y-6 max-w-6xl mx-auto">
+        <!-- 顶部标题栏 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button onclick="navigateToPage('智能工具箱.html')" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-2xl font-semibold text-gray-800">对话式 AI 助手</h1>
+                        <p class="text-sm text-gray-500 mt-1">策略建议 / 材料补充 / 风险检查</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleHistorySidebar()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200">
+                        <i class="fas fa-history mr-2"></i>历史对话
+                    </button>
+                    <button onclick="newChat()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
+                        <i class="fas fa-plus mr-2"></i>新建对话
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 对话区域 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col" style="height: calc(100vh - 280px); min-height: 500px;">
+            <div id="chatMessages" class="flex-1 overflow-y-auto space-y-4 mb-4">
+                <!-- 欢迎消息 -->
+                <div class="message-ai flex gap-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-robot text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4">
+                            <p class="text-gray-800">您好！我是您的标书制作 AI 助手。我可以帮助您：</p>
+                            <ul class="mt-2 space-y-1 text-sm text-gray-600">
+                                <li>• 解答招标文件相关问题</li>
+                                <li>• 提供标书制作策略建议</li>
+                                <li>• 检查标书合规性和风险</li>
+                                <li>• 补充标书所需材料</li>
+                            </ul>
+                            <p class="mt-3 text-sm text-gray-500">请随时向我提问！</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 示例对话 -->
+                <div class="message-user flex gap-3 justify-end">
+                    <div class="flex-1 flex justify-end">
+                        <div class="bg-blue-600 text-white rounded-2xl rounded-tr-none p-4 max-w-[80%]">
+                            <p>本项目暗标要求是什么？</p>
+                        </div>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-user text-sm"></i>
+                    </div>
+                </div>
+
+                <div class="message-ai flex gap-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-robot text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4">
+                            <p class="text-gray-800">根据招标文件分析，本项目的暗标要求如下：</p>
+                            <ul class="mt-2 space-y-2 text-sm text-gray-600">
+                                <li>• <strong>格式要求：</strong>暗标部分需隐藏企业 logo、公司名称等标识信息</li>
+                                <li>• <strong>提交方式：</strong>暗标部分需单独提交电子版，文件名不得包含企业信息</li>
+                                <li>• <strong>内容要求：</strong>技术方案中不得出现任何可能识别投标人的信息</li>
+                                <li>• <strong>装订要求：</strong>暗标部分需单独装订，封面使用统一格式</li>
+                            </ul>
+                            <p class="mt-3 text-sm text-blue-600">
+                                <i class="fas fa-lightbulb mr-1"></i>
+                                建议：在制作暗标部分时，可以使用"投标人"或"我方"等中性表述替代公司名称。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 输入区域 -->
+            <div class="border-t border-gray-200 pt-4">
+                <div class="flex items-end gap-3">
+                    <div class="flex-1">
+                        <textarea 
+                            id="messageInput" 
+                            placeholder="输入您的问题..." 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                            rows="2"
+                            onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); }"
+                        ></textarea>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="sendMessage()" class="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition flex items-center gap-2">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>发送</span>
+                        </button>
+                        <button onclick="clearChat()" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition text-sm">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center gap-4 text-xs text-gray-500">
+                    <span><i class="fas fa-keyboard mr-1"></i>Enter 发送，Shift+Enter 换行</span>
+                    <span><i class="fas fa-magic mr-1"></i>支持多轮对话</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // 历史对话数据（模拟数据，实际应从服务器获取）
+        const historyChats = [
+            {
+                id: 1,
+                title: '暗标要求咨询',
+                preview: '本项目暗标要求是什么？',
+                time: '2024-12-20 14:30',
+                messages: [
+                    { type: 'user', content: '本项目暗标要求是什么？' },
+                    { type: 'ai', content: '根据招标文件分析，本项目的暗标要求如下：\n• 格式要求：暗标部分需隐藏企业 logo、公司名称等标识信息\n• 提交方式：暗标部分需单独提交电子版，文件名不得包含企业信息\n• 内容要求：技术方案中不得出现任何可能识别投标人的信息\n• 装订要求：暗标部分需单独装订，封面使用统一格式' }
+                ]
+            },
+            {
+                id: 2,
+                title: '评分标准分析',
+                preview: '如何提高技术方案评分？',
+                time: '2024-12-19 10:15',
+                messages: [
+                    { type: 'user', content: '如何提高技术方案评分？' },
+                    { type: 'ai', content: '要提高技术方案评分，建议关注以下几个方面：\n1. 充分理解评分标准，确保每个评分项都有对应内容\n2. 突出技术创新点和优势\n3. 提供详细的实施方案和保障措施\n4. 使用图表和可视化内容增强表现力' }
+                ]
+            },
+            {
+                id: 3,
+                title: '资质要求确认',
+                preview: '需要哪些企业资质？',
+                time: '2024-12-18 16:45',
+                messages: [
+                    { type: 'user', content: '需要哪些企业资质？' },
+                    { type: 'ai', content: '根据招标文件要求，本项目需要以下资质：\n• 营业执照\n• 相关行业资质证书\n• 安全生产许可证\n• ISO质量管理体系认证\n• 近三年类似项目业绩证明' }
+                ]
+            },
+            {
+                id: 4,
+                title: '标书格式规范',
+                preview: '标书格式有什么要求？',
+                time: '2024-12-17 09:20',
+                messages: [
+                    { type: 'user', content: '标书格式有什么要求？' },
+                    { type: 'ai', content: '标书格式要求包括：\n• 字体：正文使用宋体，标题使用黑体\n• 字号：正文小四号，标题根据层级调整\n• 行距：1.5倍行距\n• 页边距：上下2.5cm，左右3cm\n• 页码：页面底部居中\n• 装订：左侧装订，封面使用统一格式' }
+                ]
+            }
+        ];
+
+        let currentChatId = null;
+
+        // 初始化历史对话列表
+        function initHistoryList() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = historyChats.map(chat => {
+                const isActive = currentChatId === chat.id;
+                return `
+                    <div class="history-item p-3 rounded-lg cursor-pointer ${isActive ? 'active' : ''}" onclick="loadHistoryChat(${chat.id})">
+                        <div class="flex items-start justify-between mb-1">
+                            <p class="font-medium text-gray-800 text-sm">${chat.title}</p>
+                            <button onclick="event.stopPropagation(); deleteHistoryChat(${chat.id})" class="text-gray-400 hover:text-red-500 text-xs">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 truncate mb-1">${chat.preview}</p>
+                        <p class="text-xs text-gray-400">${chat.time}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 切换历史对话侧边栏
+        function toggleHistorySidebar() {
+            const sidebar = document.getElementById('historySidebar');
+            const overlay = document.getElementById('historyOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('hidden');
+        }
+
+        // 加载历史对话
+        function loadHistoryChat(chatId) {
+            const chat = historyChats.find(c => c.id === chatId);
+            if (!chat) return;
+
+            currentChatId = chatId;
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            // 清空当前对话
+            messagesContainer.innerHTML = '';
+            
+            // 加载历史消息
+            chat.messages.forEach(msg => {
+                if (msg.type === 'user') {
+                    const userMessage = document.createElement('div');
+                    userMessage.className = 'message-user flex gap-3 justify-end';
+                    userMessage.innerHTML = `
+                        <div class="flex-1 flex justify-end">
+                            <div class="bg-blue-600 text-white rounded-2xl rounded-tr-none p-4 max-w-[80%]">
+                                <p>${msg.content}</p>
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user text-sm"></i>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(userMessage);
+                } else {
+                    const aiMessage = document.createElement('div');
+                    aiMessage.className = 'message-ai flex gap-3';
+                    aiMessage.innerHTML = `
+                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-robot text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4">
+                                <p class="text-gray-800 whitespace-pre-line">${msg.content}</p>
+                            </div>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(aiMessage);
+                }
+            });
+            
+            // 滚动到底部
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // 更新历史列表的激活状态
+            initHistoryList();
+            
+            // 关闭侧边栏
+            toggleHistorySidebar();
+        }
+
+        // 删除历史对话
+        function deleteHistoryChat(chatId) {
+            if (confirm('确定要删除这条历史对话吗？')) {
+                const index = historyChats.findIndex(c => c.id === chatId);
+                if (index > -1) {
+                    historyChats.splice(index, 1);
+                    initHistoryList();
+                    
+                    // 如果删除的是当前对话，清空对话区域
+                    if (currentChatId === chatId) {
+                        currentChatId = null;
+                        const messagesContainer = document.getElementById('chatMessages');
+                        messagesContainer.innerHTML = `
+                            <div class="message-ai flex gap-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-robot text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4">
+                                        <p class="text-gray-800">对话已清空，我可以继续为您服务！</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            }
+        }
+
+        // 新建对话
+        function newChat() {
+            currentChatId = null;
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = `
+                <div class="message-ai flex gap-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-robot text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4">
+                            <p class="text-gray-800">您好！我是您的标书制作 AI 助手。我可以帮助您：</p>
+                            <ul class="mt-2 space-y-1 text-sm text-gray-600">
+                                <li>• 解答招标文件相关问题</li>
+                                <li>• 提供标书制作策略建议</li>
+                                <li>• 检查标书合规性和风险</li>
+                                <li>• 补充标书所需材料</li>
+                            </ul>
+                            <p class="mt-3 text-sm text-gray-500">请随时向我提问！</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 更新历史列表的激活状态
+            initHistoryList();
+            
+            // 如果侧边栏打开，关闭它
+            if (document.getElementById('historySidebar').classList.contains('open')) {
+                toggleHistorySidebar();
+            }
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('load', () => {
+            initHistoryList();
+        });
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            // 添加用户消息
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message-user flex gap-3 justify-end';
+            userMessage.innerHTML = `
+                <div class="flex-1 flex justify-end">
+                    <div class="bg-blue-600 text-white rounded-2xl rounded-tr-none p-4 max-w-[80%]">
+                        <p>${message}</p>
+                    </div>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-user text-sm"></i>
+                </div>
+            `;
+            messagesContainer.appendChild(userMessage);
+            input.value = '';
+            
+            // 滚动到底部
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // 显示AI正在输入
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'message-ai flex gap-3';
+            typingIndicator.id = 'typingIndicator';
+            typingIndicator.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-robot text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4">
+                        <div class="flex gap-1">
+                            <span class="typing-indicator"></span>
+                            <span class="typing-indicator"></span>
+                            <span class="typing-indicator"></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingIndicator);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // 模拟AI回复（实际应用中应该调用API）
+            setTimeout(() => {
+                typingIndicator.remove();
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'message-ai flex gap-3';
+                aiMessage.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-robot text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4">
+                            <p class="text-gray-800">我已经收到您的问题，正在为您分析中...</p>
+                            <p class="mt-2 text-sm text-gray-500">（这是演示页面，实际使用时将调用 AI 接口生成回复）</p>
+                        </div>
+                    </div>
+                `;
+                messagesContainer.appendChild(aiMessage);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1500);
+        }
+
+        function clearChat() {
+            if (confirm('确定要清空当前对话吗？')) {
+                currentChatId = null;
+                const messagesContainer = document.getElementById('chatMessages');
+                messagesContainer.innerHTML = `
+                    <div class="message-ai flex gap-3">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-robot text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4">
+                                <p class="text-gray-800">对话已清空，我可以继续为您服务！</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                initHistoryList();
+            }
+        }
+
+        function navigateToPage(page) {
+            try {
+                if (window.parent && window.parent.loadPage) {
+                    window.parent.loadPage(page, 'top');
+                } else if (window.top && window.top.loadPage) {
+                    window.top.loadPage(page, 'top');
+                } else {
+                    window.location.href = page;
+                }
+            } catch (e) {
+                console.error('跳转失败:', e);
+                window.location.href = page;
+            }
+        }
+    </script>
+</body>
+</html>
+

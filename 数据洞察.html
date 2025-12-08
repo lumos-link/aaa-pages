@@ -6,149 +6,212 @@
     <title>数据洞察</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .stat-card { transition: transform 0.2s ease; }
+        .stat-card:hover { transform: translateY(-2px); }
+    </style>
 </head>
 <body class="bg-gray-50">
-    <section class="p-6 space-y-6">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <section class="p-6 space-y-6 max-w-7xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
             <div>
                 <h1 class="text-2xl font-semibold text-gray-800">数据洞察</h1>
-                <p class="text-sm text-gray-500">回顾投标表现，洞察成功因子，AI 预测下一次胜率。</p>
-            </div>
-            <div class="flex items-center gap-3 text-sm">
-                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg"><i class="fas fa-chart-line mr-2"></i> 导出分析</button>
-                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg"><i class="fas fa-sync mr-2"></i> 更新数据</button>
+                <p class="text-sm text-gray-500">标书制作进度分析、工具使用统计、质量评审洞察。</p>
             </div>
         </div>
 
-        <div class="grid xl:grid-cols-3 gap-6">
-            <div class="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-gray-800">年度投标表现</h2>
-                    <span class="text-xs text-gray-400">2024.01 - 2024.12</span>
+        <!-- 核心数据概览 -->
+        <div class="grid lg:grid-cols-2 gap-4">
+            <div class="stat-card bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-gray-500">进行中的标书</span>
+                    <i class="fas fa-file-alt text-blue-500"></i>
                 </div>
-                <div class="grid grid-cols-3 gap-4 text-center text-sm">
-                    <div class="p-4 rounded-xl bg-blue-50">
-                        <p class="text-xs text-blue-500">提交标书</p>
-                        <p class="text-2xl font-bold text-blue-700 mt-1">64</p>
-                    </div>
-                    <div class="p-4 rounded-xl bg-green-50">
-                        <p class="text-xs text-green-500">中标率</p>
-                        <p class="text-2xl font-bold text-green-700 mt-1">38%</p>
-                    </div>
-                    <div class="p-4 rounded-xl bg-purple-50">
-                        <p class="text-xs text-purple-500">AI 生成章节</p>
-                        <p class="text-2xl font-bold text-purple-700 mt-1">412</p>
-                    </div>
-                </div>
-                <div class="mt-6">
-                    <p class="text-xs text-gray-400 mb-2">季度趋势</p>
-                    <div class="h-48 bg-gradient-to-b from-blue-50 to-white rounded-xl relative overflow-hidden">
-                        <div class="absolute inset-4 grid grid-cols-4 text-xs text-gray-400">
-                            <span>Q1</span><span>Q2</span><span>Q3</span><span>Q4</span>
-                        </div>
-                        <svg viewBox="0 0 400 160" class="absolute inset-0">
-                            <polyline fill="none" stroke="#2563eb" stroke-width="3" points="20,120 120,80 220,60 320,90"></polyline>
-                            <polyline fill="none" stroke="#34d399" stroke-width="3" points="20,140 120,100 220,70 320,60"></polyline>
-                        </svg>
-                    </div>
-                </div>
+                <p class="text-3xl font-bold text-gray-800" id="activeBids">24</p>
+                <p class="text-xs text-gray-400 mt-1">来自标书工厂</p>
             </div>
-
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-lg font-semibold text-gray-800">AI 预测胜率</h2>
-                    <span class="text-xs text-gray-400">模型版本 V3.2</span>
+            <div class="stat-card bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-gray-500">待处理评审问题</span>
+                    <i class="fas fa-exclamation-triangle text-red-500"></i>
                 </div>
-                <div class="space-y-3 text-sm">
-                    <div class="p-3 border border-gray-100 rounded-xl flex items-center justify-between">
-                        <div>
-                            <p class="font-semibold text-gray-800">智慧园区</p>
-                            <p class="text-xs text-gray-500">评分贴合度 93%</p>
-                        </div>
-                        <span class="text-lg font-bold text-green-600">78%</span>
-                    </div>
-                    <div class="p-3 border border-gray-100 rounded-xl flex items-center justify-between">
-                        <div>
-                            <p class="font-semibold text-gray-800">医院运维</p>
-                            <p class="text-xs text-gray-500">素材完整度 86%</p>
-                        </div>
-                        <span class="text-lg font-bold text-yellow-600">62%</span>
-                    </div>
-                    <div class="p-3 border border-gray-100 rounded-xl flex items-center justify-between">
-                        <div>
-                            <p class="font-semibold text-gray-800">轨道交通</p>
-                            <p class="text-xs text-gray-500">协同效率 71%</p>
-                        </div>
-                        <span class="text-lg font-bold text-orange-600">54%</span>
-                    </div>
-                </div>
-                <div class="text-xs text-gray-500 p-3 rounded-xl bg-gray-50 border border-dashed border-gray-200">
-                    <p class="font-semibold text-gray-800 mb-1">提升建议</p>
-                    <p>补齐“智慧运维”案例，可提升 6%；优化暗标格式，可提升 3%。</p>
-                </div>
+                <p class="text-3xl font-bold text-gray-800" id="reviewIssues">12</p>
+                <p class="text-xs text-gray-400 mt-1">需优先处理</p>
             </div>
         </div>
 
-        <div class="grid lg:grid-cols-2 gap-6">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-gray-800">失败原因洞察</h2>
-                    <span class="text-xs text-gray-400">近 10 份未中标</span>
-                </div>
-                <ul class="space-y-3 text-sm">
-                    <li class="flex items-center gap-3">
-                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
-                        <div class="flex-1">
-                            <p class="font-semibold text-gray-800">评分项扣分</p>
-                            <p class="text-xs text-gray-500">暗标未覆盖 3 项强制条款 · 占比 42%</p>
-                        </div>
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
-                        <div class="flex-1">
-                            <p class="font-semibold text-gray-800">企业资质缺口</p>
-                            <p class="text-xs text-gray-500">缺少最新安全生产许可证 · 占比 28%</p>
-                        </div>
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                        <div class="flex-1">
-                            <p class="font-semibold text-gray-800">价格策略</p>
-                            <p class="text-xs text-gray-500">报价高于平均 6.2% · 占比 18%</p>
-                        </div>
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <span class="w-2 h-2 rounded-full bg-gray-400"></span>
-                        <div class="flex-1">
-                            <p class="font-semibold text-gray-800">其他</p>
-                            <p class="text-xs text-gray-500">格式、排版、材料延迟 · 占比 12%</p>
-                        </div>
-                    </li>
-                </ul>
+        <!-- 评审问题分析 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">评审问题分析</h2>
+                <span class="text-xs text-gray-400">数据来源：标书评审功能</span>
             </div>
+            <div class="grid md:grid-cols-3 gap-4 mb-4">
+                <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-700">高风险问题</span>
+                        <span class="text-2xl font-bold text-red-600" id="highRiskCount">3</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">需立即处理</p>
+                </div>
+                <div class="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-700">中风险问题</span>
+                        <span class="text-2xl font-bold text-orange-600" id="mediumRiskCount">5</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">建议尽快处理</p>
+                </div>
+                <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-700">低风险问题</span>
+                        <span class="text-2xl font-bold text-green-600" id="lowRiskCount">4</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">可后续优化</p>
+                </div>
+            </div>
+            <div class="space-y-2" id="reviewAnalysis">
+                <!-- 评审问题将通过JavaScript动态生成 -->
+            </div>
+        </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-gray-800">AI 洞察摘要</h2>
-                    <span class="text-xs text-gray-400">自动生成</span>
-                </div>
-                <div class="space-y-3 text-sm text-gray-600">
-                    <div class="p-3 border border-gray-100 rounded-xl">
-                        <p class="text-xs text-gray-400 mb-1">趋势 01</p>
-                        <p class="text-gray-800">“智慧城市 + 绿色节能”项目需求显著增长，需提前准备相关案例。</p>
-                    </div>
-                    <div class="p-3 border border-gray-100 rounded-xl">
-                        <p class="text-xs text-gray-400 mb-1">趋势 02</p>
-                        <p class="text-gray-800">协同效率直接影响评分，平均每增加 1 位协作者可提升 2% 胜率。</p>
-                    </div>
-                    <div class="p-3 border border-gray-100 rounded-xl">
-                        <p class="text-xs text-gray-400 mb-1">趋势 03</p>
-                        <p class="text-gray-800">AI 生图使用率持续上升，占比 63%，显著提升视觉得分。</p>
-                    </div>
-                </div>
+        <!-- 当前标书项目 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">当前标书项目</h2>
+                <span class="text-xs text-gray-400">数据来源：标书工厂</span>
+            </div>
+            <div class="grid md:grid-cols-3 gap-4" id="currentProjects">
+                <!-- 项目卡片将通过JavaScript动态生成 -->
             </div>
         </div>
     </section>
+
+    <script>
+        // 从标书工厂页面获取的数据
+        const bidFactoryData = {
+            activeBids: 24,
+            projects: [
+                {
+                    name: '智慧城市平台建设',
+                    step: 1,
+                    progress: 85,
+                    status: '招标解读',
+                    detail: '评分项分析 85%',
+                    aiSuggestions: 3,
+                    color: 'blue'
+                },
+                {
+                    name: '市政道路工程投标',
+                    step: 3,
+                    progress: 50,
+                    status: '标书编写',
+                    detail: '章节 4/8 完成',
+                    pendingChapters: 4,
+                    color: 'purple'
+                },
+                {
+                    name: '医疗信息化运维项目',
+                    step: 2,
+                    progress: 45,
+                    status: '标书设置',
+                    detail: '目录结构待完善',
+                    missingInfo: 1,
+                    color: 'orange'
+                }
+            ],
+            processRadar: {
+                interpret: 85,
+                setup: 45,
+                write: 62
+            }
+        };
+
+        // 从智能工具箱获取的数据
+        const toolboxData = {
+            aiChat: { count: 156, description: '对话轮次' },
+            review: { issues: 12, highRisk: 3, mediumRisk: 5, lowRisk: 4 },
+            table: { count: 28, description: '生成表格数' },
+            image: { count: 42, description: '生成图片数' }
+        };
+
+        // 初始化页面数据
+        function initData() {
+            // 显示核心数据
+            document.getElementById('activeBids').textContent = bidFactoryData.activeBids;
+            document.getElementById('reviewIssues').textContent = toolboxData.review.issues;
+
+            // 显示评审问题统计
+            document.getElementById('highRiskCount').textContent = toolboxData.review.highRisk;
+            document.getElementById('mediumRiskCount').textContent = toolboxData.review.mediumRisk;
+            document.getElementById('lowRiskCount').textContent = toolboxData.review.lowRisk;
+
+            // 生成当前项目卡片
+            renderCurrentProjects();
+            
+            // 生成评审问题分析
+            renderReviewAnalysis();
+        }
+
+        function renderCurrentProjects() {
+            const container = document.getElementById('currentProjects');
+            const issueCounts = { 0: 2, 1: 5, 2: 3 }; // 对应项目的待处理问题数
+            
+            container.innerHTML = bidFactoryData.projects.map((project, index) => {
+                const colorClasses = {
+                    blue: 'bg-blue-50 border-blue-200 text-blue-600',
+                    purple: 'bg-purple-50 border-purple-200 text-purple-600',
+                    orange: 'bg-orange-50 border-orange-200 text-orange-600'
+                };
+                const issues = issueCounts[index];
+                
+                return `
+                    <div class="border-2 ${colorClasses[project.color]} rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="font-semibold text-gray-800">${project.name}</p>
+                            ${issues > 0 ? `<span class="px-2 py-1 bg-red-100 text-red-600 rounded text-xs font-medium">${issues} 个问题</span>` : ''}
+                        </div>
+                        <p class="text-sm text-gray-600 mb-3">${project.status} · 进度 ${project.progress}%</p>
+                        <div class="space-y-1 text-xs text-gray-500">
+                            ${project.aiSuggestions ? `<div class="flex items-center gap-2"><i class="fas fa-lightbulb text-blue-500"></i><span>AI建议 ${project.aiSuggestions} 条</span></div>` : ''}
+                            ${project.pendingChapters ? `<div class="flex items-center gap-2"><i class="fas fa-edit text-orange-500"></i><span>待编写 ${project.pendingChapters} 个章节</span></div>` : ''}
+                            ${project.missingInfo ? `<div class="flex items-center gap-2"><i class="fas fa-exclamation-triangle text-red-500"></i><span>缺少信息 ${project.missingInfo} 项</span></div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderReviewAnalysis() {
+            const container = document.getElementById('reviewAnalysis');
+            const issues = [
+                { type: '格式规范', count: 5, risk: 'high', icon: 'fas fa-exclamation-triangle' },
+                { type: '内容缺失', count: 3, risk: 'medium', icon: 'fas fa-file-alt' },
+                { type: '编号规范', count: 4, risk: 'low', icon: 'fas fa-list-ol' }
+            ];
+            
+            container.innerHTML = issues.map(issue => {
+                const riskColors = {
+                    high: 'text-red-600 bg-red-50 border-red-200',
+                    medium: 'text-orange-600 bg-orange-50 border-orange-200',
+                    low: 'text-green-600 bg-green-50 border-green-200'
+                };
+                return `
+                    <div class="flex items-center justify-between p-3 border ${riskColors[issue.risk].split(' ')[2]} rounded-lg bg-white">
+                        <div class="flex items-center gap-3">
+                            <i class="${issue.icon} ${riskColors[issue.risk]} w-8 h-8 rounded-lg flex items-center justify-center"></i>
+                            <div>
+                                <p class="font-medium text-gray-800">${issue.type}</p>
+                                <p class="text-xs text-gray-500">${issue.count} 个问题</p>
+                            </div>
+                        </div>
+                        <span class="text-sm font-semibold ${riskColors[issue.risk].split(' ')[0]}">${issue.count}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 页面加载时初始化数据
+        window.addEventListener('load', initData);
+    </script>
 </body>
 </html>
-
