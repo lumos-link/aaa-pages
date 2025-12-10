@@ -54,6 +54,7 @@
                 <div class="border-b border-gray-200">
                     <div class="flex gap-2 overflow-x-auto">
                         <button class="tab-btn active px-4 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-600 whitespace-nowrap" data-tab="overview">项目概述</button>
+                        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="rejection">废标项</button>
                         <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="hidden">暗标要求</button>
                         <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="score">评分要求</button>
                         <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="format">响应文件格式</button>
@@ -67,6 +68,54 @@
                         <p class="mb-3">建设"城市运行数字底座"，包含感知、平台、应用三层架构，合同期 24 个月。</p>
                         <p class="font-semibold text-gray-800 mb-2">项目目标</p>
                         <p>实现城市运行数据的实时采集、分析和展示，为城市管理者提供科学决策支持。</p>
+                    </div>
+                </div>
+                <div class="tab-content hidden" id="tab-rejection">
+                    <div class="p-4 rounded-xl bg-red-50 border-2 border-red-200 text-sm text-gray-700">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            <p class="font-semibold text-red-800">废标条件（必须严格遵守）</p>
+                        </div>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2 p-2 bg-white rounded-lg border-l-4 border-red-500">
+                                <i class="fas fa-times-circle text-red-500 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">投标文件未按要求签字盖章</p>
+                                    <p class="text-xs text-gray-600 mt-1">投标函、法定代表人身份证明等文件必须加盖公章并由法定代表人签字</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-2 p-2 bg-white rounded-lg border-l-4 border-red-500">
+                                <i class="fas fa-times-circle text-red-500 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">投标报价超过最高限价</p>
+                                    <p class="text-xs text-gray-600 mt-1">项目最高限价为 500 万元，超过此价格将直接废标</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-2 p-2 bg-white rounded-lg border-l-4 border-red-500">
+                                <i class="fas fa-times-circle text-red-500 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">未提供有效的企业资质证书</p>
+                                    <p class="text-xs text-gray-600 mt-1">必须提供有效期内的营业执照、相关行业资质证书等</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-2 p-2 bg-white rounded-lg border-l-4 border-red-500">
+                                <i class="fas fa-times-circle text-red-500 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">投标文件未按指定格式提交</p>
+                                    <p class="text-xs text-gray-600 mt-1">必须按照招标文件要求的格式、装订方式提交，否则视为无效投标</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-2 p-2 bg-white rounded-lg border-l-4 border-red-500">
+                                <i class="fas fa-times-circle text-red-500 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">投标保证金未按时缴纳</p>
+                                    <p class="text-xs text-gray-600 mt-1">投标保证金 10 万元需在投标截止时间前到账，否则视为无效投标</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="mt-4 p-3 bg-red-100 rounded-lg border border-red-200">
+                            <p class="text-xs text-red-800 font-semibold"><i class="fas fa-info-circle mr-1"></i>提示：以上任何一项不符合要求，将直接导致投标被拒绝，请务必仔细检查</p>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-content hidden" id="tab-hidden">
