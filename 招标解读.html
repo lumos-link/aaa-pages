@@ -48,10 +48,23 @@
 
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-lg font-semibold text-gray-800">AI 解析摘要</h2>
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-800">AI 解析摘要</h2>
+                        <p id="currentPackageLabel" class="mt-1 text-xs text-gray-400">当前包：包一 · 平台建设</p>
+                    </div>
                     <span class="text-xs text-gray-400">自动生成</span>
                 </div>
-                <div class="border-b border-gray-200">
+
+                <!-- 包级页签：根据解析出的包动态生成，这里用示例数据展示 -->
+                <div class="mt-3 border-b border-gray-100 pb-2">
+                    <div class="flex gap-2 overflow-x-auto text-xs">
+                        <button class="pkg-tab active px-3 py-1.5 rounded-full bg-blue-50 text-blue-600 font-medium whitespace-nowrap" data-pkg="pkg1">包一 · 平台建设</button>
+                        <button class="pkg-tab px-3 py-1.5 rounded-full bg-gray-50 text-gray-500 whitespace-nowrap" data-pkg="pkg2">包二 · 运维服务</button>
+                        <button class="pkg-tab px-3 py-1.5 rounded-full bg-gray-50 text-gray-500 whitespace-nowrap" data-pkg="pkg3">包三 · 备选方案</button>
+                    </div>
+                </div>
+
+                <div class="border-b border-gray-200 mt-2">
                     <div class="flex gap-2 overflow-x-auto">
                         <button class="tab-btn active px-4 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-600 whitespace-nowrap" data-tab="overview">项目概述</button>
                         <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="rejection">废标项</button>
@@ -281,6 +294,35 @@
                     content.classList.add('hidden');
                 });
                 document.getElementById('tab-' + tabId).classList.remove('hidden');
+            });
+        });
+
+        // 包级页签交互（多包场景示例）
+        const packageNames = {
+            pkg1: '包一 · 平台建设',
+            pkg2: '包二 · 运维服务',
+            pkg3: '包三 · 备选方案'
+        };
+
+        const pkgTabs = document.querySelectorAll('.pkg-tab');
+        const currentPackageLabel = document.getElementById('currentPackageLabel');
+
+        pkgTabs.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const pkgId = this.getAttribute('data-pkg');
+
+                // 切换包级 tab 的选中样式
+                pkgTabs.forEach(b => {
+                    b.classList.remove('active', 'bg-blue-50', 'text-blue-600', 'font-medium');
+                    b.classList.add('bg-gray-50', 'text-gray-500');
+                });
+                this.classList.add('active', 'bg-blue-50', 'text-blue-600', 'font-medium');
+                this.classList.remove('bg-gray-50', 'text-gray-500');
+
+                // 更新当前包展示文案（实际接入时可切换为对应包的解析数据）
+                if (currentPackageLabel && packageNames[pkgId]) {
+                    currentPackageLabel.textContent = '当前包：' + packageNames[pkgId];
+                }
             });
         });
     </script>

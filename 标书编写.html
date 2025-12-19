@@ -51,6 +51,20 @@
             border-color: #3b82f6;
             background-color: #eff6ff;
         }
+        .typing-indicator {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #9ca3af;
+            animation: typing 1.4s infinite;
+        }
+        .typing-indicator:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -77,48 +91,67 @@
 
         <div class="grid lg:grid-cols-[280px_1fr] gap-6">
             <div class="space-y-4">
+                <!-- 编写情况（可收起） -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="flex items-center justify-between p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-50" onclick="toggleWritingStatus()">
+                        <h2 class="text-sm font-semibold text-gray-800">编写情况</h2>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-500" id="statusUpdateTime">刚刚</span>
+                            <button class="text-xs text-gray-400 hover:text-gray-600" id="statusToggleBtn">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="writingStatusContent" class="p-4 space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="text-center p-2 bg-blue-50 rounded-lg">
+                                <div class="text-xl font-bold text-blue-600" id="totalChapters">0</div>
+                                <div class="text-[10px] text-gray-600 mt-1">总章节数</div>
+                            </div>
+                            <div class="text-center p-2 bg-green-50 rounded-lg">
+                                <div class="text-xl font-bold text-green-600" id="completedChapters">0</div>
+                                <div class="text-[10px] text-gray-600 mt-1">已完成</div>
+                            </div>
+                            <div class="text-center p-2 bg-yellow-50 rounded-lg">
+                                <div class="text-xl font-bold text-yellow-600" id="writingChapters">0</div>
+                                <div class="text-[10px] text-gray-600 mt-1">编写中</div>
+                            </div>
+                            <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                <div class="text-xl font-bold text-gray-600" id="pendingChapters">0</div>
+                                <div class="text-[10px] text-gray-600 mt-1">未开始</div>
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-200 pt-3">
+                            <div class="flex items-center justify-between text-xs mb-2">
+                                <span class="text-gray-600">整体进度</span>
+                                <span class="font-semibold text-gray-800" id="progressPercent">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-blue-600 h-1.5 rounded-full transition-all" id="progressBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
                     <div class="flex items-center justify-between mb-3">
                         <h2 class="text-sm font-semibold text-gray-800">章节结构</h2>
                         <button class="text-xs text-blue-600"><i class="fas fa-sync mr-1"></i> 刷新</button>
                     </div>
-                    <div id="chapterTree" class="space-y-1 text-sm max-h-96 overflow-y-auto">
+                    <div id="chapterTree" class="space-y-1 text-sm max-h-[calc(100vh-400px)] overflow-y-auto">
                         <!-- 章节结构将动态生成 -->
                     </div>
                 </div>
             </div>
 
-            <div class="space-y-6">
-                <div id="writingStatus" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-semibold text-gray-800">编写情况</h2>
-                        <span class="text-xs text-gray-500">最后更新：刚刚</span>
-                    </div>
-                    <div class="grid md:grid-cols-4 gap-4 mb-4">
-                        <div class="text-center p-3 bg-blue-50 rounded-lg">
-                            <div class="text-2xl font-bold text-blue-600" id="totalChapters">0</div>
-                            <div class="text-xs text-gray-600 mt-1">总章节数</div>
-                        </div>
-                        <div class="text-center p-3 bg-green-50 rounded-lg">
-                            <div class="text-2xl font-bold text-green-600" id="completedChapters">0</div>
-                            <div class="text-xs text-gray-600 mt-1">已完成</div>
-                        </div>
-                        <div class="text-center p-3 bg-yellow-50 rounded-lg">
-                            <div class="text-2xl font-bold text-yellow-600" id="writingChapters">0</div>
-                            <div class="text-xs text-gray-600 mt-1">编写中</div>
-                        </div>
-                        <div class="text-center p-3 bg-gray-50 rounded-lg">
-                            <div class="text-2xl font-bold text-gray-600" id="pendingChapters">0</div>
-                            <div class="text-xs text-gray-600 mt-1">未开始</div>
-                        </div>
-                    </div>
-                    <div class="border-t border-gray-200 pt-4">
-                        <div class="flex items-center justify-between text-sm mb-2">
-                            <span class="text-gray-600">整体进度</span>
-                            <span class="font-semibold text-gray-800" id="progressPercent">0%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-600 h-2 rounded-full transition-all" id="progressBar" style="width: 0%"></div>
+            <div class="space-y-4">
+                <!-- 标书名称显示 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-file-alt text-purple-600"></i>
+                        <div>
+                            <p class="text-xs text-gray-500">当前标书</p>
+                            <h2 class="text-base font-semibold text-gray-800" id="bidName">城市运行数字底座建设项目</h2>
                         </div>
                     </div>
                 </div>
@@ -150,34 +183,63 @@
                     </div>
 
                     <div class="border border-gray-200 rounded-lg">
-                        <div class="flex items-center gap-2 p-3 border-b border-gray-200 bg-gray-50 flex-wrap">
-                            <button onclick="showToolPanel('ai-write')" class="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs flex items-center gap-1 hover:bg-purple-700">
-                                <i class="fas fa-magic"></i> AI生成
-                            </button>
-                            <button onclick="showToolPanel('ai-rewrite')" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
-                                <i class="fas fa-edit"></i> 重写
-                            </button>
-                            <button onclick="showToolPanel('ai-expand')" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
-                                <i class="fas fa-expand"></i> 扩写
-                            </button>
-                            <button onclick="showToolPanel('ai-polish')" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
-                                <i class="fas fa-spell-check"></i> 润色
-                            </button>
-                            <div class="w-px h-4 bg-gray-300"></div>
-                            <button onclick="showToolPanel('image-lib')" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
-                                <i class="fas fa-images"></i> 图片库
-                            </button>
-                            <button onclick="showToolPanel('company-lib')" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
-                                <i class="fas fa-building"></i> 企业档案
-                            </button>
-                            <button onclick="showToolPanel('format')" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
-                                <i class="fas fa-paint-brush"></i> 格式
-                            </button>
-                            <button onclick="showToolPanel('ai-image')" class="px-3 py-1.5 bg-white border border-orange-200 text-orange-600 rounded-lg text-xs flex items-center gap-1 hover:bg-orange-50">
-                                <i class="fas fa-image"></i> AI生图
+                        <div class="flex items-center gap-2 p-3 border-b border-gray-200 bg-gray-50">
+                            <button onclick="showResourcePanel()" class="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs flex items-center gap-1 hover:bg-purple-700">
+                                <i class="fas fa-plus"></i> 插入资源
                             </button>
                         </div>
                         <textarea id="chapterContent" class="w-full h-96 p-4 border-none focus:outline-none resize-none text-sm text-gray-700" placeholder="请先选择章节，或使用工具栏中的工具辅助编写..." oninput="updateChapterContent()"></textarea>
+                    </div>
+                </div>
+
+                <!-- AI对话助手（移到右侧下方） -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="flex items-center justify-between p-3 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-blue-50 cursor-pointer hover:bg-gradient-to-r hover:from-purple-100 hover:to-blue-100" onclick="toggleChatPanel()">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-gray-800">AI 内容助手</h3>
+                            <span class="text-xs text-gray-500">点击展开/收起</span>
+                        </div>
+                        <button class="text-xs text-gray-500 hover:text-gray-700" id="chatToggleBtn">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div id="chatContent" class="flex flex-col" style="display: none;">
+                        <div id="chatMessages" class="flex-1 overflow-y-auto p-3 space-y-3 text-xs" style="max-height: 300px;">
+                            <div class="flex gap-2">
+                                <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 text-[10px]">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="bg-gray-50 rounded-lg rounded-tl-none p-2 text-gray-700">
+                                        <p>我可以帮您：修改内容、调整语气、补充细节、优化表达等。直接告诉我您的需求即可！</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-200 p-3">
+                            <div class="flex items-end gap-2">
+                                <div class="flex-1 relative">
+                                    <textarea 
+                                        id="chatInput" 
+                                        placeholder="例如：把这段改得更专业一些..." 
+                                        class="w-full px-2 py-1.5 pr-8 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+                                        rows="2"
+                                        onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }"
+                                    ></textarea>
+                                    <button onclick="showChapterSelector()" class="absolute right-2 bottom-2 text-gray-400 hover:text-purple-600 text-xs" title="选择章节">
+                                        <i class="fas fa-at"></i>
+                                    </button>
+                                </div>
+                                <button onclick="sendChatMessage()" class="px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-xs flex items-center gap-1">
+                                    <i class="fas fa-paper-plane text-[10px]"></i>
+                                    <span>发送</span>
+                                </button>
+                            </div>
+                            <p class="text-[10px] text-gray-400 mt-1 ml-1">Enter 发送，Shift+Enter 换行，@ 选择章节</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -623,6 +685,48 @@
         </div>
     </div>
 
+    <!-- 章节选择器模态框 -->
+    <div id="chapterSelectorModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-4 max-w-md w-full max-h-[80vh] flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-semibold text-gray-800">选择章节</h3>
+                <button onclick="closeChapterSelector()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="mb-3">
+                <input type="text" id="chapterSearchInput" placeholder="搜索章节..." 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                       oninput="searchChapters(this.value)">
+            </div>
+            <div id="chapterSelectorList" class="flex-1 overflow-y-auto space-y-1 text-xs">
+                <!-- 章节列表将动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 插入资源面板 -->
+    <div id="resourcePanel" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">插入资源</h3>
+                <button onclick="closeResourcePanel()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="flex gap-2 mb-4 text-sm">
+                <button onclick="switchResourceTab('image')" class="resource-tab-btn px-4 py-2 bg-blue-600 text-white rounded-lg" data-tab="image">
+                    <i class="fas fa-images mr-2"></i>图片库
+                </button>
+                <button onclick="switchResourceTab('company')" class="resource-tab-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200" data-tab="company">
+                    <i class="fas fa-building mr-2"></i>企业档案
+                </button>
+                <button onclick="switchResourceTab('knowledge')" class="resource-tab-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200" data-tab="knowledge">
+                    <i class="fas fa-book mr-2"></i>知识库
+                </button>
+            </div>
+            <div id="resourceContent" class="flex-1 overflow-y-auto">
+                <!-- 资源内容将动态加载 -->
+            </div>
+        </div>
+    </div>
+
     <script>
         // 存储键名
         const STORAGE_KEY = 'bidding_draft_data';
@@ -640,6 +744,9 @@
         window.addEventListener('load', function() {
             // 恢复保存的数据
             restoreSavedData();
+            
+            // 加载标书名称
+            loadBidName();
             
             loadCatalogStructure();
             updateWritingStatus();
@@ -717,6 +824,25 @@
                 }
             } catch (e) {
                 console.error('恢复数据失败:', e);
+            }
+        }
+
+        // 加载标书名称
+        function loadBidName() {
+            try {
+                const savedSettings = localStorage.getItem(STORAGE_SETTINGS_KEY);
+                if (savedSettings) {
+                    const settings = JSON.parse(savedSettings);
+                    if (settings.bookTitle) {
+                        document.getElementById('bidName').textContent = settings.bookTitle;
+                        return;
+                    }
+                }
+                // 如果没有保存的设置，使用默认值
+                document.getElementById('bidName').textContent = '城市运行数字底座建设项目';
+            } catch (e) {
+                console.error('加载标书名称失败:', e);
+                document.getElementById('bidName').textContent = '城市运行数字底座建设项目';
             }
         }
         
@@ -1059,6 +1185,32 @@
             const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
             document.getElementById('progressPercent').textContent = progress + '%';
             document.getElementById('progressBar').style.width = progress + '%';
+            
+            // 更新最后更新时间
+            const updateTimeEl = document.getElementById('statusUpdateTime');
+            if (updateTimeEl) {
+                updateTimeEl.textContent = '刚刚';
+            }
+        }
+
+        // 编写情况收起/展开功能
+        let writingStatusCollapsed = false;
+        function toggleWritingStatus() {
+            const content = document.getElementById('writingStatusContent');
+            const toggleBtn = document.getElementById('statusToggleBtn');
+            const icon = toggleBtn.querySelector('i');
+            
+            writingStatusCollapsed = !writingStatusCollapsed;
+            
+            if (writingStatusCollapsed) {
+                content.style.display = 'none';
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            } else {
+                content.style.display = 'block';
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            }
         }
         
         function showToolPanel(toolName) {
@@ -1858,6 +2010,420 @@
             if (clearBtn) clearBtn.classList.add('hidden');
             if (resultCount) resultCount.classList.add('hidden');
         }
+
+        // AI对话助手功能
+        let chatPanelCollapsed = true; // 默认收起
+        let chatMessages = [];
+
+        function toggleChatPanel() {
+            const chatContent = document.getElementById('chatContent');
+            const toggleBtn = document.getElementById('chatToggleBtn');
+            const icon = toggleBtn.querySelector('i');
+            
+            chatPanelCollapsed = !chatPanelCollapsed;
+            
+            if (chatPanelCollapsed) {
+                chatContent.style.display = 'none';
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            } else {
+                chatContent.style.display = 'flex';
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+                // 自动滚动到底部
+                setTimeout(() => {
+                    const messagesContainer = document.getElementById('chatMessages');
+                    if (messagesContainer) {
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                }, 100);
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            if (!window.currentChapterId) {
+                showToast('请先选择章节', 'warning');
+                return;
+            }
+
+            // 检查是否有@章节引用
+            const atMentions = message.match(/@[^@\s]+/g);
+            let processedMessage = message;
+            
+            if (atMentions) {
+                // 提取@的章节名称，可以在处理时使用
+                atMentions.forEach(mention => {
+                    const chapterName = mention.substring(1);
+                    // 可以在这里添加章节引用的处理逻辑
+                });
+            }
+
+            // 添加用户消息
+            addChatMessage('user', message);
+            input.value = '';
+
+            // 显示AI思考中
+            const thinkingId = addChatMessage('ai', '', true);
+
+            // 模拟AI处理（实际应该调用后端API）
+            setTimeout(() => {
+                processChatRequest(message, thinkingId);
+            }, 1000);
+        }
+
+        function addChatMessage(role, content, isThinking = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageId = 'msg-' + Date.now();
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.id = messageId;
+            messageDiv.className = `flex gap-2 ${role === 'user' ? 'flex-row-reverse' : ''}`;
+            
+            if (isThinking) {
+                messageDiv.innerHTML = `
+                    <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 text-[10px]">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="bg-gray-50 rounded-lg ${role === 'user' ? 'rounded-tr-none' : 'rounded-tl-none'} p-2 text-gray-500">
+                            <div class="flex items-center gap-1">
+                                <span class="typing-indicator"></span>
+                                <span class="typing-indicator"></span>
+                                <span class="typing-indicator"></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="w-5 h-5 rounded-full ${role === 'user' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'} flex items-center justify-center flex-shrink-0 text-[10px]">
+                        <i class="fas ${role === 'user' ? 'fa-user' : 'fa-robot'}"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="bg-${role === 'user' ? 'purple' : 'gray'}-50 rounded-lg ${role === 'user' ? 'rounded-tr-none' : 'rounded-tl-none'} p-2 text-gray-700">
+                            ${content}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            chatMessages.push({ role, content, id: messageId });
+            return messageId;
+        }
+
+        function updateChatMessage(messageId, content, showActions = false) {
+            const messageDiv = document.getElementById(messageId);
+            if (!messageDiv) return;
+
+            const contentDiv = messageDiv.querySelector('.bg-gray-50, .bg-purple-50');
+            if (contentDiv) {
+                contentDiv.className = contentDiv.className.replace(/bg-\w+-50/, 'bg-gray-50');
+                contentDiv.innerHTML = content;
+                
+                if (showActions) {
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'mt-2 flex gap-2';
+                    actionsDiv.innerHTML = `
+                        <button onclick="applyChatSuggestion('${messageId}')" class="px-2 py-1 bg-blue-600 text-white rounded text-[10px] hover:bg-blue-700">
+                            <i class="fas fa-check mr-1"></i>应用修改
+                        </button>
+                        <button onclick="regenerateChatSuggestion('${messageId}')" class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-[10px] hover:bg-gray-200">
+                            <i class="fas fa-redo mr-1"></i>重新生成
+                        </button>
+                    `;
+                    contentDiv.appendChild(actionsDiv);
+                }
+            }
+        }
+
+        function processChatRequest(userMessage, thinkingId) {
+            const editor = document.getElementById('chapterContent');
+            const currentContent = editor.value || '';
+            const chapterTitle = document.getElementById('currentChapter').textContent;
+
+            // 简单的意图识别（实际应该使用更复杂的NLP）
+            let response = '';
+            let modifiedContent = '';
+            let shouldModify = false;
+
+            const lowerMessage = userMessage.toLowerCase();
+            
+            if (lowerMessage.includes('改') || lowerMessage.includes('修改') || lowerMessage.includes('调整')) {
+                shouldModify = true;
+                if (lowerMessage.includes('专业') || lowerMessage.includes('正式')) {
+                    modifiedContent = currentContent.replace(/。/g, '。').replace(/，/g, '，');
+                    modifiedContent = modifiedContent.split('\n').map(line => {
+                        if (line.trim()) {
+                            return line.trim() + '。';
+                        }
+                        return line;
+                    }).join('\n');
+                    response = '已为您将内容调整为更专业的表达方式：';
+                } else if (lowerMessage.includes('简洁') || lowerMessage.includes('简短')) {
+                    modifiedContent = currentContent.split('\n').filter(line => line.trim().length > 10).join('\n');
+                    response = '已为您精简内容，保留核心要点：';
+                } else if (lowerMessage.includes('详细') || lowerMessage.includes('补充')) {
+                    modifiedContent = currentContent + '\n\n【补充说明】\n' + 
+                        '本项目在实施过程中，将严格按照相关技术标准和规范执行，确保项目质量和进度。';
+                    response = '已为您补充详细说明：';
+                } else {
+                    // 通用修改
+                    modifiedContent = currentContent + '\n\n【已优化】\n' + 
+                        '以上内容已根据您的要求进行调整和优化。';
+                    response = '已根据您的要求修改内容：';
+                }
+            } else if (lowerMessage.includes('检查') || lowerMessage.includes('审查')) {
+                response = '检查结果：\n• 内容结构完整\n• 符合标书格式要求\n• 建议补充更多技术细节';
+                shouldModify = false;
+            } else if (lowerMessage.includes('建议') || lowerMessage.includes('推荐')) {
+                response = '建议：\n• 可以增加项目亮点描述\n• 建议补充实施时间表\n• 可添加风险控制措施说明';
+                shouldModify = false;
+            } else {
+                // 默认回复
+                response = '我理解您的需求。针对当前章节"' + chapterTitle + '"，我可以帮您：\n• 修改和优化内容\n• 调整语气和表达方式\n• 补充技术细节\n• 检查格式规范\n\n请告诉我具体需要如何调整？';
+                shouldModify = false;
+            }
+
+            // 更新消息
+            if (shouldModify && modifiedContent) {
+                updateChatMessage(thinkingId, response + '\n\n```\n' + modifiedContent.substring(0, 200) + (modifiedContent.length > 200 ? '...' : '') + '\n```', true);
+                // 保存建议的内容到消息数据中
+                const msg = chatMessages.find(m => m.id === thinkingId);
+                if (msg) {
+                    msg.suggestedContent = modifiedContent;
+                }
+            } else {
+                updateChatMessage(thinkingId, response, false);
+            }
+        }
+
+        function applyChatSuggestion(messageId) {
+            const message = chatMessages.find(m => m.id === messageId);
+            if (!message || !message.suggestedContent) {
+                showToast('未找到可应用的内容', 'warning');
+                return;
+            }
+
+            const editor = document.getElementById('chapterContent');
+            editor.value = message.suggestedContent;
+            updateChapterContent();
+            showToast('内容已应用', 'success');
+            
+            // 添加确认消息
+            addChatMessage('ai', '✓ 修改已应用到当前章节内容中');
+        }
+
+        function regenerateChatSuggestion(messageId) {
+            const message = chatMessages.find(m => m.id === messageId);
+            if (!message) return;
+
+            // 找到对应的用户消息
+            const userMsgIndex = chatMessages.findIndex(m => m.id === messageId) - 1;
+            if (userMsgIndex >= 0 && chatMessages[userMsgIndex].role === 'user') {
+                const userMessage = chatMessages[userMsgIndex].content;
+                updateChatMessage(messageId, '', true);
+                setTimeout(() => {
+                    processChatRequest(userMessage, messageId);
+                }, 500);
+            }
+        }
+
+        // 章节选择器功能
+        function showChapterSelector() {
+            const modal = document.getElementById('chapterSelectorModal');
+            const list = document.getElementById('chapterSelectorList');
+            
+            // 生成章节列表
+            list.innerHTML = '';
+            if (!window.catalogData || window.catalogData.length === 0) {
+                list.innerHTML = '<p class="text-center text-gray-400 py-4 text-xs">暂无章节</p>';
+            } else {
+                window.catalogData.forEach(chapter => {
+                    const chapterItem = document.createElement('div');
+                    chapterItem.className = 'p-2 hover:bg-gray-50 rounded cursor-pointer';
+                    chapterItem.onclick = () => selectChapterForChat(chapter.id, chapter.title);
+                    chapterItem.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-file-alt text-gray-400 text-xs"></i>
+                            <span class="text-gray-700">${chapter.title}</span>
+                        </div>
+                    `;
+                    list.appendChild(chapterItem);
+                    
+                    // 添加子章节
+                    if (chapter.children && chapter.children.length > 0) {
+                        chapter.children.forEach(sub => {
+                            const subItem = document.createElement('div');
+                            subItem.className = 'p-2 pl-6 hover:bg-gray-50 rounded cursor-pointer';
+                            subItem.onclick = () => selectChapterForChat(sub.id, sub.title);
+                            subItem.innerHTML = `
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-file text-gray-400 text-[10px]"></i>
+                                    <span class="text-gray-700">${sub.title}</span>
+                                </div>
+                            `;
+                            list.appendChild(subItem);
+                        });
+                    }
+                });
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeChapterSelector() {
+            document.getElementById('chapterSelectorModal').classList.add('hidden');
+            document.getElementById('chapterSearchInput').value = '';
+        }
+
+        function selectChapterForChat(chapterId, chapterTitle) {
+            const input = document.getElementById('chatInput');
+            const currentText = input.value;
+            const cursorPos = input.selectionStart || currentText.length;
+            
+            // 插入@章节引用
+            const beforeText = currentText.substring(0, cursorPos);
+            const afterText = currentText.substring(cursorPos);
+            const mention = `@${chapterTitle} `;
+            
+            input.value = beforeText + mention + afterText;
+            input.focus();
+            input.setSelectionRange(cursorPos + mention.length, cursorPos + mention.length);
+            
+            closeChapterSelector();
+        }
+
+        function searchChapters(keyword) {
+            const items = document.querySelectorAll('#chapterSelectorList > div');
+            keyword = keyword.toLowerCase().trim();
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(keyword) || keyword === '') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // 资源面板功能
+        function showResourcePanel() {
+            document.getElementById('resourcePanel').classList.remove('hidden');
+            switchResourceTab('image');
+        }
+
+        function closeResourcePanel() {
+            document.getElementById('resourcePanel').classList.add('hidden');
+        }
+
+        function switchResourceTab(tab) {
+            // 更新按钮状态
+            document.querySelectorAll('.resource-tab-btn').forEach(btn => {
+                if (btn.dataset.tab === tab) {
+                    btn.classList.remove('bg-gray-100', 'text-gray-700');
+                    btn.classList.add('bg-blue-600', 'text-white');
+                } else {
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                    btn.classList.add('bg-gray-100', 'text-gray-700');
+                }
+            });
+
+            const content = document.getElementById('resourceContent');
+            
+            if (tab === 'image') {
+                content.innerHTML = `
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="aspect-square bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-2 hover:border-blue-500 border-2 border-transparent" onclick="insertResource('image', '架构图1.jpg', '系统架构图')">
+                            <i class="fas fa-sitemap text-2xl text-blue-600 mb-2"></i>
+                            <span class="text-xs text-blue-700">架构图</span>
+                        </div>
+                        <div class="aspect-square bg-gradient-to-br from-green-100 to-green-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-2 hover:border-blue-500 border-2 border-transparent" onclick="insertResource('image', '流程图1.jpg', '业务流程图')">
+                            <i class="fas fa-project-diagram text-2xl text-green-600 mb-2"></i>
+                            <span class="text-xs text-green-700">流程图</span>
+                        </div>
+                        <div class="aspect-square bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-2 hover:border-blue-500 border-2 border-transparent" onclick="insertResource('image', '数据图1.jpg', '数据可视化')">
+                            <i class="fas fa-chart-bar text-2xl text-purple-600 mb-2"></i>
+                            <span class="text-xs text-purple-700">数据图</span>
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'company') {
+                content.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500" onclick="insertResource('company', '企业资质证书', '企业库 · 证件中心')">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i class="fas fa-certificate text-blue-600"></i>
+                                <p class="font-medium text-sm text-gray-800">企业资质证书</p>
+                            </div>
+                            <p class="text-xs text-gray-500">来源：企业库 · 证件中心</p>
+                        </div>
+                        <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500" onclick="insertResource('company', '智慧城市案例', '素材库 · 案例库')">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i class="fas fa-folder-open text-green-600"></i>
+                                <p class="font-medium text-sm text-gray-800">智慧城市案例</p>
+                            </div>
+                            <p class="text-xs text-gray-500">来源：素材库 · 案例库</p>
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'knowledge') {
+                content.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500" onclick="insertResource('knowledge', '智慧城市项目案例库', '知识库')">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i class="fas fa-book text-purple-600"></i>
+                                <p class="font-medium text-sm text-gray-800">智慧城市项目案例库</p>
+                            </div>
+                            <p class="text-xs text-gray-500">15个文件</p>
+                        </div>
+                        <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500" onclick="insertResource('knowledge', '技术标准知识库', '知识库')">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i class="fas fa-book text-purple-600"></i>
+                                <p class="font-medium text-sm text-gray-800">技术标准知识库</p>
+                            </div>
+                            <p class="text-xs text-gray-500">12个文件</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function insertResource(type, name, source) {
+            const editor = document.getElementById('chapterContent');
+            if (!window.currentChapterId) {
+                showToast('请先选择章节', 'warning');
+                return;
+            }
+
+            let insertText = '';
+            if (type === 'image') {
+                insertText = `\n[图片: ${name}]\n`;
+            } else if (type === 'company') {
+                insertText = `\n[引用${name} - ${source}]\n`;
+            } else if (type === 'knowledge') {
+                insertText = `\n[引用知识库: ${name}]\n`;
+            }
+
+            const cursorPos = editor.selectionStart || editor.value.length;
+            const textBefore = editor.value.substring(0, cursorPos);
+            const textAfter = editor.value.substring(cursorPos);
+            editor.value = textBefore + insertText + textAfter;
+            editor.focus();
+            editor.setSelectionRange(cursorPos + insertText.length, cursorPos + insertText.length);
+            
+            updateChapterContent();
+            closeResourcePanel();
+            showToast('资源已插入', 'success');
+        }
+
     </script>
 </body>
 </html>
