@@ -27,13 +27,16 @@
                         <i class="fas fa-arrow-left text-xl"></i>
                     </button>
                     <div>
-                        <h1 class="text-2xl font-semibold text-gray-800">标书评审功能</h1>
-                        <p class="text-sm text-gray-500 mt-1">AI校对 · 合规检查 · 评分策略</p>
+                        <h1 class="text-2xl font-semibold text-gray-800">标书体检中心</h1>
+                        <p class="text-sm text-gray-500 mt-1">完整性检查 · 实质项检查 · 合规性检查 · 内容验证 · 多文件比对</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
+                    <button onclick="loadFromWriting()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200">
+                        <i class="fas fa-file-alt mr-2"></i>从标书编写加载
+                    </button>
                     <button id="startReviewBtn" onclick="startReview()" class="px-4 py-2 bg-gray-300 text-gray-500 rounded-lg text-sm cursor-not-allowed" disabled>
-                        <i class="fas fa-play mr-2"></i>开始评审
+                        <i class="fas fa-play mr-2"></i>开始检查
                     </button>
                 </div>
             </div>
@@ -146,88 +149,133 @@
         </div>
 
         <div class="grid lg:grid-cols-3 gap-6" id="reviewSection" style="display: none;">
-            <!-- 左侧：评审选项 -->
+            <!-- 左侧：检查选项和统计 -->
             <div class="lg:col-span-1 space-y-4">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-4">评审选项</h2>
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">检查选项</h2>
                     <div class="space-y-3">
                         <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
-                            <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded">
+                            <input type="checkbox" checked class="check-option w-5 h-5 text-blue-600 rounded" data-check="completeness">
                             <div class="flex-1">
-                                <p class="font-medium text-gray-800">格式规范检查</p>
-                                <p class="text-xs text-gray-500">检测17项格式规范</p>
+                                <p class="font-medium text-gray-800">完整性检查</p>
+                                <p class="text-xs text-gray-500">必填项、格式文件、附件</p>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
-                            <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded">
+                            <input type="checkbox" checked class="check-option w-5 h-5 text-blue-600 rounded" data-check="substantial">
                             <div class="flex-1">
-                                <p class="font-medium text-gray-800">评分标准匹配</p>
-                                <p class="text-xs text-gray-500">对照评分标准分析</p>
+                                <p class="font-medium text-gray-800">实质项检查</p>
+                                <p class="text-xs text-gray-500">废标项/不可否决项逐条对照</p>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
-                            <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded">
+                            <input type="checkbox" checked class="check-option w-5 h-5 text-blue-600 rounded" data-check="compliance">
                             <div class="flex-1">
                                 <p class="font-medium text-gray-800">合规性检查</p>
-                                <p class="text-xs text-gray-500">检查标书合规要求</p>
+                                <p class="text-xs text-gray-500">时间范围、签字盖章、格式要求</p>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
-                            <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded">
+                            <input type="checkbox" checked class="check-option w-5 h-5 text-blue-600 rounded" data-check="verification">
                             <div class="flex-1">
-                                <p class="font-medium text-gray-800">加分策略建议</p>
-                                <p class="text-xs text-gray-500">根据评分表给出建议</p>
+                                <p class="font-medium text-gray-800">内容验证</p>
+                                <p class="text-xs text-gray-500">引用政策/标准的真实性检查</p>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" class="check-option w-5 h-5 text-blue-600 rounded" data-check="comparison">
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">多文件比对</p>
+                                <p class="text-xs text-gray-500">历史投标对比、查重检测</p>
                             </div>
                         </label>
                     </div>
                 </div>
 
-                <!-- 评审统计 -->
+                <!-- 检查统计 -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-4">评审统计</h2>
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">检查统计</h2>
                     <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">发现问题</span>
-                            <span class="text-lg font-semibold text-red-600">12</span>
+                        <div class="flex items-center justify-between p-2 bg-red-50 rounded">
+                            <span class="text-sm text-gray-700">高风险问题</span>
+                            <span class="text-lg font-semibold text-red-600" id="highRiskCount">3</span>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">建议优化</span>
-                            <span class="text-lg font-semibold text-orange-600">8</span>
+                        <div class="flex items-center justify-between p-2 bg-orange-50 rounded">
+                            <span class="text-sm text-gray-700">中风险问题</span>
+                            <span class="text-lg font-semibold text-orange-600" id="mediumRiskCount">5</span>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">加分机会</span>
-                            <span class="text-lg font-semibold text-green-600">5</span>
+                        <div class="flex items-center justify-between p-2 bg-yellow-50 rounded">
+                            <span class="text-sm text-gray-700">低风险问题</span>
+                            <span class="text-lg font-semibold text-yellow-600" id="lowRiskCount">4</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-green-50 rounded">
+                            <span class="text-sm text-gray-700">通过项</span>
+                            <span class="text-lg font-semibold text-green-600" id="passedCount">156</span>
+                        </div>
+                        <div class="border-t border-gray-200 pt-3 mt-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-800">检查通过率</span>
+                                <span class="text-lg font-semibold text-blue-600" id="passRate">93%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 右侧：评审结果 -->
+            <!-- 右侧：检查结果 -->
             <div class="lg:col-span-2 space-y-4">
-                <!-- 扣分风险 -->
+                <!-- 检查结果标签页 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <div class="border-b border-gray-200 mb-4">
+                        <div class="flex gap-2 overflow-x-auto">
+                            <button class="result-tab-btn active px-4 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-600 whitespace-nowrap" data-tab="all">全部问题</button>
+                            <button class="result-tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="completeness">完整性</button>
+                            <button class="result-tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="substantial">实质项</button>
+                            <button class="result-tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="compliance">合规性</button>
+                            <button class="result-tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="verification">内容验证</button>
+                            <button class="result-tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="comparison">文件比对</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 问题清单 -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                             <i class="fas fa-exclamation-triangle text-red-500"></i>
-                            扣分风险
+                            问题清单
                         </h2>
-                        <span class="text-sm text-gray-500">共 12 项</span>
+                        <div class="flex items-center gap-2">
+                            <select id="riskFilter" class="text-xs border border-gray-300 rounded px-2 py-1" onchange="filterIssues()">
+                                <option value="all">全部风险</option>
+                                <option value="high">高风险</option>
+                                <option value="medium">中风险</option>
+                                <option value="low">低风险</option>
+                            </select>
+                            <span class="text-sm text-gray-500">共 <span id="issueCount">12</span> 项</span>
+                        </div>
                     </div>
-                    <div class="space-y-3">
-                        <div class="risk-high border-l-4 bg-red-50 p-4 rounded-lg suggestion-item">
+                    <div id="issuesList" class="space-y-3">
+                        <!-- 完整性检查问题 -->
+                        <div class="issue-item risk-high border-l-4 bg-red-50 p-4 rounded-lg" data-category="completeness" data-risk="high">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2 mb-2">
                                         <span class="px-2 py-1 bg-red-600 text-white text-xs rounded">高风险</span>
-                                        <span class="text-sm font-medium text-gray-800">格式规范</span>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">完整性检查</span>
+                                        <span class="text-xs text-gray-500">实质项</span>
                                     </div>
-                                    <p class="text-sm text-gray-700 mb-2">第3章标题字体不符合要求，应使用"黑体"，当前为"微软雅黑"</p>
-                                    <p class="text-xs text-gray-500 mb-2">位置：第3章 技术方案</p>
+                                    <p class="text-sm font-medium text-gray-800 mb-1">缺少必填章节：投标函</p>
+                                    <p class="text-sm text-gray-700 mb-2">响应文件格式要求中明确要求提供投标函，当前标书未包含此章节</p>
+                                    <p class="text-xs text-gray-500 mb-2">位置：第一部分 投标函及投标函附录</p>
                                     <div class="flex items-center gap-2">
-                                        <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
-                                            <i class="fas fa-magic mr-1"></i>一键修复
+                                        <button onclick="jumpToChapter(1)" class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                            <i class="fas fa-arrow-right mr-1"></i>跳转到章节
                                         </button>
-                                        <button class="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">
+                                        <button onclick="generateMissingContent('投标函')" class="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700">
+                                            <i class="fas fa-magic mr-1"></i>生成内容
+                                        </button>
+                                        <button onclick="viewIssueDetail(this)" class="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">
                                             查看详情
                                         </button>
                                     </div>
@@ -235,20 +283,46 @@
                             </div>
                         </div>
 
-                        <div class="risk-medium border-l-4 bg-orange-50 p-4 rounded-lg suggestion-item">
+                        <!-- 实质项检查问题 -->
+                        <div class="issue-item risk-high border-l-4 bg-red-50 p-4 rounded-lg" data-category="substantial" data-risk="high">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="px-2 py-1 bg-red-600 text-white text-xs rounded">高风险</span>
+                                        <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded">实质项检查</span>
+                                        <span class="text-xs text-red-600 font-bold">★</span>
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-800 mb-1">投标文件未按要求签字盖章</p>
+                                    <p class="text-sm text-gray-700 mb-2">废标项要求：投标函、法定代表人身份证明等文件必须加盖公章并由法定代表人签字</p>
+                                    <p class="text-xs text-gray-500 mb-2">对应条款：第3章 第5条（实质项）</p>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="jumpToChapter(1)" class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                            <i class="fas fa-arrow-right mr-1"></i>跳转到章节
+                                        </button>
+                                        <button onclick="viewIssueDetail(this)" class="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">
+                                            查看详情
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 合规性检查问题 -->
+                        <div class="issue-item risk-medium border-l-4 bg-orange-50 p-4 rounded-lg" data-category="compliance" data-risk="medium">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2 mb-2">
                                         <span class="px-2 py-1 bg-orange-600 text-white text-xs rounded">中风险</span>
-                                        <span class="text-sm font-medium text-gray-800">内容缺失</span>
+                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">合规性检查</span>
                                     </div>
-                                    <p class="text-sm text-gray-700 mb-2">缺少"项目组织架构"章节，评分标准中要求提供（占5分）</p>
-                                    <p class="text-xs text-gray-500 mb-2">位置：建议在第4章后添加</p>
+                                    <p class="text-sm font-medium text-gray-800 mb-1">业绩时间范围不符合要求</p>
+                                    <p class="text-sm text-gray-700 mb-2">要求：近3年（2022年1月1日至今），但提供的业绩案例中有1个为2021年的项目</p>
+                                    <p class="text-xs text-gray-500 mb-2">位置：第五部分 5.2 业绩案例</p>
                                     <div class="flex items-center gap-2">
-                                        <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
-                                            <i class="fas fa-plus mr-1"></i>生成章节
+                                        <button onclick="jumpToChapter(52)" class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                            <i class="fas fa-arrow-right mr-1"></i>跳转到章节
                                         </button>
-                                        <button class="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">
+                                        <button onclick="viewIssueDetail(this)" class="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">
                                             查看详情
                                         </button>
                                     </div>
@@ -256,20 +330,45 @@
                             </div>
                         </div>
 
-                        <div class="risk-low border-l-4 bg-green-50 p-4 rounded-lg suggestion-item">
+                        <!-- 内容验证问题 -->
+                        <div class="issue-item risk-medium border-l-4 bg-orange-50 p-4 rounded-lg" data-category="verification" data-risk="medium">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <span class="px-2 py-1 bg-green-600 text-white text-xs rounded">低风险</span>
-                                        <span class="text-sm font-medium text-gray-800">编号规范</span>
+                                        <span class="px-2 py-1 bg-orange-600 text-white text-xs rounded">中风险</span>
+                                        <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">内容验证</span>
                                     </div>
-                                    <p class="text-sm text-gray-700 mb-2">第2.3节编号格式不一致，建议统一为"2.3"格式</p>
-                                    <p class="text-xs text-gray-500 mb-2">位置：第2章 项目概述</p>
+                                    <p class="text-sm font-medium text-gray-800 mb-1">引用政策文件可能不准确</p>
+                                    <p class="text-sm text-gray-700 mb-2">第3.2节引用了"GB/T 22239-2019 信息安全技术网络安全等级保护基本要求"，建议核实文件编号和内容是否准确</p>
+                                    <p class="text-xs text-gray-500 mb-2">位置：第三部分 3.2 技术架构</p>
                                     <div class="flex items-center gap-2">
-                                        <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                        <button onclick="verifyContent(this)" class="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700">
+                                            <i class="fas fa-search mr-1"></i>联网验证
+                                        </button>
+                                        <button onclick="viewIssueDetail(this)" class="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">
+                                            查看详情
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 格式规范问题 -->
+                        <div class="issue-item risk-low border-l-4 bg-yellow-50 p-4 rounded-lg" data-category="completeness" data-risk="low">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="px-2 py-1 bg-yellow-600 text-white text-xs rounded">低风险</span>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">完整性检查</span>
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-800 mb-1">第3章标题字体不符合要求</p>
+                                    <p class="text-sm text-gray-700 mb-2">应使用"黑体"，当前为"微软雅黑"</p>
+                                    <p class="text-xs text-gray-500 mb-2">位置：第3章 技术方案</p>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="fixFormat(this)" class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
                                             <i class="fas fa-magic mr-1"></i>一键修复
                                         </button>
-                                        <button class="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">
+                                        <button onclick="viewIssueDetail(this)" class="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">
                                             查看详情
                                         </button>
                                     </div>
@@ -279,17 +378,19 @@
                     </div>
                 </div>
 
-                <!-- 加分策略 -->
+                <!-- 修复建议 -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                             <i class="fas fa-lightbulb text-yellow-500"></i>
-                            加分策略建议
+                            修复建议
                         </h2>
-                        <span class="text-sm text-gray-500">共 5 项</span>
+                        <button onclick="exportReport()" class="text-sm text-blue-600 hover:text-blue-700">
+                            <i class="fas fa-download mr-1"></i>导出报告
+                        </button>
                     </div>
-                    <div class="space-y-3">
-                        <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg suggestion-item">
+                    <div id="suggestionsList" class="space-y-3">
+                        <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
                             <div class="flex items-start gap-3">
                                 <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-star text-sm"></i>
@@ -301,30 +402,41 @@
                                         <span><i class="fas fa-chart-line mr-1"></i>预计加分：8分</span>
                                         <span><i class="fas fa-clock mr-1"></i>建议优先级：高</span>
                                     </div>
-                                    <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                    <button onclick="generateMissingContent('运维保障')" class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
                                         <i class="fas fa-plus mr-1"></i>生成章节内容
                                     </button>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg suggestion-item">
-                            <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-star text-sm"></i>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="font-medium text-gray-800 mb-1">引用"市政类特级资质"</p>
-                                    <p class="text-sm text-gray-600 mb-2">在技术方案中突出展示企业资质，可提升匹配度12%</p>
-                                    <div class="flex items-center gap-4 text-xs text-gray-500 mb-2">
-                                        <span><i class="fas fa-chart-line mr-1"></i>预计加分：3-5分</span>
-                                        <span><i class="fas fa-clock mr-1"></i>建议优先级：中</span>
-                                    </div>
-                                    <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
-                                        <i class="fas fa-edit mr-1"></i>插入资质说明
-                                    </button>
-                                </div>
+                <!-- 检查历史 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">检查历史</h2>
+                        <button onclick="viewAllHistory()" class="text-sm text-blue-600 hover:text-blue-700">
+                            查看全部
+                        </button>
+                    </div>
+                    <div id="checkHistory" class="space-y-2 text-sm">
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div>
+                                <p class="font-medium text-gray-800">检查时间：2025-01-15 14:30</p>
+                                <p class="text-xs text-gray-500">发现问题：12项 | 通过率：93%</p>
                             </div>
+                            <button onclick="viewHistoryDetail(1)" class="text-xs text-blue-600 hover:text-blue-700">
+                                查看详情
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div>
+                                <p class="font-medium text-gray-800">检查时间：2025-01-15 10:15</p>
+                                <p class="text-xs text-gray-500">发现问题：18项 | 通过率：89%</p>
+                            </div>
+                            <button onclick="viewHistoryDetail(2)" class="text-xs text-blue-600 hover:text-blue-700">
+                                查看详情
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -733,25 +845,223 @@
             document.getElementById('standardModal').classList.add('hidden');
         }
 
-        // 开始评审
+        // 从标书编写加载
+        function loadFromWriting() {
+            try {
+                // 从localStorage读取标书内容
+                const draftData = localStorage.getItem('bidding_draft_data');
+                const catalogData = localStorage.getItem('bidding_catalog_data');
+                
+                if (!draftData || !catalogData) {
+                    alert('未找到标书编写数据，请先完成标书编写');
+                    return;
+                }
+                
+                // 自动开始检查
+                uploadedFile = { name: '当前标书内容', fromWriting: true };
+                document.getElementById('fileInfo').classList.remove('hidden');
+                document.getElementById('fileName').textContent = '当前标书内容（来自标书编写）';
+                document.getElementById('fileSize').textContent = '已加载';
+                document.getElementById('uploadArea').classList.add('hidden');
+                
+                const startReviewBtn = document.getElementById('startReviewBtn');
+                startReviewBtn.disabled = false;
+                startReviewBtn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                startReviewBtn.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700', 'cursor-pointer');
+                
+                // 自动开始检查
+                setTimeout(() => {
+                    startReview();
+                }, 500);
+            } catch (e) {
+                console.error('加载失败:', e);
+                alert('加载标书编写数据失败');
+            }
+        }
+
+        // 开始检查
         function startReview() {
             if (!uploadedFile) {
-                alert('请先上传标书文件');
+                alert('请先上传标书文件或从标书编写加载');
                 return;
             }
 
-            // 显示评审区域
+            // 显示检查区域
             document.getElementById('uploadSection').style.display = 'none';
             document.getElementById('standardSection').style.display = 'none';
             document.getElementById('reviewSection').style.display = 'grid';
 
             // 显示加载状态
-            alert('正在评审中，请稍候...\n（演示页面，实际使用时将调用评审接口）');
+            showLoadingState();
             
-            // 模拟评审完成后的结果展示
+            // 模拟检查过程
             setTimeout(() => {
-                // 评审结果已经在页面中，这里可以添加一些动画效果
+                hideLoadingState();
+                updateCheckStatistics();
+                showToast('检查完成', 'success');
+            }, 2000);
+        }
+
+        // 显示加载状态
+        function showLoadingState() {
+            const issuesList = document.getElementById('issuesList');
+            issuesList.innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-spinner fa-spin text-3xl text-blue-600 mb-3"></i>
+                    <p class="text-gray-600">正在检查中，请稍候...</p>
+                </div>
+            `;
+        }
+
+        // 隐藏加载状态
+        function hideLoadingState() {
+            // 问题列表已经在HTML中，这里可以添加动态加载逻辑
+        }
+
+        // 更新检查统计
+        function updateCheckStatistics() {
+            // 这里可以根据实际检查结果更新统计数据
+            // 暂时使用示例数据
+        }
+
+        // 问题筛选
+        function filterIssues() {
+            const riskFilter = document.getElementById('riskFilter').value;
+            const categoryFilter = document.querySelector('.result-tab-btn.active')?.dataset.tab || 'all';
+            
+            const issues = document.querySelectorAll('.issue-item');
+            let visibleCount = 0;
+            
+            issues.forEach(issue => {
+                const issueRisk = issue.dataset.risk;
+                const issueCategory = issue.dataset.category;
+                
+                let show = true;
+                
+                if (riskFilter !== 'all' && issueRisk !== riskFilter) {
+                    show = false;
+                }
+                
+                if (categoryFilter !== 'all' && issueCategory !== categoryFilter) {
+                    show = false;
+                }
+                
+                if (show) {
+                    issue.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    issue.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('issueCount').textContent = visibleCount;
+        }
+
+        // 结果标签页切换
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.result-tab-btn');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    tabButtons.forEach(b => {
+                        b.classList.remove('active', 'text-blue-600', 'border-b-2', 'border-blue-600');
+                        b.classList.add('text-gray-500');
+                    });
+                    this.classList.add('active', 'text-blue-600', 'border-b-2', 'border-blue-600');
+                    this.classList.remove('text-gray-500');
+                    
+                    filterIssues();
+                });
+            });
+        });
+
+        // 跳转到章节
+        function jumpToChapter(chapterId) {
+            try {
+                if (window.parent && window.parent.loadPage) {
+                    window.parent.loadPage('标书编写.html', 'step');
+                    // 通知标书编写页面选中指定章节
+                    setTimeout(() => {
+                        if (window.parent.document) {
+                            const event = new CustomEvent('selectChapter', { detail: { chapterId } });
+                            window.parent.document.dispatchEvent(event);
+                        }
+                    }, 500);
+                } else {
+                    window.location.href = '标书编写.html';
+                }
+            } catch (e) {
+                console.error('跳转失败:', e);
+                window.location.href = '标书编写.html';
+            }
+        }
+
+        // 生成缺失内容
+        function generateMissingContent(contentType) {
+            showToast(`正在生成${contentType}内容...`, 'info');
+            setTimeout(() => {
+                showToast(`${contentType}内容已生成，请前往标书编写页面查看`, 'success');
+            }, 1500);
+        }
+
+        // 查看问题详情
+        function viewIssueDetail(btn) {
+            showToast('查看详情功能开发中', 'info');
+        }
+
+        // 验证内容
+        function verifyContent(btn) {
+            showToast('正在联网验证内容真实性...', 'info');
+            setTimeout(() => {
+                showToast('验证完成：内容准确', 'success');
+            }, 2000);
+        }
+
+        // 修复格式
+        function fixFormat(btn) {
+            showToast('正在修复格式...', 'info');
+            setTimeout(() => {
+                btn.closest('.issue-item').style.opacity = '0.5';
+                showToast('格式已修复', 'success');
             }, 1000);
+        }
+
+        // 导出报告
+        function exportReport() {
+            showToast('正在导出检查报告...', 'info');
+            setTimeout(() => {
+                showToast('报告已导出', 'success');
+            }, 1000);
+        }
+
+        // 查看检查历史详情
+        function viewHistoryDetail(historyId) {
+            showToast('查看历史详情功能开发中', 'info');
+        }
+
+        // 查看全部历史
+        function viewAllHistory() {
+            showToast('查看全部历史功能开发中', 'info');
+        }
+
+        // Toast提示
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const bgColor = {
+                'success': 'bg-green-500',
+                'warning': 'bg-yellow-500',
+                'error': 'bg-red-500',
+                'info': 'bg-blue-500'
+            }[type] || 'bg-blue-500';
+            
+            toast.className = `fixed top-4 right-4 ${bgColor} text-white px-4 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2`;
+            toast.innerHTML = `<span>${message}</span>`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         function navigateToPage(page) {

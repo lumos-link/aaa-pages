@@ -49,10 +49,73 @@
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-lg font-semibold text-gray-800">AI 解析摘要</h2>
+                    <h2 class="text-lg font-semibold text-gray-800">AI 解析摘要</h2>
                         <p id="currentPackageLabel" class="mt-1 text-xs text-gray-400">当前包：包一 · 平台建设</p>
                     </div>
                     <span class="text-xs text-gray-400">自动生成</span>
+                </div>
+
+                <!-- 项目元信息（更靠近解析结果展示） -->
+                <div class="mt-2 p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xs font-semibold text-gray-700">项目基本信息</h3>
+                        <button onclick="editProjectInfo()" class="text-[11px] text-blue-600 hover:text-blue-700" id="editProjectBtn">
+                            <i class="fas fa-edit mr-1"></i>编辑
+                        </button>
+                    </div>
+                    <div id="projectInfoView" class="grid md:grid-cols-3 gap-2 text-[11px] text-gray-700">
+                        <div><span class="text-gray-500">类型：</span><span id="projectType">研发</span></div>
+                        <div class="md:col-span-2"><span class="text-gray-500">名称：</span><span id="projectName">城市运行数字底座建设项目</span></div>
+                        <div><span class="text-gray-500">招标人：</span><span id="tenderer">XX市大数据局</span></div>
+                        <div><span class="text-gray-500">代理机构：</span><span id="agency">XX招标代理公司</span></div>
+                        <div><span class="text-gray-500">开标：</span><span id="bidDate">2025-03-15 09:00</span></div>
+                        <div><span class="text-gray-500">有效期：</span><span id="validPeriod">90天</span></div>
+                    </div>
+                    <div id="projectInfoEdit" class="hidden mt-3 space-y-2">
+                        <div class="grid md:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[11px] text-gray-600 mb-1">项目类型 <span class="text-red-500">*</span></label>
+                                <select id="editProjectType" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500">
+                                    <option value="研发">研发</option>
+                                    <option value="维护">维护</option>
+                                    <option value="集成">集成</option>
+                                    <option value="合作伙伴入围">合作伙伴入围</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-600 mb-1">项目名称 <span class="text-red-500">*</span></label>
+                                <input type="text" id="editProjectName" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500" placeholder="请输入项目名称">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-600 mb-1">招标人 <span class="text-red-500">*</span></label>
+                                <input type="text" id="editTenderer" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500" placeholder="请输入招标人名称">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-600 mb-1">代理机构</label>
+                                <input type="text" id="editAgency" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500" placeholder="请输入代理机构名称">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-600 mb-1">开标日期 <span class="text-red-500">*</span></label>
+                                <input type="datetime-local" id="editBidDate" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-600 mb-1">投标有效期 <span class="text-red-500">*</span></label>
+                                <div class="flex gap-1">
+                                    <input type="number" id="editValidPeriod" class="flex-1 px-2 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500" placeholder="天数" min="1">
+                                    <span class="self-center text-[11px] text-gray-500">天</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 mt-2">
+                            <button onclick="saveProjectInfo()" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700">
+                                <i class="fas fa-save mr-1"></i>保存
+                            </button>
+                            <button onclick="cancelEditProjectInfo()" class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-xs hover:bg-gray-200">
+                                取消
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 包级页签：根据解析出的包动态生成，这里用示例数据展示 -->
@@ -65,14 +128,17 @@
                 </div>
 
                 <div class="border-b border-gray-200 mt-2">
-                    <div class="flex gap-2 overflow-x-auto">
+                    <div class="flex gap-2 overflow-x-auto pb-2">
                         <button class="tab-btn active px-4 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-600 whitespace-nowrap" data-tab="overview">项目概述</button>
                         <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="rejection">废标项</button>
-                        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="hidden">暗标要求</button>
+                        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="personnel">人员要求</button>
+                        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="performance">业绩要求</button>
+                        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="qualification">资质要求</button>
+                        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="commitment">承诺书要求</button>
+                        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="p2p">点对点应答</button>
                         <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="score">评分要求</button>
+                        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="hidden">暗标要求</button>
                         <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="format">响应文件格式</button>
-                        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="tech">技术部分</button>
-                        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="business">商业部分</button>
                     </div>
                 </div>
                 <div class="tab-content" id="tab-overview">
@@ -85,50 +151,256 @@
                 </div>
                 <div class="tab-content hidden" id="tab-rejection">
                     <div class="p-4 rounded-xl bg-red-50 border-2 border-red-200 text-sm text-gray-700">
-                        <div class="flex items-center gap-2 mb-3">
-                            <i class="fas fa-exclamation-triangle text-red-600"></i>
-                            <p class="font-semibold text-red-800">废标条件（必须严格遵守）</p>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-exclamation-triangle text-red-600"></i>
+                                <p class="font-semibold text-red-800">废标条件（必须严格遵守）</p>
+                            </div>
                         </div>
-                        <ul class="space-y-3">
-                            <li class="flex items-start gap-2 p-2 bg-white rounded-lg border-l-4 border-red-500">
-                                <i class="fas fa-times-circle text-red-500 mt-1"></i>
-                                <div>
-                                    <p class="font-semibold text-gray-800">投标文件未按要求签字盖章</p>
-                                    <p class="text-xs text-gray-600 mt-1">投标函、法定代表人身份证明等文件必须加盖公章并由法定代表人签字</p>
+                        <div id="rejectionItemsList" class="space-y-3">
+                            <!-- 结构化废标项列表，将动态生成 -->
+                            <div class="rejection-item p-3 bg-white rounded-lg border-l-4 border-red-500" data-type="substantial" data-symbol="★">
+                                <div class="flex items-start">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-red-600 font-bold">★</span>
+                                            <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-medium">实质项</span>
+                                            <span class="text-xs text-gray-500">第3章 第5条</span>
+                                        </div>
+                                        <p class="font-semibold text-gray-800 mb-1">投标文件未按要求签字盖章</p>
+                                        <p class="text-xs text-gray-600">投标函、法定代表人身份证明等文件必须加盖公章并由法定代表人签字</p>
+                                    </div>
                                 </div>
-                            </li>
-                            <li class="flex items-start gap-2 p-2 bg-white rounded-lg border-l-4 border-red-500">
-                                <i class="fas fa-times-circle text-red-500 mt-1"></i>
-                                <div>
-                                    <p class="font-semibold text-gray-800">投标报价超过最高限价</p>
-                                    <p class="text-xs text-gray-600 mt-1">项目最高限价为 500 万元，超过此价格将直接废标</p>
+                            </div>
+                            <div class="rejection-item p-3 bg-white rounded-lg border-l-4 border-red-500" data-type="substantial" data-symbol="※">
+                                <div class="flex items-start">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-red-600 font-bold">※</span>
+                                            <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-medium">实质项</span>
+                                            <span class="text-xs text-gray-500">第2章 第3条</span>
+                                        </div>
+                                        <p class="font-semibold text-gray-800 mb-1">投标报价超过最高限价</p>
+                                        <p class="text-xs text-gray-600">项目最高限价为 500 万元，超过此价格将直接废标</p>
+                                    </div>
                                 </div>
-                            </li>
-                            <li class="flex items-start gap-2 p-2 bg-white rounded-lg border-l-4 border-red-500">
-                                <i class="fas fa-times-circle text-red-500 mt-1"></i>
-                                <div>
-                                    <p class="font-semibold text-gray-800">未提供有效的企业资质证书</p>
-                                    <p class="text-xs text-gray-600 mt-1">必须提供有效期内的营业执照、相关行业资质证书等</p>
+                            </div>
+                            <div class="rejection-item p-3 bg-white rounded-lg border-l-4 border-orange-500" data-type="non-deviating" data-symbol="▲">
+                                <div class="flex items-start">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-orange-600 font-bold">▲</span>
+                                            <span class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-medium">不可偏离项</span>
+                                            <span class="text-xs text-gray-500">第4章 第2条</span>
+                                        </div>
+                                        <p class="font-semibold text-gray-800 mb-1">未提供有效的企业资质证书</p>
+                                        <p class="text-xs text-gray-600">必须提供有效期内的营业执照、相关行业资质证书等</p>
+                                    </div>
                                 </div>
-                            </li>
-                            <li class="flex items-start gap-2 p-2 bg-white rounded-lg border-l-4 border-red-500">
-                                <i class="fas fa-times-circle text-red-500 mt-1"></i>
-                                <div>
-                                    <p class="font-semibold text-gray-800">投标文件未按指定格式提交</p>
-                                    <p class="text-xs text-gray-600 mt-1">必须按照招标文件要求的格式、装订方式提交，否则视为无效投标</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start gap-2 p-2 bg-white rounded-lg border-l-4 border-red-500">
-                                <i class="fas fa-times-circle text-red-500 mt-1"></i>
-                                <div>
-                                    <p class="font-semibold text-gray-800">投标保证金未按时缴纳</p>
-                                    <p class="text-xs text-gray-600 mt-1">投标保证金 10 万元需在投标截止时间前到账，否则视为无效投标</p>
-                                </div>
-                            </li>
-                        </ul>
+                            </div>
+                        </div>
                         <div class="mt-4 p-3 bg-red-100 rounded-lg border border-red-200">
                             <p class="text-xs text-red-800 font-semibold"><i class="fas fa-info-circle mr-1"></i>提示：以上任何一项不符合要求，将直接导致投标被拒绝，请务必仔细检查</p>
                         </div>
+                    </div>
+                </div>
+                <!-- 人员要求 -->
+                <div class="tab-content hidden" id="tab-personnel">
+                    <div class="p-4 rounded-xl bg-blue-50 border border-blue-100 text-sm text-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="font-semibold text-gray-800">人员要求</p>
+                        </div>
+                        <div id="personnelRequirementsList" class="space-y-3">
+                            <div class="personnel-item p-3 bg-white rounded-lg border border-blue-200">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <p class="font-semibold text-gray-800 mb-1">项目团队人员配置</p>
+                                        <div class="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                                            <div><span class="font-medium">总人数：</span>不少于 8 人</div>
+                                            <div><span class="font-medium">驻场人员：</span>不少于 3 人</div>
+                                        </div>
+                                    </div>
+                                    <button onclick="deletePersonnelItem(this)" class="text-gray-400 hover:text-red-600">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
+                                </div>
+                                <div class="mt-2 p-2 bg-gray-50 rounded text-xs">
+                                    <p class="font-medium text-gray-700 mb-1">角色要求：</p>
+                                    <ul class="space-y-1 text-gray-600">
+                                        <li>• 项目经理 1 名（需PMP资质）</li>
+                                        <li>• 技术负责人 1 名（需高级职称）</li>
+                                        <li>• 开发工程师 4 名</li>
+                                        <li>• 测试工程师 2 名</li>
+                                    </ul>
+                                </div>
+                                <div class="mt-2 p-2 bg-gray-50 rounded text-xs">
+                                    <p class="font-medium text-gray-700 mb-1">证明材料：</p>
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded">身份证</span>
+                                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded">学历证书</span>
+                                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded">学信网证明</span>
+                                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded">PMP证书</span>
+                                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded">社保缴纳证明（近6个月）</span>
+                                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded">劳动合同</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 业绩要求 -->
+                <div class="tab-content hidden" id="tab-performance">
+                    <div class="p-4 rounded-xl bg-green-50 border border-green-100 text-sm text-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="font-semibold text-gray-800">业绩要求</p>
+                        </div>
+                        <div id="performanceRequirementsList" class="space-y-3">
+                            <div class="performance-item p-3 bg-white rounded-lg border border-green-200">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <p class="font-semibold text-gray-800 mb-1">同类项目业绩</p>
+                                        <div class="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                                            <div><span class="font-medium">时间范围：</span>近3年（2022年1月1日至今）</div>
+                                            <div><span class="font-medium">关键词：</span>智慧城市、数字底座、数据治理</div>
+                                            <div><span class="font-medium">数量要求：</span>不少于 3 个</div>
+                                            <div><span class="font-medium">金额要求：</span>单个项目金额 ≥ 300 万元</div>
+                                        </div>
+                                    </div>
+                                    <button onclick="deletePerformanceItem(this)" class="text-gray-400 hover:text-red-600">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
+                                </div>
+                                <div class="mt-2 p-2 bg-gray-50 rounded text-xs">
+                                    <p class="font-medium text-gray-700 mb-1">需提供的证明材料：</p>
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded">合同首页</span>
+                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded">合同金额页</span>
+                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded">服务内容页</span>
+                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded">签字盖章页</span>
+                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded">发票</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 资质要求 -->
+                <div class="tab-content hidden" id="tab-qualification">
+                    <div class="p-4 rounded-xl bg-yellow-50 border border-yellow-100 text-sm text-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="font-semibold text-gray-800">资质要求</p>
+                        </div>
+                        <div id="qualificationRequirementsList" class="space-y-3">
+                            <div class="qualification-item p-3 bg-white rounded-lg border border-yellow-200">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <i class="fas fa-certificate text-yellow-600"></i>
+                                            <p class="font-semibold text-gray-800">CMMI5 认证</p>
+                                            <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs">必填</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600">需提供有效期内的CMMI5级认证证书</p>
+                                    </div>
+                                    <button onclick="deleteQualificationItem(this)" class="text-gray-400 hover:text-red-600">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="qualification-item p-3 bg-white rounded-lg border border-yellow-200">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <i class="fas fa-certificate text-yellow-600"></i>
+                                            <p class="font-semibold text-gray-800">ISO 9001 质量管理体系认证</p>
+                                            <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs">必填</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600">需提供有效期内的ISO 9001认证证书</p>
+                                    </div>
+                                    <button onclick="deleteQualificationItem(this)" class="text-gray-400 hover:text-red-600">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 承诺书要求 -->
+                <div class="tab-content hidden" id="tab-commitment">
+                    <div class="p-4 rounded-xl bg-purple-50 border border-purple-100 text-sm text-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="font-semibold text-gray-800">承诺书要求</p>
+                        </div>
+                        <div id="commitmentRequirementsList" class="space-y-3">
+                            <div class="commitment-item p-3 bg-white rounded-lg border border-purple-200">
+                                <div class="flex items-start">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <i class="fas fa-file-signature text-purple-600"></i>
+                                            <p class="font-semibold text-gray-800">项目上线运行承诺</p>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mb-2">承诺项目在合同签订后 30 日内上线运行</p>
+                                        <div class="text-xs text-gray-500">
+                                            <p><span class="font-medium">承诺形式：</span>承诺书</p>
+                                            <p><span class="font-medium">时间约束：</span>30日内</p>
+                                            <p><span class="font-medium">模板：</span>标准承诺书模板</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 点对点应答要求 -->
+                <div class="tab-content hidden" id="tab-p2p">
+                    <div class="p-4 rounded-xl bg-teal-50 border border-teal-100 text-sm text-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="font-semibold text-gray-800">点对点应答要求</p>
+                            <span class="text-xs text-gray-500">逐条响应招标条款</span>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-3">以下条款需要在投标文件中按表格形式逐条应答，通常以“满足/不满足/部分满足+说明”的形式填写。</p>
+                        <div class="overflow-x-auto rounded-lg border border-teal-100 bg-white">
+                            <table class="min-w-full text-xs text-gray-700">
+                                <thead class="bg-teal-50 border-b border-teal-100">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-600 whitespace-nowrap">序号</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-600 whitespace-nowrap">条款编号</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-600 whitespace-nowrap">条款内容</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-600 whitespace-nowrap">应答方式</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-600 whitespace-nowrap">是否必应答</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="p2pRequirementList" class="divide-y divide-gray-100">
+                                    <tr>
+                                        <td class="px-3 py-2 align-top">1</td>
+                                        <td class="px-3 py-2 align-top whitespace-nowrap">3.2.1</td>
+                                        <td class="px-3 py-2 align-top">
+                                            投标人需对《技术需求表》中列出的所有技术指标逐条应答，并在“是否满足”栏中勾选“满足/部分满足/不满足”，对“部分满足/不满足”的条款需在备注中说明原因及替代方案。
+                                        </td>
+                                        <td class="px-3 py-2 align-top whitespace-nowrap">表格勾选 + 文字说明</td>
+                                        <td class="px-3 py-2 align-top text-red-600 font-semibold">是</td>
+                                    </tr>
+                                    <tr class="bg-teal-50/40">
+                                        <td class="px-3 py-2 align-top">2</td>
+                                        <td class="px-3 py-2 align-top whitespace-nowrap">4.1.3</td>
+                                        <td class="px-3 py-2 align-top">
+                                            投标人需对《商务条款应答表》中列出的所有商务条款逐条应答，明确是否“完全响应”或提出偏离说明。
+                                        </td>
+                                        <td class="px-3 py-2 align-top whitespace-nowrap">表格勾选 + 偏离说明</td>
+                                        <td class="px-3 py-2 align-top text-red-600 font-semibold">是</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-2 align-top">3</td>
+                                        <td class="px-3 py-2 align-top whitespace-nowrap">5.2.4</td>
+                                        <td class="px-3 py-2 align-top">
+                                            投标人需对服务响应时间、故障处理时限、服务覆盖范围等服务指标逐条应答，并承诺不低于本招标文件要求。
+                                        </td>
+                                        <td class="px-3 py-2 align-top whitespace-nowrap">表格勾选 + 承诺文本</td>
+                                        <td class="px-3 py-2 align-top text-yellow-600 font-semibold">建议</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="mt-3 text-xs text-gray-500">提示：系统后续可根据此结构自动生成“需求应答表”，并在标书编写阶段支持逐条填报和一键插入。</p>
                     </div>
                 </div>
                 <div class="tab-content hidden" id="tab-hidden">
@@ -152,98 +424,250 @@
                 </div>
                 <div class="tab-content hidden" id="tab-score">
                     <div class="p-4 rounded-xl bg-purple-50 border border-purple-100 text-sm text-gray-700">
-                        <p class="font-semibold text-gray-800 mb-3">评分结构</p>
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between p-2 bg-white rounded-lg">
-                                <span class="font-medium">技术方案</span>
-                                <span class="text-purple-600 font-semibold">40 分</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="font-semibold text-gray-800">评分标准</p>
+                        </div>
+                        <div id="scoreStandardList" class="space-y-3">
+                            <!-- 资格评审 -->
+                            <div class="score-category p-3 bg-white rounded-lg border-l-4 border-blue-500">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-check-circle text-blue-600"></i>
+                                        <p class="font-semibold text-gray-800">资格评审</p>
+                                    </div>
+                                    <span class="text-xs text-gray-500">通过/不通过</span>
+                                </div>
+                                <div class="ml-6 space-y-1 text-xs text-gray-600">
+                                    <p>• 投标人资格符合招标文件要求</p>
+                                    <p>• 投标文件格式完整</p>
+                                    <p>• 投标保证金已缴纳</p>
+                                </div>
                             </div>
-                            <div class="flex items-center justify-between p-2 bg-white rounded-lg">
-                                <span class="font-medium">业绩案例</span>
-                                <span class="text-purple-600 font-semibold">25 分</span>
+                            <!-- 初步评审 -->
+                            <div class="score-category p-3 bg-white rounded-lg border-l-4 border-green-500">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-clipboard-check text-green-600"></i>
+                                        <p class="font-semibold text-gray-800">初步评审</p>
+                                    </div>
+                                    <span class="text-xs text-gray-500">通过/不通过</span>
+                                </div>
+                                <div class="ml-6 space-y-1 text-xs text-gray-600">
+                                    <p>• 投标文件实质性响应招标文件</p>
+                                    <p>• 未出现废标项</p>
+                                </div>
                             </div>
-                            <div class="flex items-center justify-between p-2 bg-white rounded-lg">
-                                <span class="font-medium">团队配置</span>
-                                <span class="text-purple-600 font-semibold">15 分</span>
+                            <!-- 响应性评审 -->
+                            <div class="score-category p-3 bg-white rounded-lg border-l-4 border-yellow-500">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-list-check text-yellow-600"></i>
+                                        <p class="font-semibold text-gray-800">响应性评审</p>
+                                    </div>
+                                    <span class="text-xs text-gray-500">通过/不通过</span>
+                                </div>
+                                <div class="ml-6 space-y-1 text-xs text-gray-600">
+                                    <p>• 技术方案完整响应招标要求</p>
+                                    <p>• 商务条款逐条响应</p>
+                                </div>
                             </div>
-                            <div class="flex items-center justify-between p-2 bg-white rounded-lg">
-                                <span class="font-medium">商务条款</span>
+                            <!-- 详细评审 -->
+                            <div class="score-category p-3 bg-white rounded-lg border-l-4 border-purple-500">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-star text-purple-600"></i>
+                                        <p class="font-semibold text-gray-800">详细评审</p>
+                                    </div>
+                                    <span class="text-xs text-gray-500">总分 100 分</span>
+                                </div>
+                                <div class="ml-6 space-y-2">
+                                    <div class="p-2 bg-gray-50 rounded">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="font-medium text-gray-800">商务部分</span>
                                 <span class="text-purple-600 font-semibold">20 分</span>
+                                        </div>
+                                        <div class="text-xs text-gray-600 space-y-1">
+                                            <p>• 报价合理性：10分</p>
+                                            <p>• 付款方式：5分</p>
+                                            <p>• 售后服务：5分</p>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 bg-gray-50 rounded">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="font-medium text-gray-800">技术部分</span>
+                                            <span class="text-purple-600 font-semibold">40 分</span>
+                                        </div>
+                                        <div class="text-xs text-gray-600 space-y-1">
+                                            <p>• 技术方案：25分（需突出数据治理能力）</p>
+                                            <p>• 技术架构：10分</p>
+                                            <p>• 实施方案：5分</p>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 bg-gray-50 rounded">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="font-medium text-gray-800">业绩案例</span>
+                                            <span class="text-purple-600 font-semibold">25 分</span>
+                                        </div>
+                                        <div class="text-xs text-gray-600 space-y-1">
+                                            <p>• 近三年同类项目：15分（必须为近三年）</p>
+                                            <p>• 项目规模：10分</p>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 bg-gray-50 rounded">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="font-medium text-gray-800">团队配置</span>
+                                            <span class="text-purple-600 font-semibold">15 分</span>
+                                        </div>
+                                        <div class="text-xs text-gray-600 space-y-1">
+                                            <p>• 项目经理资质：5分（需PMP）</p>
+                                            <p>• 团队结构：5分（需提供驻场组织图）</p>
+                                            <p>• 人员经验：5分</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <p class="mt-3 text-xs text-gray-600">需突出数据治理能力，业绩必须为近三年同类项目，需提供驻场组织图</p>
                     </div>
                 </div>
                 <div class="tab-content hidden" id="tab-format">
                     <div class="p-4 rounded-xl bg-green-50 border border-green-100 text-sm text-gray-700">
-                        <p class="font-semibold text-gray-800 mb-3">投标书目录结构</p>
-                        <div class="space-y-2 text-xs">
-                            <div class="flex items-start gap-2">
-                                <i class="fas fa-file-alt text-green-600 mt-1"></i>
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="font-semibold text-gray-800">响应文件格式</p>
+                        </div>
+                        <div id="formatStructureList" class="space-y-2 text-xs">
+                            <div class="format-item p-3 bg-white rounded-lg border border-green-200" data-required="true">
+                                <div class="flex items-start justify-between">
                                 <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <i class="fas fa-file-alt text-green-600"></i>
                                     <p class="font-semibold text-gray-800">第一部分 投标函及投标函附录</p>
-                                    <p class="text-gray-600 ml-4">1.1 投标函</p>
-                                    <p class="text-gray-600 ml-4">1.2 投标函附录</p>
+                                            <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                        </div>
+                                        <div class="ml-6 space-y-1">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-600">1.1 投标函</span>
+                                                <span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-600">1.2 投标函附录</span>
+                                                <span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                            </div>
+                                        </div>
+                                        <p class="mt-1 text-[10px] text-gray-500">格式要求：Word文档，需签字盖章</p>
+                                    </div>
+                                    <button onclick="deleteFormatItem(this)" class="text-gray-400 hover:text-red-600 ml-2">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
                                 </div>
                             </div>
-                            <div class="flex items-start gap-2">
-                                <i class="fas fa-file-alt text-green-600 mt-1"></i>
+                            <div class="format-item p-3 bg-white rounded-lg border border-green-200" data-required="true">
+                                <div class="flex items-start justify-between">
                                 <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <i class="fas fa-file-alt text-green-600"></i>
                                     <p class="font-semibold text-gray-800">第二部分 法定代表人身份证明</p>
+                                            <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                        </div>
+                                        <p class="mt-1 text-[10px] text-gray-500">格式要求：Word文档，需签字盖章</p>
+                                    </div>
+                                    <button onclick="deleteFormatItem(this)" class="text-gray-400 hover:text-red-600 ml-2">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
                                 </div>
                             </div>
-                            <div class="flex items-start gap-2">
-                                <i class="fas fa-file-alt text-green-600 mt-1"></i>
+                            <div class="format-item p-3 bg-white rounded-lg border border-green-200" data-required="true">
+                                <div class="flex items-start justify-between">
                                 <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <i class="fas fa-file-alt text-green-600"></i>
                                     <p class="font-semibold text-gray-800">第三部分 技术方案</p>
-                                    <p class="text-gray-600 ml-4">3.1 项目理解</p>
-                                    <p class="text-gray-600 ml-4">3.2 技术架构</p>
-                                    <p class="text-gray-600 ml-4">3.3 实施方案</p>
-                                    <p class="text-gray-600 ml-4">3.4 质量保证措施</p>
+                                            <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                        </div>
+                                        <div class="ml-6 space-y-1">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-600">3.1 项目理解</span>
+                                                <span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-600">3.2 技术架构</span>
+                                                <span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-600">3.3 实施方案</span>
+                                                <span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-600">3.4 质量保证措施</span>
+                                                <span class="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">选填</span>
+                                            </div>
+                                        </div>
+                                        <p class="mt-1 text-[10px] text-gray-500">格式要求：Word文档，暗标格式</p>
+                                    </div>
+                                    <button onclick="deleteFormatItem(this)" class="text-gray-400 hover:text-red-600 ml-2">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
                                 </div>
                             </div>
-                            <div class="flex items-start gap-2">
-                                <i class="fas fa-file-alt text-green-600 mt-1"></i>
+                            <div class="format-item p-3 bg-white rounded-lg border border-green-200" data-required="true">
+                                <div class="flex items-start justify-between">
                                 <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <i class="fas fa-file-alt text-green-600"></i>
                                     <p class="font-semibold text-gray-800">第四部分 商务部分</p>
-                                    <p class="text-gray-600 ml-4">4.1 报价明细</p>
-                                    <p class="text-gray-600 ml-4">4.2 付款方式</p>
-                                    <p class="text-gray-600 ml-4">4.3 售后服务</p>
+                                            <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                        </div>
+                                        <div class="ml-6 space-y-1">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-600">4.1 报价明细</span>
+                                                <span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-600">4.2 付款方式</span>
+                                                <span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-600">4.3 售后服务</span>
+                                                <span class="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">选填</span>
+                                            </div>
+                                        </div>
+                                        <p class="mt-1 text-[10px] text-gray-500">格式要求：Word文档，需签字盖章</p>
+                                    </div>
+                                    <button onclick="deleteFormatItem(this)" class="text-gray-400 hover:text-red-600 ml-2">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
                                 </div>
                             </div>
-                            <div class="flex items-start gap-2">
-                                <i class="fas fa-file-alt text-green-600 mt-1"></i>
+                            <div class="format-item p-3 bg-white rounded-lg border border-green-200" data-required="true">
+                                <div class="flex items-start justify-between">
                                 <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <i class="fas fa-file-alt text-green-600"></i>
                                     <p class="font-semibold text-gray-800">第五部分 资格证明文件</p>
-                                    <p class="text-gray-600 ml-4">5.1 企业资质</p>
-                                    <p class="text-gray-600 ml-4">5.2 业绩案例</p>
-                                    <p class="text-gray-600 ml-4">5.3 团队配置</p>
+                                            <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                        </div>
+                                        <div class="ml-6 space-y-1">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-600">5.1 企业资质</span>
+                                                <span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-600">5.2 业绩案例</span>
+                                                <span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-600">5.3 团队配置</span>
+                                                <span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">必填</span>
+                                            </div>
+                                        </div>
+                                        <p class="mt-1 text-[10px] text-gray-500">格式要求：PDF扫描件，需清晰可辨</p>
+                                    </div>
+                                    <button onclick="deleteFormatItem(this)" class="text-gray-400 hover:text-red-600 ml-2">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <p class="mt-3 text-xs text-gray-500 italic">此目录结构将作为标书默认目录，可在标书设置中修改</p>
-                    </div>
-                </div>
-                <div class="tab-content hidden" id="tab-tech">
-                    <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-sm text-gray-700">
-                        <p class="font-semibold text-gray-800 mb-2">技术部分要求</p>
-                        <ul class="space-y-2">
-                            <li>· 需详细说明技术架构和实施方案</li>
-                            <li>· 包含数据采集、处理、存储、分析全流程</li>
-                            <li>· 需提供系统架构图和流程图</li>
-                            <li>· 技术指标需符合招标文件要求</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="tab-content hidden" id="tab-business">
-                    <div class="p-4 rounded-xl bg-orange-50 border border-orange-100 text-sm text-gray-700">
-                        <p class="font-semibold text-gray-800 mb-2">商业部分要求</p>
-                        <ul class="space-y-2">
-                            <li>· 报价明细需完整清晰</li>
-                            <li>· 付款方式需符合招标要求</li>
-                            <li>· 售后服务承诺需明确</li>
-                            <li>· 合同条款需逐条响应</li>
-                        </ul>
+                        <p class="mt-3 text-xs text-gray-500 italic">此目录结构将作为标书默认目录，可在标书设置中修改。标记为"必填"的项目不可删除。</p>
                     </div>
                 </div>
             </div>
@@ -263,6 +687,149 @@
 
     </section>
     <script>
+        // 存储键名
+        const STORAGE_INTERPRET_KEY = 'bidding_interpret_data';
+        
+        // 初始化项目信息
+        let projectInfo = {
+            projectType: '研发',
+            projectName: '城市运行数字底座建设项目',
+            tenderer: 'XX市大数据局',
+            agency: 'XX招标代理公司',
+            bidDate: '2025-03-15T09:00',
+            validPeriod: 90
+        };
+        
+        // 页面加载时恢复数据
+        window.addEventListener('load', function() {
+            restoreInterpretData();
+            updateProjectInfoDisplay();
+        });
+        
+        // 恢复解析数据
+        function restoreInterpretData() {
+            try {
+                const saved = localStorage.getItem(STORAGE_INTERPRET_KEY);
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data.projectInfo) {
+                        projectInfo = { ...projectInfo, ...data.projectInfo };
+                    }
+                }
+            } catch (e) {
+                console.error('恢复数据失败:', e);
+            }
+        }
+        
+        // 保存解析数据
+        function saveInterpretData() {
+            try {
+                const data = {
+                    projectInfo: projectInfo,
+                    savedAt: new Date().toISOString()
+                };
+                localStorage.setItem(STORAGE_INTERPRET_KEY, JSON.stringify(data));
+                return true;
+            } catch (e) {
+                console.error('保存数据失败:', e);
+                return false;
+            }
+        }
+        
+        // 更新项目信息显示
+        function updateProjectInfoDisplay() {
+            document.getElementById('projectType').textContent = projectInfo.projectType;
+            document.getElementById('projectName').textContent = projectInfo.projectName;
+            document.getElementById('tenderer').textContent = projectInfo.tenderer;
+            document.getElementById('agency').textContent = projectInfo.agency;
+            
+            if (projectInfo.bidDate) {
+                const date = new Date(projectInfo.bidDate);
+                document.getElementById('bidDate').textContent = date.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+            
+            document.getElementById('validPeriod').textContent = projectInfo.validPeriod + '天';
+        }
+        
+        // 编辑项目信息
+        function editProjectInfo() {
+            const viewDiv = document.getElementById('projectInfoView');
+            const editDiv = document.getElementById('projectInfoEdit');
+            const editBtn = document.getElementById('editProjectBtn');
+            
+            viewDiv.classList.add('hidden');
+            editDiv.classList.remove('hidden');
+            editBtn.classList.add('hidden');
+            
+            // 填充编辑表单
+            document.getElementById('editProjectType').value = projectInfo.projectType;
+            document.getElementById('editProjectName').value = projectInfo.projectName;
+            document.getElementById('editTenderer').value = projectInfo.tenderer;
+            document.getElementById('editAgency').value = projectInfo.agency || '';
+            document.getElementById('editBidDate').value = projectInfo.bidDate ? projectInfo.bidDate.substring(0, 16) : '';
+            document.getElementById('editValidPeriod').value = projectInfo.validPeriod || 90;
+        }
+        
+        // 保存项目信息
+        function saveProjectInfo() {
+            projectInfo.projectType = document.getElementById('editProjectType').value;
+            projectInfo.projectName = document.getElementById('editProjectName').value;
+            projectInfo.tenderer = document.getElementById('editTenderer').value;
+            projectInfo.agency = document.getElementById('editAgency').value;
+            projectInfo.bidDate = document.getElementById('editBidDate').value + ':00';
+            projectInfo.validPeriod = parseInt(document.getElementById('editValidPeriod').value) || 90;
+            
+            if (!projectInfo.projectName || !projectInfo.tenderer || !projectInfo.bidDate) {
+                alert('请填写必填项：项目名称、招标人、开标日期');
+                return;
+            }
+            
+            updateProjectInfoDisplay();
+            saveInterpretData();
+            cancelEditProjectInfo();
+            
+            // 显示保存成功提示
+            showToast('项目信息已保存', 'success');
+        }
+        
+        // 取消编辑
+        function cancelEditProjectInfo() {
+            const viewDiv = document.getElementById('projectInfoView');
+            const editDiv = document.getElementById('projectInfoEdit');
+            const editBtn = document.getElementById('editProjectBtn');
+            
+            viewDiv.classList.remove('hidden');
+            editDiv.classList.add('hidden');
+            editBtn.classList.remove('hidden');
+        }
+        
+        // Toast提示
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const bgColor = {
+                'success': 'bg-green-500',
+                'warning': 'bg-yellow-500',
+                'error': 'bg-red-500',
+                'info': 'bg-blue-500'
+            }[type] || 'bg-blue-500';
+            
+            toast.className = `fixed top-4 right-4 ${bgColor} text-white px-4 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2`;
+            toast.innerHTML = `<span>${message}</span>`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
         function goBack() {
             try {
                 // 尝试返回到标书制作页面（如果在iframe中）

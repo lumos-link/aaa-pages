@@ -136,7 +136,17 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
                     <div class="flex items-center justify-between mb-3">
                         <h2 class="text-sm font-semibold text-gray-800">章节结构</h2>
-                        <button class="text-xs text-blue-600"><i class="fas fa-sync mr-1"></i> 刷新</button>
+                        <div class="flex items-center gap-2">
+                            <select id="chapterFilter" class="text-xs border border-gray-300 rounded px-2 py-1" onchange="filterChapters()">
+                                <option value="all">全部</option>
+                                <option value="required">实质项</option>
+                                <option value="score">评分相关</option>
+                                <option value="pending">未开始</option>
+                                <option value="writing">编写中</option>
+                                <option value="completed">已完成</option>
+                            </select>
+                            <button class="text-xs text-blue-600"><i class="fas fa-sync mr-1"></i> 刷新</button>
+                        </div>
                     </div>
                     <div id="chapterTree" class="space-y-1 text-sm max-h-[calc(100vh-400px)] overflow-y-auto">
                         <!-- 章节结构将动态生成 -->
@@ -156,11 +166,62 @@
                     </div>
                 </div>
 
+                <!-- 商务内容生成区域 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-semibold text-gray-800">商务内容生成</h3>
+                        <button onclick="toggleBusinessPanel()" class="text-xs text-gray-500 hover:text-gray-700" id="businessToggleBtn">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div id="businessContent" class="space-y-3" style="display: none;">
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <button onclick="generateCommitment()" class="p-2 bg-purple-50 border border-purple-200 rounded hover:bg-purple-100">
+                                <i class="fas fa-file-signature text-purple-600 mb-1"></i>
+                                <p class="font-medium text-gray-800">生成承诺书</p>
+                            </button>
+                            <button onclick="generatePersonnel()" class="p-2 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100">
+                                <i class="fas fa-users text-blue-600 mb-1"></i>
+                                <p class="font-medium text-gray-800">生成人员配置</p>
+                            </button>
+                            <button onclick="generatePerformance()" class="p-2 bg-green-50 border border-green-200 rounded hover:bg-green-100">
+                                <i class="fas fa-folder-open text-green-600 mb-1"></i>
+                                <p class="font-medium text-gray-800">生成业绩列表</p>
+                            </button>
+                            <button onclick="generateQualification()" class="p-2 bg-yellow-50 border border-yellow-200 rounded hover:bg-yellow-100">
+                                <i class="fas fa-certificate text-yellow-600 mb-1"></i>
+                                <p class="font-medium text-gray-800">生成资质证明</p>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 合规检查提示区域 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-semibold text-gray-800">合规检查</h3>
+                        <button onclick="runComplianceCheck()" class="text-xs text-blue-600 hover:text-blue-700">
+                            <i class="fas fa-check-circle mr-1"></i>立即检查
+                        </button>
+                    </div>
+                    <div id="complianceStatus" class="space-y-2 text-xs">
+                        <div class="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded">
+                            <i class="fas fa-check-circle text-green-600"></i>
+                            <span class="text-gray-700">当前章节：无风险项</span>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                            <i class="fas fa-exclamation-triangle text-yellow-600"></i>
+                            <span class="text-gray-700">整体：2个待检查项</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                     <div class="flex flex-col gap-2 mb-3">
                         <div class="flex items-center gap-2">
                             <span class="text-sm font-medium text-gray-700">当前章节：</span>
                             <span class="text-sm text-purple-600 font-semibold" id="currentChapter">请选择章节</span>
+                            <span id="chapterRiskBadge" class="hidden px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs">实质项</span>
                         </div>
                         <div class="flex items-center gap-2 flex-wrap text-xs text-gray-500">
                             <button class="px-3 py-1.5 border border-gray-200 rounded text-xs text-gray-600 hover:bg-gray-50" onclick="previewCurrentChapter()">
@@ -183,9 +244,25 @@
                     </div>
 
                     <div class="border border-gray-200 rounded-lg">
-                        <div class="flex items-center gap-2 p-3 border-b border-gray-200 bg-gray-50">
+                        <div class="flex items-center gap-2 p-3 border-b border-gray-200 bg-gray-50 flex-wrap">
                             <button onclick="showResourcePanel()" class="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs flex items-center gap-1 hover:bg-purple-700">
                                 <i class="fas fa-plus"></i> 插入资源
+                            </button>
+                            <button onclick="generateChapterContent()" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs flex items-center gap-1 hover:bg-blue-700">
+                                <i class="fas fa-magic"></i> AI生成章节
+                            </button>
+                            <div class="w-px h-4 bg-gray-300"></div>
+                            <button onclick="expandSelectedText()" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50" title="选中文本后扩写">
+                                <i class="fas fa-expand"></i> 扩写
+                            </button>
+                            <button onclick="rewriteSelectedText()" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50" title="选中文本后重写">
+                                <i class="fas fa-edit"></i> 重写
+                            </button>
+                            <button onclick="polishSelectedText()" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50" title="选中文本后润色">
+                                <i class="fas fa-spell-check"></i> 润色
+                            </button>
+                            <button onclick="referenceKnowledge()" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
+                                <i class="fas fa-book"></i> 引用知识库
                             </button>
                         </div>
                         <textarea id="chapterContent" class="w-full h-96 p-4 border-none focus:outline-none resize-none text-sm text-gray-700" placeholder="请先选择章节，或使用工具栏中的工具辅助编写..." oninput="updateChapterContent()"></textarea>
@@ -979,10 +1056,19 @@
                 return;
             }
             
+            const filter = document.getElementById('chapterFilter')?.value || 'all';
+            
             window.catalogData.forEach((chapter, index) => {
                 const chapterId = chapter.id;
                 const status = getChapterStatus(chapterId);
                 const hasChildren = chapter.children && chapter.children.length > 0;
+                const isRequired = chapter.required || false; // 是否为实质项
+                
+                // 应用筛选
+                if (filter === 'required' && !isRequired) return;
+                if (filter === 'pending' && status !== 'pending') return;
+                if (filter === 'writing' && status !== 'writing') return;
+                if (filter === 'completed' && status !== 'completed') return;
                 
                 // 主章节
                 const mainDiv = document.createElement('div');
@@ -990,10 +1076,11 @@
                 mainDiv.innerHTML = `
                     <button onclick="selectChapter(${chapterId}, '${chapter.title}')" 
                             class="w-full text-left px-3 py-2 rounded-lg flex items-center justify-between transition ${window.currentChapterId === chapterId ? 'bg-purple-50 text-purple-600 font-semibold border border-purple-200' : 'hover:bg-gray-50 border border-transparent'}"
-                            data-chapter-id="${chapterId}">
+                            data-chapter-id="${chapterId}" data-required="${isRequired}">
                         <span class="flex items-center gap-2">
                             ${hasChildren ? '<i class="fas fa-chevron-down text-xs text-gray-400"></i>' : '<i class="fas fa-file-alt text-xs text-gray-400"></i>'}
                             <span class="text-sm">${chapter.title}</span>
+                            ${isRequired ? '<span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">实质项</span>' : ''}
                         </span>
                         <span class="text-xs ${getStatusColor(status)}">${getStatusText(status)}</span>
                     </button>
@@ -1007,14 +1094,23 @@
                     chapter.children.forEach((sub) => {
                         const subId = sub.id;
                         const subStatus = getChapterStatus(subId);
+                        const subRequired = sub.required || false;
+                        
+                        // 应用筛选
+                        if (filter === 'required' && !subRequired) return;
+                        if (filter === 'pending' && subStatus !== 'pending') return;
+                        if (filter === 'writing' && subStatus !== 'writing') return;
+                        if (filter === 'completed' && subStatus !== 'completed') return;
+                        
                         const subDiv = document.createElement('div');
                         subDiv.innerHTML = `
                             <button onclick="selectChapter(${subId}, '${sub.title}')" 
                                     class="w-full text-left px-2 py-1.5 rounded text-xs flex items-center justify-between transition ${window.currentChapterId === subId ? 'bg-purple-50 text-purple-600 font-semibold border border-purple-200' : 'hover:bg-gray-50 border border-transparent'}"
-                                    data-chapter-id="${subId}">
+                                    data-chapter-id="${subId}" data-required="${subRequired}">
                                 <span class="flex items-center gap-2">
                                     <i class="fas fa-file text-[10px] text-gray-400"></i>
                                     <span>${sub.title}</span>
+                                    ${subRequired ? '<span class="px-1 py-0.5 bg-red-100 text-red-700 rounded text-[9px]">实质项</span>' : ''}
                                 </span>
                                 <span class="text-[10px] ${getStatusColor(subStatus)}">${getStatusText(subStatus)}</span>
                             </button>
@@ -1024,6 +1120,11 @@
                     container.appendChild(subContainer);
                 }
             });
+        }
+        
+        // 章节筛选
+        function filterChapters() {
+            renderChapterTree();
         }
         
         function getChapterStatus(chapterId) {
@@ -1056,8 +1157,21 @@
             window.currentChapterId = chapterId;
             document.getElementById('currentChapter').textContent = chapterTitle;
             document.getElementById('chapterContent').value = window.chapterContents[chapterId] || '';
+            
+            // 检查是否为实质项
+            const chapterBtn = document.querySelector(`[data-chapter-id="${chapterId}"]`);
+            const isRequired = chapterBtn?.dataset.required === 'true';
+            const riskBadge = document.getElementById('chapterRiskBadge');
+            if (isRequired) {
+                riskBadge.classList.remove('hidden');
+                riskBadge.textContent = '实质项';
+            } else {
+                riskBadge.classList.add('hidden');
+            }
+            
             renderChapterTree();
             updateConfirmButtonState();
+            updateComplianceStatus();
         }
         
         function updateChapterContent() {
@@ -2422,6 +2536,132 @@
             updateChapterContent();
             closeResourcePanel();
             showToast('资源已插入', 'success');
+        }
+
+        // 商务内容生成相关函数
+        function toggleBusinessPanel() {
+            const content = document.getElementById('businessContent');
+            const toggleBtn = document.getElementById('businessToggleBtn');
+            const icon = toggleBtn.querySelector('i');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            } else {
+                content.style.display = 'none';
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
+        }
+
+        function generateCommitment() {
+            if (!window.currentChapterId) {
+                showToast('请先选择章节', 'warning');
+                return;
+            }
+            showToast('正在生成承诺书...', 'info');
+            // 模拟生成
+            setTimeout(() => {
+                const editor = document.getElementById('chapterContent');
+                const content = `\n\n【项目上线运行承诺书】\n\n我公司郑重承诺：如中标，将在合同签订后30日内完成项目上线运行。\n\n特此承诺。\n\n投标人（盖章）：\n法定代表人（签字）：\n日期：${new Date().toLocaleDateString('zh-CN')}\n\n`;
+                editor.value += content;
+                updateChapterContent();
+                showToast('承诺书已生成', 'success');
+            }, 1000);
+        }
+
+        function generatePersonnel() {
+            showToast('人员配置生成功能开发中', 'info');
+        }
+
+        function generatePerformance() {
+            showToast('业绩列表生成功能开发中', 'info');
+        }
+
+        function generateQualification() {
+            showToast('资质证明生成功能开发中', 'info');
+        }
+
+        // 合规检查相关函数
+        function updateComplianceStatus() {
+            // 更新当前章节的合规状态
+            const statusDiv = document.getElementById('complianceStatus');
+            if (!statusDiv) return;
+            
+            // 这里可以根据实际检查结果更新
+            // 暂时使用示例数据
+        }
+
+        function runComplianceCheck() {
+            showToast('正在检查合规性...', 'info');
+            setTimeout(() => {
+                showToast('检查完成，发现2个待检查项', 'warning');
+                // 更新合规状态显示
+                const statusDiv = document.getElementById('complianceStatus');
+                if (statusDiv) {
+                    statusDiv.innerHTML = `
+                        <div class="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded">
+                            <i class="fas fa-check-circle text-green-600"></i>
+                            <span class="text-gray-700">当前章节：无风险项</span>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                            <i class="fas fa-exclamation-triangle text-yellow-600"></i>
+                            <span class="text-gray-700">整体：2个待检查项</span>
+                        </div>
+                        <button onclick="viewComplianceDetails()" class="w-full mt-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded text-xs hover:bg-blue-100">
+                            查看详情
+                        </button>
+                    `;
+                }
+            }, 1500);
+        }
+
+        function viewComplianceDetails() {
+            showToast('查看详情功能开发中', 'info');
+        }
+
+        // 编辑器增强功能
+        function generateChapterContent() {
+            if (!window.currentChapterId) {
+                showToast('请先选择章节', 'warning');
+                return;
+            }
+            showAIModal('generate');
+        }
+
+        function expandSelectedText() {
+            const editor = document.getElementById('chapterContent');
+            const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+            if (!selectedText.trim()) {
+                showToast('请先选中要扩写的文本', 'warning');
+                return;
+            }
+            showAIModal('expand', selectedText);
+        }
+
+        function rewriteSelectedText() {
+            const editor = document.getElementById('chapterContent');
+            const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+            if (!selectedText.trim()) {
+                showToast('请先选中要重写的文本', 'warning');
+                return;
+            }
+            showAIModal('rewrite', selectedText);
+        }
+
+        function polishSelectedText() {
+            const editor = document.getElementById('chapterContent');
+            const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+            if (!selectedText.trim()) {
+                showToast('请先选中要润色的文本', 'warning');
+                return;
+            }
+            showAIModal('polish', selectedText);
+        }
+
+        function referenceKnowledge() {
+            showToast('知识库引用功能开发中', 'info');
         }
 
     </script>

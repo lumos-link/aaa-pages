@@ -22,7 +22,12 @@
 
         <div class="grid lg:grid-cols-2 gap-6">
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-5">
-                <h2 class="text-lg font-semibold text-gray-800">基本信息</h2>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800">基本信息</h2>
+                    <span class="text-xs text-blue-600" id="interpretStatus">
+                        <i class="fas fa-link mr-1"></i>已关联解析结果
+                    </span>
+                </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -36,7 +41,21 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        标书类型 <span class="text-red-500">*</span>
+                        项目类型 <span class="text-red-500">*</span>
+                    </label>
+                    <select id="projectType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" onchange="saveSettingsToLocal()">
+                        <option value="研发">研发</option>
+                        <option value="维护">维护</option>
+                        <option value="集成">集成</option>
+                        <option value="合作伙伴入围">合作伙伴入围</option>
+                        <option value="其他">其他</option>
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">从招标解析结果自动带入</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        标书类型（行业） <span class="text-red-500">*</span>
                     </label>
                     <div class="grid grid-cols-2 gap-3">
                         <button class="industry-btn px-4 py-3 border-2 border-blue-600 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium" data-industry="it">
@@ -50,6 +69,77 @@
                         </button>
                         <button class="industry-btn px-4 py-3 border-2 border-gray-200 text-gray-600 rounded-lg text-sm font-medium" data-industry="service">
                             <i class="fas fa-handshake mr-2"></i>服务类
+                        </button>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 pt-4">
+                    <h3 class="text-sm font-semibold text-gray-800 mb-3">投标人信息</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">公司名称 <span class="text-red-500">*</span></label>
+                            <input type="text" id="bidderName" placeholder="请输入公司名称" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                   onchange="saveSettingsToLocal()">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">法定代表人</label>
+                                <input type="text" id="legalRepresentative" placeholder="请输入姓名" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                       onchange="saveSettingsToLocal()">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">联系人</label>
+                                <input type="text" id="contactPerson" placeholder="请输入姓名" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                       onchange="saveSettingsToLocal()">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">公司地址</label>
+                            <input type="text" id="bidderAddress" placeholder="请输入公司地址" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                   onchange="saveSettingsToLocal()">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">联系电话</label>
+                                <input type="tel" id="bidderPhone" placeholder="请输入电话" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                       onchange="saveSettingsToLocal()">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">邮箱</label>
+                                <input type="email" id="bidderEmail" placeholder="请输入邮箱" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                       onchange="saveSettingsToLocal()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 pt-4">
+                    <h3 class="text-sm font-semibold text-gray-800 mb-3">项目信息（来自招标解析）</h3>
+                    <div class="space-y-2 text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
+                        <div class="flex justify-between">
+                            <span>招标人：</span>
+                            <span class="font-medium text-gray-800" id="displayTenderer">XX市大数据局</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>代理机构：</span>
+                            <span class="font-medium text-gray-800" id="displayAgency">XX招标代理公司</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>开标日期：</span>
+                            <span class="font-medium text-gray-800" id="displayBidDate">2025-03-15 09:00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>投标有效期：</span>
+                            <span class="font-medium text-gray-800" id="displayValidPeriod">90天</span>
+                        </div>
+                        <button onclick="syncFromInterpret()" class="mt-2 w-full px-3 py-1.5 bg-blue-50 text-blue-600 rounded text-xs hover:bg-blue-100">
+                            <i class="fas fa-sync mr-1"></i> 同步最新解析结果
                         </button>
                     </div>
                 </div>
@@ -169,6 +259,165 @@
                             <p>5.3 团队配置</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商务内容配置 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">商务内容配置</h2>
+                <span class="text-xs text-gray-500">基于招标解析结果自动配置</span>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- 承诺书配置 -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-semibold text-gray-800">承诺书要求</h3>
+                        <button onclick="manageCommitments()" class="text-xs text-blue-600 hover:text-blue-700">
+                            <i class="fas fa-cog mr-1"></i>管理
+                        </button>
+                    </div>
+                    <div id="commitmentConfigList" class="space-y-2">
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" checked class="rounded">
+                                <span class="text-sm text-gray-700">项目上线运行承诺（30日内上线）</span>
+                            </div>
+                            <span class="text-xs text-gray-500">标准承诺书模板</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">勾选的承诺书将在标书编写时自动生成</p>
+                </div>
+
+                <!-- 人员配置 -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-semibold text-gray-800">人员配置</h3>
+                        <button onclick="selectPersonnel()" class="text-xs text-blue-600 hover:text-blue-700">
+                            <i class="fas fa-users mr-1"></i>选择人员
+                        </button>
+                    </div>
+                    <div class="text-xs text-gray-600 mb-2">
+                        <p>要求：不少于 8 人，其中驻场人员不少于 3 人</p>
+                        <p>需提供：身份证、学历证书、PMP证书、社保证明、劳动合同等</p>
+                    </div>
+                    <div id="personnelConfigList" class="space-y-2">
+                        <div class="p-2 bg-gray-50 rounded text-sm">
+                            <p class="font-medium text-gray-800 mb-1">已选择：0 / 8 人</p>
+                            <p class="text-xs text-gray-500">从公司资产库中选择符合要求的人员</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 业绩配置 -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-semibold text-gray-800">业绩配置</h3>
+                        <button onclick="selectPerformance()" class="text-xs text-blue-600 hover:text-blue-700">
+                            <i class="fas fa-folder-open mr-1"></i>选择业绩
+                        </button>
+                    </div>
+                    <div class="text-xs text-gray-600 mb-2">
+                        <p>要求：近3年（2022年1月1日至今），同类项目，不少于 3 个，单个项目金额 ≥ 300 万元</p>
+                        <p>需提供：合同首页、金额页、服务内容页、签字盖章页、发票</p>
+                    </div>
+                    <div id="performanceConfigList" class="space-y-2">
+                        <div class="p-2 bg-gray-50 rounded text-sm">
+                            <p class="font-medium text-gray-800 mb-1">已选择：0 / 3 个</p>
+                            <p class="text-xs text-gray-500">从公司资产库中选择符合要求的业绩案例</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 资质配置 -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-semibold text-gray-800">资质配置</h3>
+                        <button onclick="selectQualifications()" class="text-xs text-blue-600 hover:text-blue-700">
+                            <i class="fas fa-certificate mr-1"></i>选择资质
+                        </button>
+                    </div>
+                    <div id="qualificationConfigList" class="space-y-2">
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" checked class="rounded">
+                                <span class="text-sm text-gray-700">CMMI5 认证</span>
+                            </div>
+                            <span class="text-xs text-green-600">已匹配</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" checked class="rounded">
+                                <span class="text-sm text-gray-700">ISO 9001 质量管理体系认证</span>
+                            </div>
+                            <span class="text-xs text-green-600">已匹配</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">勾选的资质将从公司资产库自动引用到标书中</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 技术内容配置 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">技术内容配置</h2>
+                <span class="text-xs text-gray-500">基于项目类型和评分标准推荐</span>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- 技术章节推荐 -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <h3 class="text-sm font-semibold text-gray-800 mb-3">技术章节推荐</h3>
+                    <div class="text-xs text-gray-600 mb-3">
+                        <p>基于项目类型（研发）、行业（IT信息化）、评分标准自动推荐</p>
+                    </div>
+                    <div id="techChapterRecommendations" class="space-y-2">
+                        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-800 text-sm mb-1">推荐章节结构</p>
+                                    <div class="text-xs text-gray-600 space-y-1 ml-4">
+                                        <p>• 3.1 项目理解（对应评分：技术方案 25分）</p>
+                                        <p>• 3.2 技术架构（对应评分：技术架构 10分）</p>
+                                        <p>• 3.3 实施方案（对应评分：实施方案 5分）</p>
+                                        <p>• 3.4 数据治理方案（需突出数据治理能力）</p>
+                                        <p>• 3.5 质量保证措施</p>
+                                    </div>
+                                </div>
+                                <button onclick="applyTechRecommendations()" class="px-3 py-1.5 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">
+                                    采用
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 知识库引用配置 -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-semibold text-gray-800">知识库引用</h3>
+                        <button onclick="manageKnowledgeRefs()" class="text-xs text-blue-600 hover:text-blue-700">
+                            <i class="fas fa-book mr-1"></i>管理
+                        </button>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                            <input type="checkbox" checked class="rounded">
+                            <span class="text-sm text-gray-700">历史投标方案（智慧城市类项目）</span>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                            <input type="checkbox" checked class="rounded">
+                            <span class="text-sm text-gray-700">行业知识库（数据治理相关）</span>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                            <input type="checkbox" class="rounded">
+                            <span class="text-sm text-gray-700">实施方案模块（平台建设类）</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">勾选的知识库将在AI生成内容时自动引用</p>
                 </div>
             </div>
         </div>
@@ -564,6 +813,98 @@
             closeFormatModal();
         }
         // 保存设置到本地存储
+        // 从招标解析结果同步数据（仅在用户点击时触发）
+        function syncFromInterpret() {
+            try {
+                const interpretData = localStorage.getItem('bidding_interpret_data');
+                const statusEl = document.getElementById('interpretStatus');
+                if (!interpretData) {
+                    if (statusEl) {
+                        statusEl.textContent = '尚未完成招标文件解读';
+                        statusEl.classList.remove('text-blue-600');
+                        statusEl.classList.add('text-gray-400');
+                    }
+                    // 不弹出提示，静默返回
+                    return;
+                }
+                
+                const data = JSON.parse(interpretData);
+                if (data.projectInfo) {
+                    const info = data.projectInfo;
+                    
+                    // 更新项目类型
+                    if (info.projectType && document.getElementById('projectType')) {
+                        document.getElementById('projectType').value = info.projectType;
+                    }
+                    
+                    // 更新标书标题（基于项目名称）
+                    if (info.projectName && document.getElementById('bookTitle')) {
+                        document.getElementById('bookTitle').value = info.projectName + '投标书';
+                    }
+                    
+                    // 更新显示的项目信息
+                    if (info.tenderer) {
+                        document.getElementById('displayTenderer').textContent = info.tenderer;
+                    }
+                    if (info.agency) {
+                        document.getElementById('displayAgency').textContent = info.agency;
+                    }
+                    if (info.bidDate) {
+                        const date = new Date(info.bidDate);
+                        document.getElementById('displayBidDate').textContent = date.toLocaleString('zh-CN', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    }
+                    if (info.validPeriod) {
+                        document.getElementById('displayValidPeriod').textContent = info.validPeriod + '天';
+                    }
+                    
+                    // 同步目录结构（从响应文件格式）——预留，后续可接入
+                    
+                    saveSettingsToLocal();
+                    if (statusEl) {
+                        statusEl.textContent = '已关联解析结果';
+                        statusEl.classList.remove('text-gray-400');
+                        statusEl.classList.add('text-blue-600');
+                    }
+                    showToast('已同步最新解析结果', 'success');
+                }
+            } catch (e) {
+                console.error('同步解析结果失败:', e);
+                showToast('同步失败，请重试', 'error');
+            }
+        }
+        
+        // 商务内容配置相关函数
+        function manageCommitments() {
+            showToast('承诺书管理功能开发中', 'info');
+        }
+        
+        function selectPersonnel() {
+            showToast('人员选择功能开发中', 'info');
+        }
+        
+        function selectPerformance() {
+            showToast('业绩选择功能开发中', 'info');
+        }
+        
+        function selectQualifications() {
+            showToast('资质选择功能开发中', 'info');
+        }
+        
+        // 技术内容配置相关函数
+        function applyTechRecommendations() {
+            showToast('已采用推荐的技术章节结构', 'success');
+        }
+        
+        function manageKnowledgeRefs() {
+            showToast('知识库管理功能开发中', 'info');
+        }
+        
         function saveSettingsToLocal() {
             try {
                 const settings = {
