@@ -154,168 +154,106 @@
                 </div>
             </div>
 
-            <div class="space-y-4">
-                <!-- 标书名称显示 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-file-alt text-purple-600"></i>
-                        <div>
-                            <p class="text-xs text-gray-500">当前标书</p>
-                            <h2 class="text-base font-semibold text-gray-800" id="bidName">城市运行数字底座建设项目</h2>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 商务内容生成区域 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-sm font-semibold text-gray-800">商务内容生成</h3>
-                        <button onclick="toggleBusinessPanel()" class="text-xs text-gray-500 hover:text-gray-700" id="businessToggleBtn">
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                    </div>
-                    <div id="businessContent" class="space-y-3" style="display: none;">
-                        <div class="grid grid-cols-2 gap-3 text-xs">
-                            <button onclick="generateCommitment()" class="p-2 bg-purple-50 border border-purple-200 rounded hover:bg-purple-100">
-                                <i class="fas fa-file-signature text-purple-600 mb-1"></i>
-                                <p class="font-medium text-gray-800">生成承诺书</p>
-                            </button>
-                            <button onclick="generatePersonnel()" class="p-2 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100">
-                                <i class="fas fa-users text-blue-600 mb-1"></i>
-                                <p class="font-medium text-gray-800">生成人员配置</p>
-                            </button>
-                            <button onclick="generatePerformance()" class="p-2 bg-green-50 border border-green-200 rounded hover:bg-green-100">
-                                <i class="fas fa-folder-open text-green-600 mb-1"></i>
-                                <p class="font-medium text-gray-800">生成业绩列表</p>
-                            </button>
-                            <button onclick="generateQualification()" class="p-2 bg-yellow-50 border border-yellow-200 rounded hover:bg-yellow-100">
-                                <i class="fas fa-certificate text-yellow-600 mb-1"></i>
-                                <p class="font-medium text-gray-800">生成资质证明</p>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 合规检查提示区域 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-sm font-semibold text-gray-800">合规检查</h3>
-                        <button onclick="runComplianceCheck()" class="text-xs text-blue-600 hover:text-blue-700">
-                            <i class="fas fa-check-circle mr-1"></i>立即检查
-                        </button>
-                    </div>
-                    <div id="complianceStatus" class="space-y-2 text-xs">
-                        <div class="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded">
-                            <i class="fas fa-check-circle text-green-600"></i>
-                            <span class="text-gray-700">当前章节：无风险项</span>
-                        </div>
-                        <div class="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
-                            <i class="fas fa-exclamation-triangle text-yellow-600"></i>
-                            <span class="text-gray-700">整体：2个待检查项</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                    <div class="flex flex-col gap-2 mb-3">
+            <div class="flex gap-6">
+                <!-- 左侧编辑区域 -->
+                <div class="flex-1 space-y-4 min-w-0">
+                    <!-- 标书名称显示 -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
                         <div class="flex items-center gap-2">
-                            <span class="text-sm font-medium text-gray-700">当前章节：</span>
-                            <span class="text-sm text-purple-600 font-semibold" id="currentChapter">请选择章节</span>
-                            <span id="chapterRiskBadge" class="hidden px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs">实质项</span>
-                        </div>
-                        <div class="flex items-center gap-2 flex-wrap text-xs text-gray-500">
-                            <button class="px-3 py-1.5 border border-gray-200 rounded text-xs text-gray-600 hover:bg-gray-50" onclick="previewCurrentChapter()">
-                                <i class="fas fa-eye mr-1 text-blue-500"></i> 预览Word格式
-                            </button>
-                            <button id="confirmChapterBtn" class="px-3 py-1.5 border border-gray-200 rounded text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="confirmChapterCompletion()">
-                                <i class="fas fa-check-circle mr-1 text-green-500"></i> 标记已完成
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
-                        <div class="flex items-center justify-between mb-2">
-                            <label class="text-xs font-medium text-gray-700">引用企业知识库</label>
-                            <button onclick="showKnowledgeModal()" class="text-xs text-blue-600"><i class="fas fa-plus mr-1"></i> 选择</button>
-                        </div>
-                        <div id="knowledgeList" class="flex flex-wrap gap-2 mt-2">
-                            <!-- 已选择的知识库和文件将动态显示 -->
-                        </div>
-                    </div>
-
-                    <div class="border border-gray-200 rounded-lg">
-                        <div class="flex items-center gap-2 p-3 border-b border-gray-200 bg-gray-50 flex-wrap">
-                            <button onclick="showResourcePanel()" class="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs flex items-center gap-1 hover:bg-purple-700">
-                                <i class="fas fa-plus"></i> 插入资源
-                            </button>
-                            <button onclick="generateChapterContent()" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs flex items-center gap-1 hover:bg-blue-700">
-                                <i class="fas fa-magic"></i> AI生成章节
-                            </button>
-                            <div class="w-px h-4 bg-gray-300"></div>
-                            <button onclick="expandSelectedText()" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50" title="选中文本后扩写">
-                                <i class="fas fa-expand"></i> 扩写
-                            </button>
-                            <button onclick="rewriteSelectedText()" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50" title="选中文本后重写">
-                                <i class="fas fa-edit"></i> 重写
-                            </button>
-                            <button onclick="polishSelectedText()" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50" title="选中文本后润色">
-                                <i class="fas fa-spell-check"></i> 润色
-                            </button>
-                            <button onclick="referenceKnowledge()" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs flex items-center gap-1 hover:bg-gray-50">
-                                <i class="fas fa-book"></i> 引用知识库
-                            </button>
-                        </div>
-                        <textarea id="chapterContent" class="w-full h-96 p-4 border-none focus:outline-none resize-none text-sm text-gray-700" placeholder="请先选择章节，或使用工具栏中的工具辅助编写..." oninput="updateChapterContent()"></textarea>
-                    </div>
-                </div>
-
-                <!-- AI对话助手（移到右侧下方） -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="flex items-center justify-between p-3 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-blue-50 cursor-pointer hover:bg-gradient-to-r hover:from-purple-100 hover:to-blue-100" onclick="toggleChatPanel()">
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs">
-                                <i class="fas fa-robot"></i>
+                            <i class="fas fa-file-alt text-purple-600"></i>
+                            <div>
+                                <p class="text-xs text-gray-500">当前标书</p>
+                                <h2 class="text-base font-semibold text-gray-800" id="bidName">城市运行数字底座建设项目</h2>
                             </div>
-                            <h3 class="text-sm font-semibold text-gray-800">AI 内容助手</h3>
-                            <span class="text-xs text-gray-500">点击展开/收起</span>
                         </div>
-                        <button class="text-xs text-gray-500 hover:text-gray-700" id="chatToggleBtn">
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
                     </div>
-                    <div id="chatContent" class="flex flex-col" style="display: none;">
-                        <div id="chatMessages" class="flex-1 overflow-y-auto p-3 space-y-3 text-xs" style="max-height: 300px;">
-                            <div class="flex gap-2">
-                                <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 text-[10px]">
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                        <div class="flex flex-col gap-2 mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-gray-700">当前章节：</span>
+                                <span class="text-sm text-purple-600 font-semibold" id="currentChapter">请选择章节</span>
+                                <span id="chapterRiskBadge" class="hidden px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs">实质项</span>
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap text-xs text-gray-500">
+                                <button class="px-3 py-1.5 border border-gray-200 rounded text-xs text-gray-600 hover:bg-gray-50" onclick="previewCurrentChapter()">
+                                    <i class="fas fa-eye mr-1 text-blue-500"></i> 预览Word格式
+                                </button>
+                                <button id="confirmChapterBtn" class="px-3 py-1.5 border border-gray-200 rounded text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="confirmChapterCompletion()">
+                                    <i class="fas fa-check-circle mr-1 text-green-500"></i> 标记已完成
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-medium text-gray-700">引用企业知识库</label>
+                                <button onclick="showKnowledgeModal()" class="text-xs text-blue-600"><i class="fas fa-plus mr-1"></i> 选择</button>
+                            </div>
+                            <div id="knowledgeList" class="flex flex-wrap gap-2 mt-2">
+                                <!-- 已选择的知识库和文件将动态显示 -->
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="flex items-center gap-2 p-3 border-b border-gray-200 bg-gray-50 flex-wrap">
+                                <button onclick="showResourcePanel()" class="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs flex items-center gap-1 hover:bg-purple-700">
+                                    <i class="fas fa-plus"></i> 插入资源
+                                </button>
+                            </div>
+                            <textarea id="chapterContent" class="w-full h-96 p-4 border-none focus:outline-none resize-none text-sm text-gray-700" placeholder="请先选择章节，或使用工具栏中的工具辅助编写..." oninput="updateChapterContent()"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧AI对话助手（竖着放） -->
+                <div class="w-80 flex-shrink-0">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden h-full flex flex-col">
+                        <div class="flex items-center justify-between p-3 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-blue-50">
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs">
                                     <i class="fas fa-robot"></i>
                                 </div>
-                                <div class="flex-1">
-                                    <div class="bg-gray-50 rounded-lg rounded-tl-none p-2 text-gray-700">
-                                        <p>我可以帮您：修改内容、调整语气、补充细节、优化表达等。直接告诉我您的需求即可！</p>
+                                <h3 class="text-sm font-semibold text-gray-800">AI 内容助手</h3>
+                            </div>
+                            <button class="text-xs text-gray-500 hover:text-gray-700" id="chatToggleBtn" onclick="toggleChatPanel()">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                        </div>
+                        <div id="chatContent" class="flex flex-col flex-1 min-h-0">
+                            <div id="chatMessages" class="flex-1 overflow-y-auto p-3 space-y-3 text-xs">
+                                <div class="flex gap-2">
+                                    <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 text-[10px]">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="bg-gray-50 rounded-lg rounded-tl-none p-2 text-gray-700">
+                                            <p>我可以帮您：修改内容、调整语气、补充细节、优化表达等。直接告诉我您的需求即可！</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="border-t border-gray-200 p-3">
-                            <div class="flex items-end gap-2">
-                                <div class="flex-1 relative">
-                                    <textarea 
-                                        id="chatInput" 
-                                        placeholder="例如：把这段改得更专业一些..." 
-                                        class="w-full px-2 py-1.5 pr-8 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
-                                        rows="2"
-                                        onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }"
-                                    ></textarea>
-                                    <button onclick="showChapterSelector()" class="absolute right-2 bottom-2 text-gray-400 hover:text-purple-600 text-xs" title="选择章节">
-                                        <i class="fas fa-at"></i>
+                            <div class="border-t border-gray-200 p-3 flex-shrink-0">
+                                <div class="flex flex-col gap-2">
+                                    <div class="relative">
+                                        <textarea 
+                                            id="chatInput" 
+                                            placeholder="例如：把这段改得更专业一些..." 
+                                            class="w-full px-2 py-1.5 pr-8 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+                                            rows="3"
+                                            onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }"
+                                        ></textarea>
+                                        <button onclick="showChapterSelector()" class="absolute right-2 bottom-2 text-gray-400 hover:text-purple-600 text-xs" title="选择章节">
+                                            <i class="fas fa-at"></i>
+                                        </button>
+                                    </div>
+                                    <button onclick="sendChatMessage()" class="w-full px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-xs flex items-center justify-center gap-1">
+                                        <i class="fas fa-paper-plane text-[10px]"></i>
+                                        <span>发送</span>
                                     </button>
+                                    <p class="text-[10px] text-gray-400 text-center">Enter 发送，Shift+Enter 换行，@ 选择章节</p>
                                 </div>
-                                <button onclick="sendChatMessage()" class="px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-xs flex items-center gap-1">
-                                    <i class="fas fa-paper-plane text-[10px]"></i>
-                                    <span>发送</span>
-                                </button>
                             </div>
-                            <p class="text-[10px] text-gray-400 mt-1 ml-1">Enter 发送，Shift+Enter 换行，@ 选择章节</p>
                         </div>
                     </div>
                 </div>
@@ -782,22 +720,45 @@
 
     <!-- 插入资源面板 -->
     <div id="resourcePanel" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] flex flex-col">
+        <div class="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] flex flex-col">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold">插入资源</h3>
                 <button onclick="closeResourcePanel()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
             </div>
-            <div class="flex gap-2 mb-4 text-sm">
-                <button onclick="switchResourceTab('image')" class="resource-tab-btn px-4 py-2 bg-blue-600 text-white rounded-lg" data-tab="image">
+            
+            <!-- 搜索框 -->
+            <div class="mb-4">
+                <div class="relative">
+                    <input type="text" id="resourceSearchInput" placeholder="搜索资源名称、描述、标签..." 
+                           class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           oninput="searchResourcesInPanel()">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <!-- 页签 -->
+            <div class="flex gap-2 mb-4 text-sm border-b border-gray-200 overflow-x-auto">
+                <button onclick="switchResourceTab('image')" class="resource-tab-btn px-4 py-2 bg-blue-600 text-white rounded-t-lg whitespace-nowrap" data-tab="image">
                     <i class="fas fa-images mr-2"></i>图片库
                 </button>
-                <button onclick="switchResourceTab('company')" class="resource-tab-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200" data-tab="company">
-                    <i class="fas fa-building mr-2"></i>企业档案
+                <button onclick="switchResourceTab('material')" class="resource-tab-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-t-lg hover:bg-gray-200 whitespace-nowrap" data-tab="material">
+                    <i class="fas fa-folder-open mr-2"></i>企业素材库
                 </button>
-                <button onclick="switchResourceTab('knowledge')" class="resource-tab-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200" data-tab="knowledge">
-                    <i class="fas fa-book mr-2"></i>知识库
+                <button onclick="switchResourceTab('case')" class="resource-tab-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-t-lg hover:bg-gray-200 whitespace-nowrap" data-tab="case">
+                    <i class="fas fa-briefcase mr-2"></i>企业案例库
+                </button>
+                <button onclick="switchResourceTab('knowledge')" class="resource-tab-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-t-lg hover:bg-gray-200 whitespace-nowrap" data-tab="knowledge">
+                    <i class="fas fa-book mr-2"></i>行业知识库
+                </button>
+                <button onclick="switchResourceTab('certificate')" class="resource-tab-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-t-lg hover:bg-gray-200 whitespace-nowrap" data-tab="certificate">
+                    <i class="fas fa-certificate mr-2"></i>资质证件
+                </button>
+                <button onclick="switchResourceTab('template')" class="resource-tab-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-t-lg hover:bg-gray-200 whitespace-nowrap" data-tab="template">
+                    <i class="fas fa-file-alt mr-2"></i>标书模板
                 </button>
             </div>
+            
+            <!-- 资源内容区域 -->
             <div id="resourceContent" class="flex-1 overflow-y-auto">
                 <!-- 资源内容将动态加载 -->
             </div>
@@ -828,6 +789,9 @@
             loadCatalogStructure();
             updateWritingStatus();
             updateConfirmButtonState();
+            
+            // 自动生成商务内容（基于标书设置中的配置）
+            autoGenerateBusinessContent();
             
             // 如果恢复了当前章节，自动选中
             if (window.currentChapterId && window.catalogData) {
@@ -2126,7 +2090,7 @@
         }
 
         // AI对话助手功能
-        let chatPanelCollapsed = true; // 默认收起
+        let chatPanelCollapsed = false; // 默认展开
         let chatMessages = [];
 
         function toggleChatPanel() {
@@ -2153,6 +2117,22 @@
                 }, 100);
             }
         }
+        
+        // 确保AI助手容器高度自适应
+        window.addEventListener('load', function() {
+            const chatContainer = document.querySelector('.w-80');
+            if (chatContainer) {
+                // 设置高度为视口高度减去一些padding
+                const setChatHeight = () => {
+                    const section = document.querySelector('section.p-6');
+                    const sectionTop = section ? section.offsetTop : 0;
+                    const availableHeight = window.innerHeight - sectionTop - 48; // 减去padding
+                    chatContainer.style.height = availableHeight + 'px';
+                };
+                setChatHeight();
+                window.addEventListener('resize', setChatHeight);
+            }
+        });
 
         function sendChatMessage() {
             const input = document.getElementById('chatInput');
@@ -2431,6 +2411,9 @@
         // 资源面板功能
         function showResourcePanel() {
             document.getElementById('resourcePanel').classList.remove('hidden');
+            // 清空搜索框
+            document.getElementById('resourceSearchInput').value = '';
+            resourceSearchKeyword = '';
             switchResourceTab('image');
         }
 
@@ -2438,7 +2421,60 @@
             document.getElementById('resourcePanel').classList.add('hidden');
         }
 
+        // 资源面板相关变量
+        let currentResourceTab = 'image';
+        let resourceSearchKeyword = '';
+
+        // 从资源资产库读取数据
+        function loadResourceDataFromLibrary() {
+            try {
+                const saved = localStorage.getItem('resource_asset_library');
+                if (saved) {
+                    return JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('加载资源数据失败:', e);
+            }
+            // 返回默认空数据
+            return {
+                image: [],
+                material: [],
+                case: [],
+                knowledge: [],
+                certificate: [],
+                template: []
+            };
+        }
+
+        // 获取资源库名称
+        function getCategoryName(category) {
+            const names = {
+                image: '图片库',
+                material: '企业素材库',
+                case: '企业案例库',
+                knowledge: '行业知识库',
+                certificate: '资质证件',
+                template: '标书模板'
+            };
+            return names[category] || category;
+        }
+
+        // 获取资源图标
+        function getCategoryIcon(category) {
+            const icons = {
+                image: 'fa-images',
+                material: 'fa-folder-open',
+                case: 'fa-briefcase',
+                knowledge: 'fa-book',
+                certificate: 'fa-certificate',
+                template: 'fa-file-alt'
+            };
+            return icons[category] || 'fa-file';
+        }
+
         function switchResourceTab(tab) {
+            currentResourceTab = tab;
+            
             // 更新按钮状态
             document.querySelectorAll('.resource-tab-btn').forEach(btn => {
                 if (btn.dataset.tab === tab) {
@@ -2450,67 +2486,87 @@
                 }
             });
 
+            // 重新渲染内容（会应用当前搜索关键词）
+            renderResourceContent();
+        }
+
+        // 搜索资源
+        function searchResourcesInPanel() {
+            resourceSearchKeyword = document.getElementById('resourceSearchInput').value.trim().toLowerCase();
+            renderResourceContent();
+        }
+
+        // 渲染资源内容
+        function renderResourceContent() {
             const content = document.getElementById('resourceContent');
+            const resourceData = loadResourceDataFromLibrary();
+            const resources = resourceData[currentResourceTab] || [];
             
-            if (tab === 'image') {
+            // 过滤资源（根据搜索关键词）
+            let filteredResources = resources;
+            if (resourceSearchKeyword) {
+                filteredResources = resources.filter(resource => {
+                    const name = (resource.name || '').toLowerCase();
+                    const description = (resource.description || '').toLowerCase();
+                    const tags = (resource.tags || []).join(' ').toLowerCase();
+                    const searchText = name + ' ' + description + ' ' + tags;
+                    return searchText.includes(resourceSearchKeyword);
+                });
+            }
+
+            if (filteredResources.length === 0) {
                 content.innerHTML = `
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="aspect-square bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-2 hover:border-blue-500 border-2 border-transparent" onclick="insertResource('image', '架构图1.jpg', '系统架构图')">
-                            <i class="fas fa-sitemap text-2xl text-blue-600 mb-2"></i>
-                            <span class="text-xs text-blue-700">架构图</span>
-                        </div>
-                        <div class="aspect-square bg-gradient-to-br from-green-100 to-green-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-2 hover:border-blue-500 border-2 border-transparent" onclick="insertResource('image', '流程图1.jpg', '业务流程图')">
-                            <i class="fas fa-project-diagram text-2xl text-green-600 mb-2"></i>
-                            <span class="text-xs text-green-700">流程图</span>
-                        </div>
-                        <div class="aspect-square bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-2 hover:border-blue-500 border-2 border-transparent" onclick="insertResource('image', '数据图1.jpg', '数据可视化')">
-                            <i class="fas fa-chart-bar text-2xl text-purple-600 mb-2"></i>
-                            <span class="text-xs text-purple-700">数据图</span>
-                        </div>
+                    <div class="text-center py-12 text-gray-400">
+                        <i class="fas fa-inbox text-4xl mb-3"></i>
+                        <p class="text-sm">${resourceSearchKeyword ? '未找到匹配的资源' : '暂无资源'}</p>
+                        ${!resourceSearchKeyword ? `<p class="text-xs mt-1">请前往"资源资产库"添加资源</p>` : ''}
                     </div>
                 `;
-            } else if (tab === 'company') {
+                return;
+            }
+
+            // 根据资源类型渲染不同样式
+            if (currentResourceTab === 'image') {
+                // 图片库：网格布局
                 content.innerHTML = `
-                    <div class="space-y-2">
-                        <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500" onclick="insertResource('company', '企业资质证书', '企业库 · 证件中心')">
-                            <div class="flex items-center gap-2 mb-1">
-                                <i class="fas fa-certificate text-blue-600"></i>
-                                <p class="font-medium text-sm text-gray-800">企业资质证书</p>
+                    <div class="grid grid-cols-3 gap-4">
+                        ${filteredResources.map(resource => `
+                            <div class="aspect-square bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-2 hover:border-blue-500 border-2 border-transparent p-3" 
+                                 onclick="insertResource('${currentResourceTab}', '${(resource.name || '').replace(/'/g, "\\'")}', '${(resource.file || '').replace(/'/g, "\\'")}')"
+                                 title="${(resource.name || '').replace(/"/g, '&quot;')}">
+                                <i class="fas ${getCategoryIcon(currentResourceTab)} text-2xl text-blue-600 mb-2"></i>
+                                <span class="text-xs text-blue-700 text-center truncate w-full">${resource.name || '未命名'}</span>
+                                ${resource.description ? `<span class="text-[10px] text-blue-500 mt-1 text-center line-clamp-2">${resource.description}</span>` : ''}
                             </div>
-                            <p class="text-xs text-gray-500">来源：企业库 · 证件中心</p>
-                        </div>
-                        <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500" onclick="insertResource('company', '智慧城市案例', '素材库 · 案例库')">
-                            <div class="flex items-center gap-2 mb-1">
-                                <i class="fas fa-folder-open text-green-600"></i>
-                                <p class="font-medium text-sm text-gray-800">智慧城市案例</p>
-                            </div>
-                            <p class="text-xs text-gray-500">来源：素材库 · 案例库</p>
-                        </div>
+                        `).join('')}
                     </div>
                 `;
-            } else if (tab === 'knowledge') {
+            } else {
+                // 其他库：列表布局
                 content.innerHTML = `
                     <div class="space-y-2">
-                        <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500" onclick="insertResource('knowledge', '智慧城市项目案例库', '知识库')">
-                            <div class="flex items-center gap-2 mb-1">
-                                <i class="fas fa-book text-purple-600"></i>
-                                <p class="font-medium text-sm text-gray-800">智慧城市项目案例库</p>
+                        ${filteredResources.map(resource => `
+                            <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" 
+                                 onclick="insertResource('${currentResourceTab}', '${(resource.name || '').replace(/'/g, "\\'")}', '${(resource.file || '').replace(/'/g, "\\'")}')">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <i class="fas ${getCategoryIcon(currentResourceTab)} text-blue-600"></i>
+                                    <p class="font-medium text-sm text-gray-800">${resource.name || '未命名'}</p>
+                                    ${resource.file ? `<span class="text-xs text-gray-400 ml-auto">${resource.file}</span>` : ''}
+                                </div>
+                                ${resource.description ? `<p class="text-xs text-gray-500 mb-1">${resource.description}</p>` : ''}
+                                ${resource.tags && resource.tags.length > 0 ? `
+                                    <div class="flex flex-wrap gap-1 mt-2">
+                                        ${resource.tags.map(tag => `<span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">${tag}</span>`).join('')}
+                                    </div>
+                                ` : ''}
                             </div>
-                            <p class="text-xs text-gray-500">15个文件</p>
-                        </div>
-                        <div class="p-3 border border-gray-100 rounded-lg cursor-pointer hover:border-blue-500" onclick="insertResource('knowledge', '技术标准知识库', '知识库')">
-                            <div class="flex items-center gap-2 mb-1">
-                                <i class="fas fa-book text-purple-600"></i>
-                                <p class="font-medium text-sm text-gray-800">技术标准知识库</p>
-                            </div>
-                            <p class="text-xs text-gray-500">12个文件</p>
-                        </div>
+                        `).join('')}
                     </div>
                 `;
             }
         }
 
-        function insertResource(type, name, source) {
+        function insertResource(category, name, file) {
             const editor = document.getElementById('chapterContent');
             if (!window.currentChapterId) {
                 showToast('请先选择章节', 'warning');
@@ -2518,12 +2574,22 @@
             }
 
             let insertText = '';
-            if (type === 'image') {
-                insertText = `\n[图片: ${name}]\n`;
-            } else if (type === 'company') {
-                insertText = `\n[引用${name} - ${source}]\n`;
-            } else if (type === 'knowledge') {
-                insertText = `\n[引用知识库: ${name}]\n`;
+            const categoryName = getCategoryName(category);
+            
+            if (category === 'image') {
+                insertText = `\n[图片: ${name}${file ? ` (${file})` : ''}]\n`;
+            } else if (category === 'certificate') {
+                insertText = `\n[资质证件: ${name}${file ? ` (${file})` : ''}]\n`;
+            } else if (category === 'case') {
+                insertText = `\n[案例: ${name}${file ? ` (${file})` : ''}]\n`;
+            } else if (category === 'knowledge') {
+                insertText = `\n[知识库: ${name}${file ? ` (${file})` : ''}]\n`;
+            } else if (category === 'material') {
+                insertText = `\n[素材: ${name}${file ? ` (${file})` : ''}]\n`;
+            } else if (category === 'template') {
+                insertText = `\n[模板: ${name}${file ? ` (${file})` : ''}]\n`;
+            } else {
+                insertText = `\n[${categoryName}: ${name}${file ? ` (${file})` : ''}]\n`;
             }
 
             const cursorPos = editor.selectionStart || editor.value.length;
@@ -2538,88 +2604,118 @@
             showToast('资源已插入', 'success');
         }
 
-        // 商务内容生成相关函数
-        function toggleBusinessPanel() {
-            const content = document.getElementById('businessContent');
-            const toggleBtn = document.getElementById('businessToggleBtn');
-            const icon = toggleBtn.querySelector('i');
-            
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
-                icon.classList.remove('fa-chevron-down');
-                icon.classList.add('fa-chevron-up');
-            } else {
-                content.style.display = 'none';
-                icon.classList.remove('fa-chevron-up');
-                icon.classList.add('fa-chevron-down');
-            }
-        }
-
-        function generateCommitment() {
-            if (!window.currentChapterId) {
-                showToast('请先选择章节', 'warning');
-                return;
-            }
-            showToast('正在生成承诺书...', 'info');
-            // 模拟生成
-            setTimeout(() => {
-                const editor = document.getElementById('chapterContent');
-                const content = `\n\n【项目上线运行承诺书】\n\n我公司郑重承诺：如中标，将在合同签订后30日内完成项目上线运行。\n\n特此承诺。\n\n投标人（盖章）：\n法定代表人（签字）：\n日期：${new Date().toLocaleDateString('zh-CN')}\n\n`;
-                editor.value += content;
-                updateChapterContent();
-                showToast('承诺书已生成', 'success');
-            }, 1000);
-        }
-
-        function generatePersonnel() {
-            showToast('人员配置生成功能开发中', 'info');
-        }
-
-        function generatePerformance() {
-            showToast('业绩列表生成功能开发中', 'info');
-        }
-
-        function generateQualification() {
-            showToast('资质证明生成功能开发中', 'info');
-        }
-
-        // 合规检查相关函数
-        function updateComplianceStatus() {
-            // 更新当前章节的合规状态
-            const statusDiv = document.getElementById('complianceStatus');
-            if (!statusDiv) return;
-            
-            // 这里可以根据实际检查结果更新
-            // 暂时使用示例数据
-        }
-
-        function runComplianceCheck() {
-            showToast('正在检查合规性...', 'info');
-            setTimeout(() => {
-                showToast('检查完成，发现2个待检查项', 'warning');
-                // 更新合规状态显示
-                const statusDiv = document.getElementById('complianceStatus');
-                if (statusDiv) {
-                    statusDiv.innerHTML = `
-                        <div class="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded">
-                            <i class="fas fa-check-circle text-green-600"></i>
-                            <span class="text-gray-700">当前章节：无风险项</span>
-                        </div>
-                        <div class="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
-                            <i class="fas fa-exclamation-triangle text-yellow-600"></i>
-                            <span class="text-gray-700">整体：2个待检查项</span>
-                        </div>
-                        <button onclick="viewComplianceDetails()" class="w-full mt-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded text-xs hover:bg-blue-100">
-                            查看详情
-                        </button>
-                    `;
+        // 自动生成商务内容（基于标书设置中的配置）
+        function autoGenerateBusinessContent() {
+            try {
+                // 读取标书设置中的配置
+                const savedSettings = localStorage.getItem(STORAGE_SETTINGS_KEY);
+                if (!savedSettings) {
+                    return; // 没有配置，不生成
                 }
-            }, 1500);
+                
+                const settings = JSON.parse(savedSettings);
+                let hasGenerated = false;
+                
+                // 检查人员配置并生成
+                if (settings.personnelConfig && settings.personnelConfig.selectedCount > 0) {
+                    generatePersonnelToChapter(settings.personnelConfig);
+                    hasGenerated = true;
+                }
+                
+                // 检查业绩配置并生成
+                if (settings.performanceConfig && settings.performanceConfig.selectedCount > 0) {
+                    generatePerformanceToChapter(settings.performanceConfig);
+                    hasGenerated = true;
+                }
+                
+                // 检查资质配置并生成
+                if (settings.qualificationConfig && Array.isArray(settings.qualificationConfig)) {
+                    const checkedQuals = settings.qualificationConfig.filter(q => q.checked);
+                    if (checkedQuals.length > 0) {
+                        generateQualificationToChapter(checkedQuals);
+                        hasGenerated = true;
+                    }
+                }
+                
+                if (hasGenerated) {
+                    console.log('已自动生成商务内容');
+                    // 保存生成的内容
+                    saveToLocalStorage();
+                }
+            } catch (e) {
+                console.error('自动生成商务内容失败:', e);
+            }
+        }
+        
+        // 生成人员配置到对应章节
+        function generatePersonnelToChapter(config) {
+            const chapterId = findChapterByKeyword(['人员', '团队', '5.3']);
+            if (chapterId) {
+                const content = `\n\n【项目团队人员配置】\n\n根据招标文件要求，我公司配置项目团队人员如下：\n\n总人数：${config.selectedCount}人\n驻场人员：${config.onsiteCount || 0}人\n\n（具体人员信息及证明材料见附件）\n\n`;
+                appendToChapter(chapterId, content);
+            }
+        }
+        
+        // 生成业绩列表到对应章节
+        function generatePerformanceToChapter(config) {
+            const chapterId = findChapterByKeyword(['业绩', '案例', '5.2']);
+            if (chapterId) {
+                const content = `\n\n【同类项目业绩】\n\n根据招标文件要求，我公司提供近3年同类项目业绩如下：\n\n已选择业绩：${config.selectedCount}个\n\n（具体业绩案例及证明材料见附件）\n\n`;
+                appendToChapter(chapterId, content);
+            }
+        }
+        
+        // 生成资质证明到对应章节
+        function generateQualificationToChapter(qualifications) {
+            const chapterId = findChapterByKeyword(['资质', '资格', '5.1']);
+            if (chapterId) {
+                let content = `\n\n【企业资质证明】\n\n根据招标文件要求，我公司提供以下资质证明：\n\n`;
+                qualifications.forEach(q => {
+                    content += `• ${q.name}\n`;
+                });
+                content += `\n（具体资质证书见附件）\n\n`;
+                appendToChapter(chapterId, content);
+            }
+        }
+        
+        // 根据关键词查找章节
+        function findChapterByKeyword(keywords) {
+            if (!window.catalogData) return null;
+            
+            const searchInChapters = (chapters) => {
+                for (const chapter of chapters) {
+                    // 检查主章节
+                    if (keywords.some(keyword => chapter.title.includes(keyword))) {
+                        return chapter.id;
+                    }
+                    // 检查子章节
+                    if (chapter.children) {
+                        for (const sub of chapter.children) {
+                            if (keywords.some(keyword => sub.title.includes(keyword))) {
+                                return sub.id;
+                            }
+                        }
+                    }
+                }
+                return null;
+            };
+            
+            return searchInChapters(window.catalogData);
+        }
+        
+        // 追加内容到章节
+        function appendToChapter(chapterId, content) {
+            if (!window.chapterContents[chapterId]) {
+                window.chapterContents[chapterId] = '';
+            }
+            // 如果章节已有内容，追加；否则直接设置
+            if (window.chapterContents[chapterId].trim()) {
+                window.chapterContents[chapterId] += content;
+            } else {
+                window.chapterContents[chapterId] = content;
+            }
         }
 
-        function viewComplianceDetails() {
-            showToast('查看详情功能开发中', 'info');
-        }
 
         // 编辑器增强功能
         function generateChapterContent() {

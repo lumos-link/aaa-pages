@@ -267,30 +267,10 @@
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-semibold text-gray-800">商务内容配置</h2>
-                <span class="text-xs text-gray-500">基于招标解析结果自动配置</span>
+                <span class="text-xs text-gray-500">配置人员、业绩、资质等，配置完成后可在标书编写页面生成具体内容</span>
             </div>
             
             <div class="space-y-4">
-                <!-- 承诺书配置 -->
-                <div class="border border-gray-200 rounded-lg p-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-sm font-semibold text-gray-800">承诺书要求</h3>
-                        <button onclick="manageCommitments()" class="text-xs text-blue-600 hover:text-blue-700">
-                            <i class="fas fa-cog mr-1"></i>管理
-                        </button>
-                    </div>
-                    <div id="commitmentConfigList" class="space-y-2">
-                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" checked class="rounded">
-                                <span class="text-sm text-gray-700">项目上线运行承诺（30日内上线）</span>
-                            </div>
-                            <span class="text-xs text-gray-500">标准承诺书模板</span>
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-2">勾选的承诺书将在标书编写时自动生成</p>
-                </div>
-
                 <!-- 人员配置 -->
                 <div class="border border-gray-200 rounded-lg p-4">
                     <div class="flex items-center justify-between mb-3">
@@ -364,60 +344,24 @@
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-semibold text-gray-800">技术内容配置</h2>
-                <span class="text-xs text-gray-500">基于项目类型和评分标准推荐</span>
+                <span class="text-xs text-gray-500">配置技术章节结构、知识库引用等，为标书编写提供技术内容基础</span>
             </div>
             
             <div class="space-y-4">
-                <!-- 技术章节推荐 -->
-                <div class="border border-gray-200 rounded-lg p-4">
-                    <h3 class="text-sm font-semibold text-gray-800 mb-3">技术章节推荐</h3>
-                    <div class="text-xs text-gray-600 mb-3">
-                        <p>基于项目类型（研发）、行业（IT信息化）、评分标准自动推荐</p>
-                    </div>
-                    <div id="techChapterRecommendations" class="space-y-2">
-                        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                            <div class="flex items-start justify-between mb-2">
-                                <div class="flex-1">
-                                    <p class="font-medium text-gray-800 text-sm mb-1">推荐章节结构</p>
-                                    <div class="text-xs text-gray-600 space-y-1 ml-4">
-                                        <p>• 3.1 项目理解（对应评分：技术方案 25分）</p>
-                                        <p>• 3.2 技术架构（对应评分：技术架构 10分）</p>
-                                        <p>• 3.3 实施方案（对应评分：实施方案 5分）</p>
-                                        <p>• 3.4 数据治理方案（需突出数据治理能力）</p>
-                                        <p>• 3.5 质量保证措施</p>
-                                    </div>
-                                </div>
-                                <button onclick="applyTechRecommendations()" class="px-3 py-1.5 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">
-                                    采用
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- 知识库引用配置 -->
                 <div class="border border-gray-200 rounded-lg p-4">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="text-sm font-semibold text-gray-800">知识库引用</h3>
                         <button onclick="manageKnowledgeRefs()" class="text-xs text-blue-600 hover:text-blue-700">
-                            <i class="fas fa-book mr-1"></i>管理
+                            <i class="fas fa-book mr-1"></i>选择知识库
                         </button>
                     </div>
-                    <div class="space-y-2">
-                        <div class="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                            <input type="checkbox" checked class="rounded">
-                            <span class="text-sm text-gray-700">历史投标方案（智慧城市类项目）</span>
-                        </div>
-                        <div class="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                            <input type="checkbox" checked class="rounded">
-                            <span class="text-sm text-gray-700">行业知识库（数据治理相关）</span>
-                        </div>
-                        <div class="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                            <input type="checkbox" class="rounded">
-                            <span class="text-sm text-gray-700">实施方案模块（平台建设类）</span>
+                    <div id="knowledgeRefList" class="space-y-2">
+                        <div class="p-2 bg-gray-50 rounded text-sm">
+                            <p class="text-gray-500">请从资源资产库中选择知识库文件</p>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500 mt-2">勾选的知识库将在AI生成内容时自动引用</p>
+                    <p class="text-xs text-gray-500 mt-2">选择的知识库将在AI生成内容时自动引用</p>
                 </div>
             </div>
         </div>
@@ -431,7 +375,7 @@
                 <button class="hidden px-4 py-2 bg-pink-600 text-white rounded-lg" onclick="showCollabModal()">
                     <i class="fas fa-users mr-2"></i> 开启协同
                 </button>
-                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg" onclick="parent.loadPage('标书编写.html','step')">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" onclick="goToNextStep('标书编写.html')">
                     <i class="fas fa-arrow-right mr-2"></i> 下一步：标书编写
                 </button>
             </div>
@@ -594,6 +538,42 @@
                 <div class="flex gap-3 pt-2">
                     <button onclick="closeFormatModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700">取消</button>
                     <button onclick="saveFormat()" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 选择资源弹窗 -->
+    <div id="resourceSelectModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold" id="resourceSelectTitle">选择资源</h3>
+                <button onclick="closeResourceSelectModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <!-- 搜索框 -->
+            <div class="mb-4">
+                <div class="relative">
+                    <input type="text" id="resourceSelectSearchInput" placeholder="搜索资源名称、描述、标签..." 
+                           class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           oninput="searchResourcesInSelect()">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <!-- 资源列表 -->
+            <div id="resourceSelectContent" class="flex-1 overflow-y-auto space-y-2">
+                <!-- 资源列表将动态加载 -->
+            </div>
+            
+            <!-- 底部操作 -->
+            <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                <div class="text-sm text-gray-600">
+                    <span id="selectedCount">已选择：0 项</span>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="closeResourceSelectModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button onclick="confirmResourceSelection()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">确认选择</button>
                 </div>
             </div>
         </div>
@@ -880,29 +860,513 @@
         }
         
         // 商务内容配置相关函数
-        function manageCommitments() {
-            showToast('承诺书管理功能开发中', 'info');
+        let currentSelectType = null; // 'personnel', 'performance', 'qualification', 'knowledge'
+        let currentSelectCategory = null; // 'material', 'case', 'certificate', 'knowledge'
+        let selectedResources = []; // 当前选中的资源
+        let resourceSelectSearchKeyword = '';
+        
+        // 从资源资产库读取数据
+        function loadResourceDataFromLibrary() {
+            try {
+                const saved = localStorage.getItem('resource_asset_library');
+                if (saved) {
+                    return JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('加载资源数据失败:', e);
+            }
+            return {
+                image: [],
+                material: [],
+                case: [],
+                knowledge: [],
+                certificate: [],
+                template: []
+            };
         }
         
         function selectPersonnel() {
-            showToast('人员选择功能开发中', 'info');
+            currentSelectType = 'personnel';
+            selectedResources = getSelectedPersonnel();
+            // 人员可能在企业素材库或其他库中，这里先显示企业素材库
+            showResourceSelectModal('选择人员', 'material');
         }
         
         function selectPerformance() {
-            showToast('业绩选择功能开发中', 'info');
+            currentSelectType = 'performance';
+            selectedResources = getSelectedPerformance();
+            showResourceSelectModal('选择业绩案例', 'case');
         }
         
         function selectQualifications() {
-            showToast('资质选择功能开发中', 'info');
+            currentSelectType = 'qualification';
+            selectedResources = getSelectedQualifications();
+            showResourceSelectModal('选择资质证件', 'certificate');
         }
+        
+        // 显示资源选择弹窗
+        function showResourceSelectModal(title, category) {
+            document.getElementById('resourceSelectTitle').textContent = title;
+            document.getElementById('resourceSelectModal').classList.remove('hidden');
+            document.getElementById('resourceSelectSearchInput').value = '';
+            resourceSelectSearchKeyword = '';
+            currentSelectCategory = category;
+            renderResourceSelectList();
+        }
+        
+        // 关闭资源选择弹窗
+        function closeResourceSelectModal() {
+            document.getElementById('resourceSelectModal').classList.add('hidden');
+            selectedResources = [];
+            currentSelectType = null;
+        }
+        
+        // 搜索资源
+        function searchResourcesInSelect() {
+            resourceSelectSearchKeyword = document.getElementById('resourceSelectSearchInput').value.trim().toLowerCase();
+            renderResourceSelectList();
+        }
+        
+        // 渲染资源选择列表
+        function renderResourceSelectList() {
+            const content = document.getElementById('resourceSelectContent');
+            const resourceData = loadResourceDataFromLibrary();
+            const resources = resourceData[currentSelectCategory] || [];
+            
+            // 过滤资源
+            let filteredResources = resources;
+            if (resourceSelectSearchKeyword) {
+                filteredResources = resources.filter(resource => {
+                    const name = (resource.name || '').toLowerCase();
+                    const description = (resource.description || '').toLowerCase();
+                    const tags = (resource.tags || []).join(' ').toLowerCase();
+                    const searchText = name + ' ' + description + ' ' + tags;
+                    return searchText.includes(resourceSelectSearchKeyword);
+                });
+            }
+            
+            if (filteredResources.length === 0) {
+                content.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <i class="fas fa-inbox text-4xl mb-3"></i>
+                        <p class="text-sm">${resourceSelectSearchKeyword ? '未找到匹配的资源' : '暂无资源'}</p>
+                        ${!resourceSelectSearchKeyword ? `<p class="text-xs mt-1">请前往"资源资产库"添加资源</p>` : ''}
+                    </div>
+                `;
+                document.getElementById('selectedCount').textContent = '已选择：0 项';
+                return;
+            }
+            
+            // 渲染资源列表（复选框）
+            content.innerHTML = filteredResources.map(resource => {
+                const isSelected = selectedResources.some(r => r.id === resource.id);
+                const safeName = (resource.name || '未命名').replace(/"/g, '&quot;');
+                const safeDesc = (resource.description || '').replace(/"/g, '&quot;');
+                return `
+                    <label class="flex items-start gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition ${isSelected ? 'border-blue-500 bg-blue-50' : ''}">
+                        <input type="checkbox" class="mt-1 resource-checkbox" 
+                               data-resource-id="${resource.id}"
+                               ${isSelected ? 'checked' : ''}
+                               onchange="toggleResourceSelection(${resource.id}, '${safeName}', '${(resource.file || '').replace(/'/g, "\\'")}')">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <p class="font-medium text-sm text-gray-800">${resource.name || '未命名'}</p>
+                                ${resource.file ? `<span class="text-xs text-gray-400">${resource.file}</span>` : ''}
+                            </div>
+                            ${resource.description ? `<p class="text-xs text-gray-500 mb-1">${resource.description}</p>` : ''}
+                            ${resource.tags && resource.tags.length > 0 ? `
+                                <div class="flex flex-wrap gap-1 mt-1">
+                                    ${resource.tags.map(tag => `<span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">${tag}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </label>
+                `;
+            }).join('');
+            
+            updateSelectedCount();
+        }
+        
+        // 切换资源选择状态
+        function toggleResourceSelection(id, name, file) {
+            const checkbox = document.querySelector(`.resource-checkbox[data-resource-id="${id}"]`);
+            if (checkbox.checked) {
+                selectedResources.push({ id, name, file });
+            } else {
+                selectedResources = selectedResources.filter(r => r.id !== id);
+            }
+            updateSelectedCount();
+        }
+        
+        // 更新选中数量
+        function updateSelectedCount() {
+            document.getElementById('selectedCount').textContent = `已选择：${selectedResources.length} 项`;
+        }
+        
+        // 确认选择
+        function confirmResourceSelection() {
+            if (!currentSelectType) return;
+            
+            if (currentSelectType === 'personnel') {
+                savePersonnelSelection(selectedResources);
+            } else if (currentSelectType === 'performance') {
+                savePerformanceSelection(selectedResources);
+            } else if (currentSelectType === 'qualification') {
+                saveQualificationSelection(selectedResources);
+            } else if (currentSelectType === 'knowledge') {
+                saveKnowledgeSelection(selectedResources);
+            }
+            
+            closeResourceSelectModal();
+            showToast('选择已保存', 'success');
+        }
+        
+        // 保存人员选择
+        function savePersonnelSelection(resources) {
+            const config = {
+                selected: resources,
+                selectedCount: resources.length,
+                onsiteCount: 0 // 可以后续添加驻场人员数量
+            };
+            saveBusinessConfig('personnel', config);
+            renderPersonnelConfig();
+        }
+        
+        // 保存业绩选择
+        function savePerformanceSelection(resources) {
+            const config = {
+                selected: resources,
+                selectedCount: resources.length
+            };
+            saveBusinessConfig('performance', config);
+            renderPerformanceConfig();
+        }
+        
+        // 保存资质选择
+        function saveQualificationSelection(resources) {
+            const config = resources.map(r => ({
+                id: r.id,
+                name: r.name,
+                checked: true
+            }));
+            saveBusinessConfig('qualification', config);
+            renderQualificationConfig();
+        }
+        
+        // 保存商务配置到localStorage
+        function saveBusinessConfig(type, config) {
+            try {
+                const saved = localStorage.getItem('bidding_settings_data');
+                const settings = saved ? JSON.parse(saved) : {};
+                
+                if (!settings.businessConfig) {
+                    settings.businessConfig = {};
+                }
+                
+                settings.businessConfig[type] = config;
+                localStorage.setItem('bidding_settings_data', JSON.stringify(settings));
+            } catch (e) {
+                console.error('保存商务配置失败:', e);
+            }
+        }
+        
+        // 获取已选择的人员
+        function getSelectedPersonnel() {
+            try {
+                const saved = localStorage.getItem('bidding_settings_data');
+                if (saved) {
+                    const settings = JSON.parse(saved);
+                    return settings.businessConfig?.personnel?.selected || [];
+                }
+            } catch (e) {}
+            return [];
+        }
+        
+        // 获取已选择的业绩
+        function getSelectedPerformance() {
+            try {
+                const saved = localStorage.getItem('bidding_settings_data');
+                if (saved) {
+                    const settings = JSON.parse(saved);
+                    return settings.businessConfig?.performance?.selected || [];
+                }
+            } catch (e) {}
+            return [];
+        }
+        
+        // 获取已选择的资质
+        function getSelectedQualifications() {
+            try {
+                const saved = localStorage.getItem('bidding_settings_data');
+                if (saved) {
+                    const settings = JSON.parse(saved);
+                    return settings.businessConfig?.qualification || [];
+                }
+            } catch (e) {}
+            return [];
+        }
+        
+        // 渲染人员配置
+        function renderPersonnelConfig() {
+            const container = document.getElementById('personnelConfigList');
+            const selected = getSelectedPersonnel();
+            const requirement = getPersonnelRequirement(); // 从招标解读获取要求
+            
+            if (selected.length === 0) {
+                container.innerHTML = `
+                    <div class="p-2 bg-gray-50 rounded text-sm">
+                        <p class="font-medium text-gray-800 mb-1">已选择：0 / ${requirement.total || 8} 人</p>
+                        <p class="text-xs text-gray-500">从资源资产库中选择符合要求的人员</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="p-2 bg-blue-50 border border-blue-200 rounded text-sm mb-2">
+                    <p class="font-medium text-gray-800 mb-1">已选择：${selected.length} / ${requirement.total || 8} 人</p>
+                    ${selected.length < (requirement.total || 8) ? `<p class="text-xs text-yellow-600">还需选择 ${(requirement.total || 8) - selected.length} 人</p>` : '<p class="text-xs text-green-600">人员数量已满足要求</p>'}
+                </div>
+                <div class="space-y-1">
+                    ${selected.map(r => `
+                        <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded text-xs">
+                            <span class="text-gray-700">${r.name}</span>
+                            <button onclick="removePersonnel(${r.id})" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        // 渲染业绩配置
+        function renderPerformanceConfig() {
+            const container = document.getElementById('performanceConfigList');
+            const selected = getSelectedPerformance();
+            const requirement = getPerformanceRequirement(); // 从招标解读获取要求
+            
+            if (selected.length === 0) {
+                container.innerHTML = `
+                    <div class="p-2 bg-gray-50 rounded text-sm">
+                        <p class="font-medium text-gray-800 mb-1">已选择：0 / ${requirement.count || 3} 个</p>
+                        <p class="text-xs text-gray-500">从资源资产库中选择符合要求的业绩案例</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="p-2 bg-green-50 border border-green-200 rounded text-sm mb-2">
+                    <p class="font-medium text-gray-800 mb-1">已选择：${selected.length} / ${requirement.count || 3} 个</p>
+                    ${selected.length < (requirement.count || 3) ? `<p class="text-xs text-yellow-600">还需选择 ${(requirement.count || 3) - selected.length} 个</p>` : '<p class="text-xs text-green-600">业绩数量已满足要求</p>'}
+                </div>
+                <div class="space-y-1">
+                    ${selected.map(r => `
+                        <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded text-xs">
+                            <span class="text-gray-700">${r.name}</span>
+                            <button onclick="removePerformance(${r.id})" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        // 渲染资质配置
+        function renderQualificationConfig() {
+            const container = document.getElementById('qualificationConfigList');
+            const selected = getSelectedQualifications();
+            const requirement = getQualificationRequirement(); // 从招标解读获取要求
+            
+            if (selected.length === 0) {
+                container.innerHTML = `
+                    <div class="p-2 bg-gray-50 rounded text-sm">
+                        <p class="text-gray-500">请从资源资产库中选择资质证件</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = selected.map(item => `
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" ${item.checked ? 'checked' : ''} 
+                               onchange="toggleQualification(${item.id})" class="rounded">
+                        <span class="text-sm text-gray-700">${item.name}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-green-600">已匹配</span>
+                        <button onclick="removeQualification(${item.id})" class="text-red-500 hover:text-red-700 text-xs">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 从招标解读获取人员要求
+        function getPersonnelRequirement() {
+            try {
+                const saved = localStorage.getItem('bidding_interpret_data');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    // 这里可以从解析结果中获取人员要求
+                    return { total: 8, onsite: 3 };
+                }
+            } catch (e) {}
+            return { total: 8, onsite: 3 };
+        }
+        
+        // 从招标解读获取业绩要求
+        function getPerformanceRequirement() {
+            try {
+                const saved = localStorage.getItem('bidding_interpret_data');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    // 这里可以从解析结果中获取业绩要求
+                    return { count: 3 };
+                }
+            } catch (e) {}
+            return { count: 3 };
+        }
+        
+        // 从招标解读获取资质要求
+        function getQualificationRequirement() {
+            try {
+                const saved = localStorage.getItem('bidding_interpret_data');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    // 这里可以从解析结果中获取资质要求
+                    return [];
+                }
+            } catch (e) {}
+            return [];
+        }
+        
+        // 删除人员
+        function removePersonnel(id) {
+            const selected = getSelectedPersonnel();
+            const newSelected = selected.filter(r => r.id !== id);
+            savePersonnelSelection(newSelected);
+            renderPersonnelConfig();
+        }
+        
+        // 删除业绩
+        function removePerformance(id) {
+            const selected = getSelectedPerformance();
+            const newSelected = selected.filter(r => r.id !== id);
+            savePerformanceSelection(newSelected);
+            renderPerformanceConfig();
+        }
+        
+        // 切换资质选择
+        function toggleQualification(id) {
+            const selected = getSelectedQualifications();
+            const item = selected.find(q => q.id === id);
+            if (item) {
+                item.checked = !item.checked;
+                saveBusinessConfig('qualification', selected);
+                renderQualificationConfig();
+            }
+        }
+        
+        // 删除资质
+        function removeQualification(id) {
+            const selected = getSelectedQualifications();
+            const newSelected = selected.filter(q => q.id !== id);
+            saveBusinessConfig('qualification', newSelected);
+            renderQualificationConfig();
+        }
+        
+        // 页面加载时渲染配置
+        window.addEventListener('load', function() {
+            renderPersonnelConfig();
+            renderPerformanceConfig();
+            renderQualificationConfig();
+            renderKnowledgeConfig();
+        });
         
         // 技术内容配置相关函数
-        function applyTechRecommendations() {
-            showToast('已采用推荐的技术章节结构', 'success');
+        function manageKnowledgeRefs() {
+            currentSelectType = 'knowledge';
+            selectedResources = getSelectedKnowledge();
+            showResourceSelectModal('选择知识库', 'knowledge');
         }
         
-        function manageKnowledgeRefs() {
-            showToast('知识库管理功能开发中', 'info');
+        // 获取已选择的知识库
+        function getSelectedKnowledge() {
+            try {
+                const saved = localStorage.getItem('bidding_settings_data');
+                if (saved) {
+                    const settings = JSON.parse(saved);
+                    return settings.businessConfig?.knowledge || [];
+                }
+            } catch (e) {}
+            return [];
+        }
+        
+        // 保存知识库选择
+        function saveKnowledgeSelection(resources) {
+            const config = resources.map(r => ({
+                id: r.id,
+                name: r.name,
+                file: r.file,
+                checked: true
+            }));
+            saveBusinessConfig('knowledge', config);
+            renderKnowledgeConfig();
+        }
+        
+        // 渲染知识库配置
+        function renderKnowledgeConfig() {
+            const container = document.getElementById('knowledgeRefList');
+            const selected = getSelectedKnowledge();
+            
+            if (selected.length === 0) {
+                container.innerHTML = `
+                    <div class="p-2 bg-gray-50 rounded text-sm">
+                        <p class="text-gray-500">请从资源资产库中选择知识库文件</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = selected.map(item => `
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" ${item.checked ? 'checked' : ''} 
+                               onchange="toggleKnowledge(${item.id})" class="rounded">
+                        <div class="flex-1">
+                            <span class="text-sm text-gray-700">${item.name}</span>
+                            ${item.file ? `<span class="text-xs text-gray-400 ml-2">${item.file}</span>` : ''}
+                        </div>
+                    </div>
+                    <button onclick="removeKnowledge(${item.id})" class="text-red-500 hover:text-red-700 text-xs">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        // 切换知识库选择
+        function toggleKnowledge(id) {
+            const selected = getSelectedKnowledge();
+            const item = selected.find(k => k.id === id);
+            if (item) {
+                item.checked = !item.checked;
+                saveBusinessConfig('knowledge', selected);
+                renderKnowledgeConfig();
+            }
+        }
+        
+        // 删除知识库
+        function removeKnowledge(id) {
+            const selected = getSelectedKnowledge();
+            const newSelected = selected.filter(k => k.id !== id);
+            saveBusinessConfig('knowledge', newSelected);
+            renderKnowledgeConfig();
         }
         
         function saveSettingsToLocal() {
@@ -977,6 +1441,49 @@
                 showToast('标书设置已保存', 'success');
             } else {
                 showToast('保存失败，请重试', 'error');
+            }
+        }
+        
+        function goToNextStep(page) {
+            try {
+                // 先保存当前设置
+                saveSettingsToLocal();
+                
+                // 如果在标书制作.html的iframe中，需要切换步骤
+                if (window.parent && window.parent !== window) {
+                    // 检查是否在标书制作.html中
+                    try {
+                        const parentDoc = window.parent.document;
+                        if (parentDoc && parentDoc.querySelector('.step-tab')) {
+                            // 根据目标页面确定步骤
+                            let stepId = null;
+                            if (page === '标书编写.html') {
+                                stepId = 'step3';
+                            }
+                            
+                            if (stepId && window.parent.switchStep) {
+                                // 调用父窗口的switchStep函数
+                                window.parent.switchStep(stepId);
+                                return;
+                            }
+                        }
+                    } catch (e) {
+                        // 跨域或其他错误，继续下面的逻辑
+                        console.log('无法访问父窗口DOM:', e);
+                    }
+                    
+                    // 如果在index.html的iframe中，使用loadPage
+                    if (window.parent.loadPage) {
+                        window.parent.loadPage(page, 'step');
+                        return;
+                    }
+                }
+                // 如果没有parent或parent没有loadPage，直接跳转
+                window.location.href = page;
+            } catch (e) {
+                console.error('跳转失败:', e);
+                // 出错时直接跳转
+                window.location.href = page;
             }
         }
         
