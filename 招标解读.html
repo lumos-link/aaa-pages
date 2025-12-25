@@ -23,26 +23,25 @@
                     <h2 class="text-lg font-semibold text-gray-800">招标文件</h2>
                     <span class="text-xs text-gray-400">最大 40MB</span>
                 </div>
-                <div class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center text-sm text-gray-600">
+                <div id="uploadArea" class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center text-sm text-gray-600 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition" 
+                     onclick="document.getElementById('fileInput').click()"
+                     ondrop="handleFileDrop(event)"
+                     ondragover="handleDragOver(event)"
+                     ondragleave="handleDragLeave(event)">
+                    <input type="file" id="fileInput" multiple accept=".doc,.docx,.pdf,.xls,.xlsx" class="hidden" onchange="handleFileSelect(event)">
                     <i class="fas fa-file-import text-3xl text-blue-500 mb-3"></i>
                     <p class="font-semibold text-gray-700 mb-1">拖拽或点击上传</p>
                     <p class="text-xs text-gray-400">支持 doc、docx、pdf、xls、xlsx（不含扫描件）</p>
                 </div>
-                <div class="space-y-3 text-sm">
-                    <div class="flex items-center justify-between p-3 border border-gray-100 rounded-xl">
-                        <div>
-                            <p class="font-semibold text-gray-800">项目主体招标书.docx</p>
-                            <p class="text-xs text-gray-500">解析完成 · 143 KB</p>
-                        </div>
-                        <span class="text-green-600 text-xs"><i class="fas fa-check-circle mr-1"></i>成功</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 border border-gray-100 rounded-xl">
-                        <div>
-                            <p class="font-semibold text-gray-800">技术澄清.pdf</p>
-                            <p class="text-xs text-gray-500">解析中 · 412 KB</p>
-                        </div>
-                        <span class="text-blue-600 text-xs"><i class="fas fa-spinner fa-spin mr-1"></i>解析中</span>
-                    </div>
+                <div id="fileList" class="space-y-3 text-sm">
+                    <!-- 文件列表将动态生成 -->
+                </div>
+                <div id="startParseSection" class="pt-2 border-t border-gray-100">
+                    <button id="startParseBtn" onclick="startParseAll()" class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fas fa-magic"></i>
+                        <span>开始生成解析摘要</span>
+                    </button>
+                    <p class="text-xs text-gray-400 text-center mt-2">上传文件后，点击按钮开始解析所有文件</p>
                 </div>
             </div>
 
@@ -649,10 +648,16 @@
             validPeriod: 90
         };
         
+        // 文件列表管理
+        let uploadedFiles = [];
+        let isParsing = false;
+        let parseCompleted = false;
+        
         // 页面加载时恢复数据
         window.addEventListener('load', function() {
             restoreInterpretData();
             updateProjectInfoDisplay();
+            renderFileList();
         });
         
         // 恢复解析数据
@@ -664,14 +669,266 @@
                     if (data.projectInfo) {
                         projectInfo = { ...projectInfo, ...data.projectInfo };
                     }
+                    if (data.uploadedFiles) {
+                        uploadedFiles = data.uploadedFiles;
+                    }
+                    if (data.isParsing !== undefined) {
+                        isParsing = data.isParsing;
+                    }
+                    if (data.parseCompleted !== undefined) {
+                        parseCompleted = data.parseCompleted;
+                    }
                 }
             } catch (e) {
                 console.error('恢复数据失败:', e);
             }
         }
         
+        // 处理文件选择
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            if (files.length === 0) return;
+            
+            files.forEach(file => {
+                // 验证文件类型
+                const validExtensions = ['.doc', '.docx', '.pdf', '.xls', '.xlsx'];
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                if (!validExtensions.includes(fileExtension)) {
+                    showToast('不支持的文件类型：' + file.name, 'error');
+                    return;
+                }
+                
+                // 验证文件大小（40MB）
+                if (file.size > 40 * 1024 * 1024) {
+                    showToast('文件大小超过限制：' + file.name, 'error');
+                    return;
+                }
+                
+                // 检查是否已存在同名文件
+                if (uploadedFiles.some(f => f.name === file.name)) {
+                    showToast('文件已存在：' + file.name, 'warning');
+                    return;
+                }
+                
+                // 添加到文件列表
+                uploadedFiles.push({
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    size: file.size,
+                    status: 'uploaded', // uploaded, parsing, success, error
+                    file: file
+                });
+            });
+            
+            // 清空input以便可以再次选择相同文件
+            event.target.value = '';
+            
+            renderFileList();
+            saveInterpretData();
+        }
+        
+        // 渲染文件列表
+        function renderFileList() {
+            const fileList = document.getElementById('fileList');
+            const startParseBtn = document.getElementById('startParseBtn');
+            
+            if (uploadedFiles.length === 0) {
+                fileList.innerHTML = '';
+                startParseBtn.disabled = true;
+                startParseBtn.innerHTML = '<i class="fas fa-magic"></i><span>开始生成解析摘要</span>';
+                return;
+            }
+            
+            // 更新按钮状态
+            const hasUnparsedFiles = uploadedFiles.some(f => f.status === 'uploaded');
+            const hasParsingFiles = uploadedFiles.some(f => f.status === 'parsing');
+            
+            if (isParsing || hasParsingFiles) {
+                startParseBtn.disabled = true;
+                startParseBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>解析中...</span>';
+            } else if (hasUnparsedFiles) {
+                startParseBtn.disabled = false;
+                startParseBtn.innerHTML = '<i class="fas fa-magic"></i><span>开始生成解析摘要</span>';
+            } else {
+                startParseBtn.disabled = true;
+                startParseBtn.innerHTML = '<i class="fas fa-check-circle"></i><span>所有文件已解析</span>';
+            }
+            
+            // 渲染文件列表
+            fileList.innerHTML = uploadedFiles.map(file => {
+                const fileSize = (file.size / 1024).toFixed(0) + ' KB';
+                let statusHtml = '';
+                
+                if (file.status === 'uploaded') {
+                    statusHtml = '<span class="text-gray-500 text-xs"><i class="fas fa-clock mr-1"></i>待解析</span>';
+                } else if (file.status === 'parsing') {
+                    statusHtml = '<span class="text-blue-600 text-xs"><i class="fas fa-spinner fa-spin mr-1"></i>解析中</span>';
+                } else if (file.status === 'success') {
+                    statusHtml = '<span class="text-green-600 text-xs"><i class="fas fa-check-circle mr-1"></i>成功</span>';
+                } else if (file.status === 'error') {
+                    statusHtml = '<span class="text-red-600 text-xs"><i class="fas fa-exclamation-circle mr-1"></i>失败</span>';
+                }
+                
+                return `
+                    <div class="flex items-center justify-between p-3 border border-gray-100 rounded-xl">
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">${file.name}</p>
+                            <p class="text-xs text-gray-500">${fileSize}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            ${statusHtml}
+                            ${file.status === 'uploaded' || file.status === 'error' ? `
+                                <button onclick="removeFile('${file.id}')" class="text-gray-400 hover:text-red-600 transition" title="删除">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 删除文件
+        function removeFile(fileId) {
+            // 将字符串ID转换为数字进行比较
+            const id = typeof fileId === 'string' ? parseFloat(fileId) : fileId;
+            uploadedFiles = uploadedFiles.filter(f => {
+                const fileIdNum = typeof f.id === 'string' ? parseFloat(f.id) : f.id;
+                return fileIdNum !== id;
+            });
+            renderFileList();
+            saveInterpretData();
+        }
+        
+        // 拖拽上传处理
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.currentTarget.classList.add('border-blue-500', 'bg-blue-50');
+        }
+        
+        function handleDragLeave(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
+        }
+        
+        function handleFileDrop(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
+            
+            const files = Array.from(event.dataTransfer.files);
+            if (files.length === 0) return;
+            
+            // 创建模拟的change事件
+            const input = document.getElementById('fileInput');
+            const dataTransfer = new DataTransfer();
+            files.forEach(file => {
+                // 验证文件类型
+                const validExtensions = ['.doc', '.docx', '.pdf', '.xls', '.xlsx'];
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                if (validExtensions.includes(fileExtension)) {
+                    dataTransfer.items.add(file);
+                }
+            });
+            
+            input.files = dataTransfer.files;
+            handleFileSelect({ target: input });
+        }
+        
+        // 开始解析所有文件
+        function startParseAll() {
+            if (isParsing) return;
+            
+            const unparsedFiles = uploadedFiles.filter(f => f.status === 'uploaded');
+            if (unparsedFiles.length === 0) {
+                showToast('没有待解析的文件', 'warning');
+                return;
+            }
+            
+            isParsing = true;
+            parseCompleted = false;
+            
+            // 更新所有待解析文件状态为解析中
+            unparsedFiles.forEach(file => {
+                file.status = 'parsing';
+            });
+            renderFileList();
+            saveInterpretData();
+            
+            // 模拟解析过程（实际应该调用后端API）
+            showToast('开始解析 ' + unparsedFiles.length + ' 个文件...', 'info');
+            
+            // 模拟异步解析
+            let completedCount = 0;
+            unparsedFiles.forEach((file, index) => {
+                setTimeout(() => {
+                    // 模拟解析成功或失败（90%成功率）
+                    if (Math.random() > 0.1) {
+                        file.status = 'success';
+                        completedCount++;
+                    } else {
+                        file.status = 'error';
+                        completedCount++;
+                    }
+                    
+                    renderFileList();
+                    saveInterpretData();
+                    
+                    // 所有文件解析完成
+                    if (completedCount === unparsedFiles.length) {
+                        isParsing = false;
+                        const successCount = unparsedFiles.filter(f => f.status === 'success').length;
+                        const errorCount = unparsedFiles.filter(f => f.status === 'error').length;
+                        
+                        if (errorCount === 0) {
+                            parseCompleted = true;
+                            showToast('所有文件解析完成！', 'success');
+                            // 可以在这里触发解析摘要的生成
+                            generateParseSummary();
+                        } else {
+                            showToast(`解析完成：${successCount} 个成功，${errorCount} 个失败`, successCount > 0 ? 'success' : 'error');
+                        }
+                    }
+                }, (index + 1) * 1000 + Math.random() * 2000); // 模拟不同文件解析时间
+            });
+        }
+        
+        // 生成解析摘要（解析完成后调用）
+        function generateParseSummary() {
+            // 这里可以触发AI解析摘要的生成
+            // 实际应该调用后端API生成摘要内容
+            showToast('AI 解析摘要生成中...', 'info');
+            
+            // 模拟摘要生成完成
+            setTimeout(() => {
+                showToast('AI 解析摘要已生成', 'success');
+                parseCompleted = true;
+                saveInterpretData();
+            }, 2000);
+        }
+        
         // 保存解析数据
         function saveInterpretData() {
+            try {
+                const data = {
+                    projectInfo: projectInfo,
+                    uploadedFiles: uploadedFiles.map(f => ({
+                        id: f.id,
+                        name: f.name,
+                        size: f.size,
+                        status: f.status
+                        // 不保存file对象，因为无法序列化
+                    })),
+                    isParsing: isParsing,
+                    parseCompleted: parseCompleted
+                };
+                localStorage.setItem(STORAGE_INTERPRET_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.error('保存数据失败:', e);
+            }
+        }
             try {
                 const data = {
                     projectInfo: projectInfo,

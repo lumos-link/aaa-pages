@@ -34,6 +34,40 @@
         .step-connector.completed::after {
             background: linear-gradient(to right, #10b981, #e5e7eb);
         }
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 4px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            min-width: 140px;
+            overflow: hidden;
+        }
+        .dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .dropdown-item:hover {
+            background: #f3f4f6;
+        }
+        .dropdown-item.danger {
+            color: #dc2626;
+        }
+        .dropdown-item.danger:hover {
+            background: #fee2e2;
+        }
+        .relative {
+            position: relative;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -61,57 +95,23 @@
             <div class="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-semibold text-gray-800">当前标书管道</h2>
-                    <button class="text-sm text-blue-600 hover:text-blue-700" onclick="parent.loadPage('资源资产库.html','top')">查看全部</button>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                            <button id="filterActive" onclick="filterBids('active')" class="px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 bg-white shadow-sm transition">
+                                进行中
+                            </button>
+                            <button id="filterEnded" onclick="filterBids('ended')" class="px-3 py-1.5 rounded-md text-sm font-medium text-gray-500 hover:text-gray-700 transition">
+                                已结束
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="grid gap-4">
-                    <div class="flex items-center justify-between p-4 rounded-xl bg-blue-50 border border-blue-200">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-2">
-                                <p class="text-sm text-blue-600 font-semibold">智慧城市平台建设</p>
-                                <span class="px-2 py-0.5 rounded-full bg-blue-600 text-white text-xs">步骤1</span>
-                            </div>
-                            <p class="text-xs text-blue-400">当前进度：招标解读 · 评分项分析 85%</p>
-                            <div class="mt-2 flex items-center gap-2 text-xs text-blue-600">
-                                <i class="fas fa-lightbulb"></i>
-                                <span>AI建议 3 条待处理</span>
-                            </div>
-                        </div>
-                        <button onclick="parent.loadPage('标书制作.html','step')" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition">
-                            <i class="fas fa-arrow-right mr-1"></i>继续
-                        </button>
-                    </div>
-                    <div class="flex items-center justify-between p-4 rounded-xl bg-purple-50 border border-purple-200">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-2">
-                                <p class="text-sm text-purple-600 font-semibold">市政道路工程投标</p>
-                                <span class="px-2 py-0.5 rounded-full bg-purple-600 text-white text-xs">步骤3</span>
-                            </div>
-                            <p class="text-xs text-purple-400">当前进度：标书编写 · 章节 4/8 完成</p>
-                            <div class="mt-2 flex items-center gap-2 text-xs text-purple-600">
-                                <i class="fas fa-edit"></i>
-                                <span>待编写章节 4 个</span>
-                            </div>
-                        </div>
-                        <button onclick="parent.loadPage('标书制作.html','step')" class="px-4 py-2 rounded-lg bg-purple-600 text-white text-sm hover:bg-purple-700 transition">
-                            <i class="fas fa-arrow-right mr-1"></i>继续
-                        </button>
-                    </div>
-                    <div class="flex items-center justify-between p-4 rounded-xl bg-orange-50 border border-orange-200">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-2">
-                                <p class="text-sm text-orange-600 font-semibold">医疗信息化运维项目</p>
-                                <span class="px-2 py-0.5 rounded-full bg-orange-600 text-white text-xs">步骤2</span>
-                            </div>
-                            <p class="text-xs text-orange-400">当前进度：标书设置 · 目录结构待完善</p>
-                            <div class="mt-2 flex items-center gap-2 text-xs text-orange-600">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <span>缺少必要信息 1 项</span>
-                            </div>
-                        </div>
-                        <button onclick="parent.loadPage('标书制作.html','step')" class="px-4 py-2 rounded-lg bg-orange-600 text-white text-sm hover:bg-orange-700 transition">
-                            <i class="fas fa-arrow-right mr-1"></i>继续
-                        </button>
-                    </div>
+                <div id="biddingList" class="grid gap-4">
+                    <!-- 标书列表将动态生成 -->
+                </div>
+                <div id="emptyState" class="text-center py-12 hidden">
+                    <i class="fas fa-inbox text-4xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-500 text-sm">暂无标书项目</p>
                 </div>
             </div>
 
@@ -200,7 +200,294 @@
             </div>
         </div>
     </section>
+    <!-- 结束任务确认对话框 -->
+    <div id="endTaskModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4">
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-red-600"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800">结束任务</h3>
+                </div>
+                <p class="text-sm text-gray-600 mb-4">确定要结束这个标书任务吗？结束后的任务将移至"已结束"列表，您可以随时重新激活。</p>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">结束原因（可选）</label>
+                    <textarea id="endReason" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="请输入结束原因..."></textarea>
+                </div>
+                <div class="flex items-center justify-end gap-3">
+                    <button onclick="closeEndTaskModal()" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition">取消</button>
+                    <button onclick="confirmEndTask()" class="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition">确认结束</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // 标书数据管理
+        let currentBids = [];
+        let currentFilter = 'active';
+        let currentEndingBidId = null;
+
+        // 初始化数据
+        function initBidsData() {
+            const saved = localStorage.getItem('bidding_factory_data');
+            if (saved) {
+                currentBids = JSON.parse(saved);
+            } else {
+                // 默认数据
+                currentBids = [
+                    {
+                        id: 1,
+                        name: '智慧城市平台建设',
+                        status: 'active',
+                        step: 1,
+                        stepName: '招标解读',
+                        progress: 85,
+                        progressText: '评分项分析 85%',
+                        color: 'blue',
+                        tips: { icon: 'lightbulb', text: 'AI建议 3 条待处理' },
+                        createTime: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        name: '市政道路工程投标',
+                        status: 'active',
+                        step: 3,
+                        stepName: '标书编写',
+                        progress: 50,
+                        progressText: '章节 4/8 完成',
+                        color: 'purple',
+                        tips: { icon: 'edit', text: '待编写章节 4 个' },
+                        createTime: new Date().toISOString()
+                    },
+                    {
+                        id: 3,
+                        name: '医疗信息化运维项目',
+                        status: 'active',
+                        step: 2,
+                        stepName: '标书设置',
+                        progress: 60,
+                        progressText: '目录结构待完善',
+                        color: 'orange',
+                        tips: { icon: 'exclamation-triangle', text: '缺少必要信息 1 项' },
+                        createTime: new Date().toISOString()
+                    }
+                ];
+                saveBidsData();
+            }
+        }
+
+        // 保存数据
+        function saveBidsData() {
+            localStorage.setItem('bidding_factory_data', JSON.stringify(currentBids));
+        }
+
+        // 渲染标书列表
+        function renderBids() {
+            const list = document.getElementById('biddingList');
+            const emptyState = document.getElementById('emptyState');
+            
+            const filtered = currentBids.filter(bid => {
+                if (currentFilter === 'active') {
+                    return bid.status === 'active';
+                } else {
+                    return bid.status === 'ended';
+                }
+            });
+
+            if (filtered.length === 0) {
+                list.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            list.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            list.innerHTML = filtered.map(bid => {
+                const colorClasses = {
+                    blue: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-600', badge: 'bg-blue-600', btn: 'bg-blue-600 hover:bg-blue-700', progress: 'text-blue-400' },
+                    purple: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-600', badge: 'bg-purple-600', btn: 'bg-purple-600 hover:bg-purple-700', progress: 'text-purple-400' },
+                    orange: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-600', badge: 'bg-orange-600', btn: 'bg-orange-600 hover:bg-orange-700', progress: 'text-orange-400' },
+                    gray: { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-600', badge: 'bg-gray-600', btn: 'bg-gray-600 hover:bg-gray-700', progress: 'text-gray-400' }
+                };
+                const colors = colorClasses[bid.color] || colorClasses.gray;
+                const stepNames = ['', '招标解读', '标书设置', '标书编写', '协同审校', '导出交付'];
+                
+                return `
+                    <div class="flex items-center justify-between p-4 rounded-xl ${colors.bg} border ${colors.border} relative">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <p class="text-sm ${colors.text} font-semibold">${bid.name}</p>
+                                ${bid.status === 'active' ? `<span class="px-2 py-0.5 rounded-full ${colors.badge} text-white text-xs">步骤${bid.step}</span>` : '<span class="px-2 py-0.5 rounded-full bg-gray-500 text-white text-xs">已结束</span>'}
+                            </div>
+                            <p class="text-xs ${colors.progress}">${bid.status === 'active' ? `当前进度：${stepNames[bid.step]} · ${bid.progressText}` : `结束时间：${bid.endTime ? new Date(bid.endTime).toLocaleString('zh-CN') : ''}`}</p>
+                            ${bid.status === 'active' && bid.tips ? `
+                                <div class="mt-2 flex items-center gap-2 text-xs ${colors.text}">
+                                    <i class="fas fa-${bid.tips.icon}"></i>
+                                    <span>${bid.tips.text}</span>
+                                </div>
+                            ` : ''}
+                            ${bid.endReason ? `
+                                <div class="mt-2 text-xs text-gray-500">
+                                    <i class="fas fa-comment-alt mr-1"></i>
+                                    <span>结束原因：${bid.endReason}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            ${bid.status === 'active' ? `
+                                <button onclick="parent.loadPage('标书制作.html','step')" class="px-4 py-2 rounded-lg ${colors.btn} text-white text-sm transition">
+                                    <i class="fas fa-arrow-right mr-1"></i>继续
+                                </button>
+                            ` : `
+                                <button onclick="reactivateBid(${bid.id})" class="px-4 py-2 rounded-lg bg-gray-600 text-white text-sm hover:bg-gray-700 transition">
+                                    <i class="fas fa-redo mr-1"></i>重新激活
+                                </button>
+                            `}
+                            <div class="relative">
+                                <button onclick="toggleDropdown(${bid.id})" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-white transition">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div id="dropdown-${bid.id}" class="dropdown-menu hidden">
+                                    ${bid.status === 'active' ? `
+                                        <div class="dropdown-item danger" onclick="openEndTaskModal(${bid.id})">
+                                            <i class="fas fa-stop-circle"></i>
+                                            <span>结束任务</span>
+                                        </div>
+                                    ` : `
+                                        <div class="dropdown-item danger" onclick="deleteBid(${bid.id})">
+                                            <i class="fas fa-trash"></i>
+                                            <span>删除任务</span>
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // 更新统计
+            const activeCount = currentBids.filter(b => b.status === 'active').length;
+            document.querySelector('.text-3xl.font-bold').textContent = activeCount;
+        }
+
+        // 切换下拉菜单
+        function toggleDropdown(bidId) {
+            // 关闭所有其他下拉菜单
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if (menu.id !== `dropdown-${bidId}`) {
+                    menu.classList.add('hidden');
+                }
+            });
+            
+            const menu = document.getElementById(`dropdown-${bidId}`);
+            if (menu) {
+                menu.classList.toggle('hidden');
+            }
+        }
+
+        // 点击外部关闭下拉菜单
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.add('hidden');
+                });
+            }
+        });
+
+        // 筛选标书
+        function filterBids(type) {
+            currentFilter = type;
+            const activeBtn = document.getElementById('filterActive');
+            const endedBtn = document.getElementById('filterEnded');
+            
+            if (type === 'active') {
+                activeBtn.classList.add('bg-white', 'shadow-sm', 'text-gray-700');
+                activeBtn.classList.remove('text-gray-500');
+                endedBtn.classList.remove('bg-white', 'shadow-sm', 'text-gray-700');
+                endedBtn.classList.add('text-gray-500');
+            } else {
+                endedBtn.classList.add('bg-white', 'shadow-sm', 'text-gray-700');
+                endedBtn.classList.remove('text-gray-500');
+                activeBtn.classList.remove('bg-white', 'shadow-sm', 'text-gray-700');
+                activeBtn.classList.add('text-gray-500');
+            }
+            
+            renderBids();
+        }
+
+        // 打开结束任务对话框
+        function openEndTaskModal(bidId) {
+            currentEndingBidId = bidId;
+            document.getElementById('endTaskModal').classList.remove('hidden');
+            document.getElementById('endReason').value = '';
+            // 关闭下拉菜单
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.classList.add('hidden');
+            });
+        }
+
+        // 关闭结束任务对话框
+        function closeEndTaskModal() {
+            document.getElementById('endTaskModal').classList.add('hidden');
+            currentEndingBidId = null;
+        }
+
+        // 确认结束任务
+        function confirmEndTask() {
+            if (!currentEndingBidId) return;
+            
+            const bid = currentBids.find(b => b.id === currentEndingBidId);
+            if (bid) {
+                bid.status = 'ended';
+                bid.endTime = new Date().toISOString();
+                bid.endReason = document.getElementById('endReason').value.trim() || null;
+                saveBidsData();
+                renderBids();
+                closeEndTaskModal();
+                
+                // 如果当前在查看已结束列表，保持在该列表
+                if (currentFilter === 'ended') {
+                    // 已经在已结束列表，不需要切换
+                } else {
+                    // 如果当前在进行中列表，且没有进行中的标书了，自动切换到已结束
+                    const activeCount = currentBids.filter(b => b.status === 'active').length;
+                    if (activeCount === 0) {
+                        filterBids('ended');
+                    }
+                }
+            }
+        }
+
+        // 重新激活标书
+        function reactivateBid(bidId) {
+            const bid = currentBids.find(b => b.id === bidId);
+            if (bid) {
+                bid.status = 'active';
+                bid.endTime = null;
+                bid.endReason = null;
+                saveBidsData();
+                renderBids();
+                
+                // 如果当前在已结束列表，切换到进行中列表
+                if (currentFilter === 'ended') {
+                    filterBids('active');
+                }
+            }
+        }
+
+        // 删除标书
+        function deleteBid(bidId) {
+            if (confirm('确定要删除这个标书任务吗？删除后无法恢复。')) {
+                currentBids = currentBids.filter(b => b.id !== bidId);
+                saveBidsData();
+                renderBids();
+            }
+        }
+
         function handleStartBidding() {
             try {
                 if (window.parent && window.parent.loadPage) {
@@ -213,6 +500,12 @@
                 window.location.href = '标书制作.html';
             }
         }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initBidsData();
+            renderBids();
+        });
     </script>
 </body>
 </html>
