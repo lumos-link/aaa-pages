@@ -127,7 +127,7 @@
                 </div>
 
                 <div class="border-b border-gray-200 mt-2">
-                    <div class="flex gap-2 overflow-x-auto pb-2">
+                    <div class="flex gap-2 overflow-x-auto pb-2" id="tabButtonsContainer">
                         <button class="tab-btn active px-4 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-600 whitespace-nowrap" data-tab="overview">项目概述</button>
                         <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="rejection">废标项</button>
                         <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="personnel">人员要求</button>
@@ -653,12 +653,109 @@
         let isParsing = false;
         let parseCompleted = false;
         
+        // 页签切换函数（直接在HTML中调用）- 必须在最前面定义，确保全局可访问
+        function switchTab(tabId, buttonElement) {
+            try {
+                if (!tabId || !buttonElement) {
+                    console.warn('页签切换参数错误', tabId, buttonElement);
+                    return false;
+                }
+                
+                console.log('切换页签:', tabId);
+                
+                // 更新按钮样式
+                const allButtons = document.querySelectorAll('.tab-btn');
+                allButtons.forEach(b => {
+                    b.classList.remove('active', 'text-blue-600', 'border-b-2', 'border-blue-600');
+                    b.classList.add('text-gray-500');
+                });
+                buttonElement.classList.add('active', 'text-blue-600', 'border-b-2', 'border-blue-600');
+                buttonElement.classList.remove('text-gray-500');
+                
+                // 更新内容显示
+                const allContents = document.querySelectorAll('.tab-content');
+                allContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                const targetTab = document.getElementById('tab-' + tabId);
+                if (targetTab) {
+                    targetTab.classList.remove('hidden');
+                    console.log('页签内容已显示:', 'tab-' + tabId);
+                } else {
+                    console.warn('找不到页签内容:', 'tab-' + tabId);
+                }
+                
+                return false;
+            } catch (e) {
+                console.error('页签切换错误:', e);
+                return false;
+            }
+        }
+        
+        // 确保函数在全局作用域中可用
+        window.switchTab = switchTab;
+        
+        // 初始化页签切换功能 - 使用事件委托
+        function initTabSwitching() {
+            const container = document.getElementById('tabButtonsContainer');
+            if (!container) {
+                console.warn('找不到页签容器');
+                setTimeout(initTabSwitching, 100);
+                return;
+            }
+            
+            // 移除旧的事件监听器
+            const newContainer = container.cloneNode(true);
+            container.parentNode.replaceChild(newContainer, container);
+            
+            // 使用事件委托
+            newContainer.addEventListener('click', function(e) {
+                const btn = e.target.closest('.tab-btn');
+                if (!btn) return;
+                
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const tabId = btn.getAttribute('data-tab');
+                if (!tabId) {
+                    console.warn('页签按钮缺少data-tab属性');
+                    return;
+                }
+                
+                switchTab(tabId, btn);
+            });
+            
+            console.log('页签切换功能已初始化（事件委托）');
+        }
+        
         // 页面加载时恢复数据
-        window.addEventListener('load', function() {
+        function initPage() {
             restoreInterpretData();
             updateProjectInfoDisplay();
             renderFileList();
+            // 延迟初始化页签，确保DOM完全渲染
+            setTimeout(initTabSwitching, 50);
+        }
+        
+        // 多种方式确保初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPage);
+        } else {
+            // DOM已经加载完成
+            initPage();
+        }
+        
+        // 也监听load事件作为备用
+        window.addEventListener('load', function() {
+            setTimeout(initTabSwitching, 100);
         });
+        
+        // 如果是在iframe中，也监听iframe的load事件
+        if (window.frameElement) {
+            window.frameElement.addEventListener('load', function() {
+                setTimeout(initTabSwitching, 100);
+            });
+        }
         
         // 恢复解析数据
         function restoreInterpretData() {
@@ -929,18 +1026,6 @@
                 console.error('保存数据失败:', e);
             }
         }
-            try {
-                const data = {
-                    projectInfo: projectInfo,
-                    savedAt: new Date().toISOString()
-                };
-                localStorage.setItem(STORAGE_INTERPRET_KEY, JSON.stringify(data));
-                return true;
-            } catch (e) {
-                console.error('保存数据失败:', e);
-                return false;
-            }
-        }
         
         // 更新项目信息显示
         function updateProjectInfoDisplay() {
@@ -1096,49 +1181,51 @@
             }
         }
         
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tabId = this.getAttribute('data-tab');
-                document.querySelectorAll('.tab-btn').forEach(b => {
-                    b.classList.remove('active', 'text-blue-600', 'border-b-2', 'border-blue-600');
-                    b.classList.add('text-gray-500');
-                });
-                this.classList.add('active', 'text-blue-600', 'border-b-2', 'border-blue-600');
-                this.classList.remove('text-gray-500');
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.add('hidden');
-                });
-                document.getElementById('tab-' + tabId).classList.remove('hidden');
-            });
-        });
 
         // 包级页签交互（多包场景示例）
-        const packageNames = {
-            pkg1: '包一 · 平台建设',
-            pkg2: '包二 · 运维服务',
-            pkg3: '包三 · 备选方案'
-        };
+        function initPackageTabs() {
+            const packageNames = {
+                pkg1: '包一 · 平台建设',
+                pkg2: '包二 · 运维服务',
+                pkg3: '包三 · 备选方案'
+            };
 
-        const pkgTabs = document.querySelectorAll('.pkg-tab');
-        const currentPackageLabel = document.getElementById('currentPackageLabel');
+            const pkgTabs = document.querySelectorAll('.pkg-tab');
+            const currentPackageLabel = document.getElementById('currentPackageLabel');
 
-        pkgTabs.forEach(btn => {
-            btn.addEventListener('click', function () {
-                const pkgId = this.getAttribute('data-pkg');
+            if (pkgTabs.length === 0) return;
 
-                // 切换包级 tab 的选中样式
-                pkgTabs.forEach(b => {
-                    b.classList.remove('active', 'bg-blue-50', 'text-blue-600', 'font-medium');
-                    b.classList.add('bg-gray-50', 'text-gray-500');
+            pkgTabs.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const pkgId = this.getAttribute('data-pkg');
+
+                    // 切换包级 tab 的选中样式
+                    pkgTabs.forEach(b => {
+                        b.classList.remove('active', 'bg-blue-50', 'text-blue-600', 'font-medium');
+                        b.classList.add('bg-gray-50', 'text-gray-500');
+                    });
+                    this.classList.add('active', 'bg-blue-50', 'text-blue-600', 'font-medium');
+                    this.classList.remove('bg-gray-50', 'text-gray-500');
+
+                    // 更新当前包展示文案（实际接入时可切换为对应包的解析数据）
+                    if (currentPackageLabel && packageNames[pkgId]) {
+                        currentPackageLabel.textContent = '当前包：' + packageNames[pkgId];
+                    }
                 });
-                this.classList.add('active', 'bg-blue-50', 'text-blue-600', 'font-medium');
-                this.classList.remove('bg-gray-50', 'text-gray-500');
-
-                // 更新当前包展示文案（实际接入时可切换为对应包的解析数据）
-                if (currentPackageLabel && packageNames[pkgId]) {
-                    currentPackageLabel.textContent = '当前包：' + packageNames[pkgId];
-                }
             });
+        }
+        
+        // 初始化包级页签
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                initPackageTabs();
+            });
+        } else {
+            initPackageTabs();
+        }
+        
+        window.addEventListener('load', function() {
+            initPackageTabs();
         });
     </script>
 </body>

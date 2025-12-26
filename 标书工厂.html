@@ -167,7 +167,7 @@
             </div>
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- 制作标书 -->
-                <button onclick="parent.loadPage('标书制作.html','step')" class="p-4 border-2 border-blue-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 text-left transition group">
+                <button onclick="safeParentLoadPage('标书制作.html','step') || (window.location.href='标书制作.html')" class="p-4 border-2 border-blue-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 text-left transition group">
                     <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition">
                         <i class="fas fa-file-alt"></i>
                     </div>
@@ -176,21 +176,21 @@
                 </button>
                 
                 <!-- 辅助功能 -->
-                <button onclick="parent.loadPage('资源资产库.html','top')" class="p-4 border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 text-left transition group">
+                <button onclick="safeParentLoadPage('资源资产库.html','top') || (window.location.href='资源资产库.html')" class="p-4 border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 text-left transition group">
                     <div class="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition">
                         <i class="fas fa-building"></i>
                     </div>
                     <p class="font-semibold text-gray-800 mb-1">资源资产库</p>
                     <p class="text-xs text-gray-500">企业素材管理</p>
                 </button>
-                <button onclick="parent.loadPage('智能工具箱.html','top')" class="p-4 border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 text-left transition group">
+                <button onclick="safeParentLoadPage('智能工具箱.html','top') || (window.location.href='智能工具箱.html')" class="p-4 border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 text-left transition group">
                     <div class="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition">
                         <i class="fas fa-tools"></i>
                     </div>
                     <p class="font-semibold text-gray-800 mb-1">智能工具箱</p>
                     <p class="text-xs text-gray-500">格式与图片工具</p>
                 </button>
-                <button onclick="parent.loadPage('数据洞察.html','top')" class="p-4 border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 text-left transition group">
+                <button onclick="safeParentLoadPage('数据洞察.html','top') || (window.location.href='数据洞察.html')" class="p-4 border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 text-left transition group">
                     <div class="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition">
                         <i class="fas fa-chart-line"></i>
                     </div>
@@ -338,7 +338,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             ${bid.status === 'active' ? `
-                                <button onclick="parent.loadPage('标书制作.html','step')" class="px-4 py-2 rounded-lg ${colors.btn} text-white text-sm transition">
+                                <button onclick="safeParentLoadPage('标书制作.html','step') || (window.location.href='标书制作.html')" class="px-4 py-2 rounded-lg ${colors.btn} text-white text-sm transition">
                                     <i class="fas fa-arrow-right mr-1"></i>继续
                                 </button>
                             ` : `
@@ -490,15 +490,30 @@
 
         function handleStartBidding() {
             try {
-                if (window.parent && window.parent.loadPage) {
+                if (window.parent && window.parent !== window && window.parent.loadPage) {
                     window.parent.loadPage('标书制作.html', 'step');
                 } else {
                     window.location.href = '标书制作.html';
                 }
             } catch (e) {
-                console.error('跳转失败:', e);
+                // 跨域错误时直接跳转
+                console.log('无法访问父窗口，直接跳转:', e.message);
                 window.location.href = '标书制作.html';
             }
+        }
+        
+        // 安全的父窗口调用函数
+        function safeParentLoadPage(page, source) {
+            try {
+                if (window.parent && window.parent !== window && window.parent.loadPage) {
+                    window.parent.loadPage(page, source);
+                    return true;
+                }
+            } catch (e) {
+                // 跨域错误，忽略
+                console.log('无法访问父窗口:', e.message);
+            }
+            return false;
         }
 
         // 初始化
