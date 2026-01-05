@@ -170,6 +170,7 @@
                             <option value="certificate">资质证件</option>
                             <option value="template">标书模板</option>
                             <option value="personnel">人员库</option>
+                            <option value="performance">业绩库</option>
                         </select>
                     </div>
                 </div>
@@ -569,6 +570,62 @@
                 { id: 1, name: 'ISO9001质量管理体系认证', description: '质量管理体系认证证书', tags: ['质量', '认证'], file: 'iso9001.pdf', uploadTime: '2024-01-10', expiry: getDateInDays(10), reminder: '30d' }, // 10天后到期
                 { id: 2, name: 'CMMI5级认证', description: '软件能力成熟度模型集成认证', tags: ['软件', '认证'], file: 'cmmi5.pdf', uploadTime: '2024-01-08', expiry: getDateInDays(22), reminder: '30d' } // 22天后到期
             ],
+            performance: [
+                { 
+                    id: 1, 
+                    name: 'XX市智慧城市数据治理平台项目', 
+                    description: '项目金额：850万元 | 项目时间：2022-03-15 至 2023-06-30 | 服务内容：数据治理平台建设、数据清洗、数据质量提升', 
+                    tags: ['智慧城市', '数据治理', '平台建设'], 
+                    file: 'performance1.pdf', 
+                    uploadTime: '2023-07-10', 
+                    expiry: null 
+                },
+                { 
+                    id: 2, 
+                    name: 'XX省大数据中心建设项目', 
+                    description: '项目金额：1200万元 | 项目时间：2021-08-01 至 2022-12-31 | 服务内容：大数据中心基础设施建设、数据存储、计算资源管理', 
+                    tags: ['大数据', '数据中心', '基础设施'], 
+                    file: 'performance2.pdf', 
+                    uploadTime: '2023-01-15', 
+                    expiry: null 
+                },
+                { 
+                    id: 3, 
+                    name: 'XX区数字政府一体化平台', 
+                    description: '项目金额：650万元 | 项目时间：2023-01-10 至 2023-11-30 | 服务内容：数字政府平台开发、政务服务系统集成、数据共享交换', 
+                    tags: ['数字政府', '政务服务', '系统集成'], 
+                    file: 'performance3.pdf', 
+                    uploadTime: '2023-12-05', 
+                    expiry: null 
+                },
+                { 
+                    id: 4, 
+                    name: 'XX市轨道交通信息化系统', 
+                    description: '项目金额：980万元 | 项目时间：2020-05-20 至 2021-09-30 | 服务内容：轨道交通运营管理系统、票务系统、调度系统开发', 
+                    tags: ['轨道交通', '信息化', '运营管理'], 
+                    file: 'performance4.pdf', 
+                    uploadTime: '2021-10-20', 
+                    expiry: null 
+                },
+                { 
+                    id: 5, 
+                    name: 'XX集团企业数字化转型项目', 
+                    description: '项目金额：1500万元 | 项目时间：2022-06-01 至 2024-05-31 | 服务内容：企业数字化转型咨询、系统架构设计、核心业务系统开发', 
+                    tags: ['数字化转型', '企业服务', '系统开发'], 
+                    file: 'performance5.pdf', 
+                    uploadTime: '2024-06-10', 
+                    expiry: null 
+                },
+                { 
+                    id: 6, 
+                    name: 'XX县智慧农业物联网平台', 
+                    description: '项目金额：420万元 | 项目时间：2023-03-01 至 2023-12-31 | 服务内容：智慧农业物联网平台建设、传感器数据采集、农业数据分析', 
+                    tags: ['智慧农业', '物联网', '数据分析'], 
+                    file: 'performance6.pdf', 
+                    uploadTime: '2024-01-08', 
+                    expiry: null 
+                }
+            ],
             template: [
                 { id: 1, name: '评分策略段落模板', description: '针对100分制评分的差异化亮点模板', tags: ['评分', '策略'], file: 'template1.docx', uploadTime: '2024-01-16', expiry: null },
                 { id: 2, name: '项目管理组织图', description: 'Visio/PPT/SVG多版本组织图', tags: ['组织', '管理'], file: 'template2.pptx', uploadTime: '2024-01-12', expiry: getDateInDays(7), reminder: '30d' } // 7天后到期
@@ -750,7 +807,8 @@
             knowledge: '行业知识库',
             certificate: '资质证件',
             template: '标书模板',
-            personnel: '人员库'
+            personnel: '人员库',
+            performance: '业绩库'
         };
 
         // 示例数据：用于演示不同有效期与提醒逻辑
@@ -1028,7 +1086,8 @@
                 case: { icon: 'fa-briefcase', color: 'text-purple-600' },
                 knowledge: { icon: 'fa-book', color: 'text-orange-600' },
                 certificate: { icon: 'fa-certificate', color: 'text-red-600' },
-                template: { icon: 'fa-file-alt', color: 'text-indigo-600' }
+                template: { icon: 'fa-file-alt', color: 'text-indigo-600' },
+                performance: { icon: 'fa-trophy', color: 'text-yellow-600' }
             };
             
             nav.innerHTML = Object.keys(categoryNames).map(category => {
@@ -2520,7 +2579,7 @@
             const container = modal.querySelector('#libraryManageList');
             if (!container) return;
             
-            const defaultKeys = ['image', 'material', 'case', 'knowledge', 'certificate', 'template'];
+            const defaultKeys = ['image', 'material', 'case', 'knowledge', 'certificate', 'template', 'performance'];
             
             container.innerHTML = Object.keys(categoryNames).map(key => {
                 const isDefault = defaultKeys.includes(key);
@@ -2612,7 +2671,7 @@
 
         // 删除资源库（仅自定义库）
         function deleteLibrary(key) {
-            const defaultKeys = ['image', 'material', 'case', 'knowledge', 'certificate', 'template'];
+            const defaultKeys = ['image', 'material', 'case', 'knowledge', 'certificate', 'template', 'performance'];
             if (defaultKeys.includes(key)) {
                 showToast('系统内置资源库不可删除', 'warning');
                 return;
