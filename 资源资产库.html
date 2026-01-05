@@ -353,18 +353,30 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="mt-2 grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-xs text-gray-600 mb-1">有效期</label>
-                                    <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="idCard" onchange="toggleFileExpiry('idCard'); updateFileExpiry('idCard');">
-                                        <option value="none">长期有效</option>
-                                        <option value="date">设置到期日期</option>
-                                    </select>
+                            <div class="mt-2 space-y-2">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">有效期</label>
+                                        <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="idCard" onchange="toggleFileExpiry('idCard'); updateFileExpiry('idCard');">
+                                            <option value="none">长期有效</option>
+                                            <option value="date">设置到期日期</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">到期日期</label>
+                                        <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs hidden" data-file-type="idCard" onchange="updateFileExpiry('idCard')">
+                                        <p class="text-xs text-gray-400 file-expiry-none" data-file-type="idCard">长期有效</p>
+                                    </div>
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-600 mb-1">到期日期</label>
-                                    <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs hidden" data-file-type="idCard" onchange="updateFileExpiry('idCard')">
-                                    <p class="text-xs text-gray-400 file-expiry-none" data-file-type="idCard">长期有效</p>
+                                    <label class="block text-xs text-gray-600 mb-1">到期提醒</label>
+                                    <select class="file-reminder w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="idCard" onchange="updateFileExpiry('idCard')">
+                                        <option value="none">不提醒</option>
+                                        <option value="30d">提前30天提醒</option>
+                                        <option value="6m">提前6个月提醒</option>
+                                        <option value="1y">提前1年提醒</option>
+                                    </select>
+                                    <p class="mt-1 text-[10px] text-gray-400">仅当设置了到期日期时才会生效</p>
                                 </div>
                             </div>
                         </div>
@@ -395,18 +407,30 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="mt-2 grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-xs text-gray-600 mb-1">有效期</label>
-                                    <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="diploma" onchange="toggleFileExpiry('diploma'); updateFileExpiry('diploma');">
-                                        <option value="none">长期有效</option>
-                                        <option value="date">设置到期日期</option>
-                                    </select>
+                            <div class="mt-2 space-y-2">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">有效期</label>
+                                        <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="diploma" onchange="toggleFileExpiry('diploma'); updateFileExpiry('diploma');">
+                                            <option value="none">长期有效</option>
+                                            <option value="date">设置到期日期</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">到期日期</label>
+                                        <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs hidden" data-file-type="diploma" onchange="updateFileExpiry('diploma')">
+                                        <p class="text-xs text-gray-400 file-expiry-none" data-file-type="diploma">长期有效</p>
+                                    </div>
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-600 mb-1">到期日期</label>
-                                    <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs hidden" data-file-type="diploma" onchange="updateFileExpiry('diploma')">
-                                    <p class="text-xs text-gray-400 file-expiry-none" data-file-type="diploma">长期有效</p>
+                                    <label class="block text-xs text-gray-600 mb-1">到期提醒</label>
+                                    <select class="file-reminder w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="diploma" onchange="updateFileExpiry('diploma')">
+                                        <option value="none">不提醒</option>
+                                        <option value="30d">提前30天提醒</option>
+                                        <option value="6m">提前6个月提醒</option>
+                                        <option value="1y">提前1年提醒</option>
+                                    </select>
+                                    <p class="mt-1 text-[10px] text-gray-400">仅当设置了到期日期时才会生效</p>
                                 </div>
                             </div>
                         </div>
@@ -443,18 +467,30 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="mt-2 grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-xs text-gray-600 mb-1">有效期</label>
-                                    <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="resume" onchange="toggleFileExpiry('resume'); updateFileExpiry('resume');">
-                                        <option value="none">长期有效</option>
-                                        <option value="date">设置到期日期</option>
-                                    </select>
+                            <div class="mt-2 space-y-2">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">有效期</label>
+                                        <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="resume" onchange="toggleFileExpiry('resume'); updateFileExpiry('resume');">
+                                            <option value="none">长期有效</option>
+                                            <option value="date">设置到期日期</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">到期日期</label>
+                                        <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs hidden" data-file-type="resume" onchange="updateFileExpiry('resume')">
+                                        <p class="text-xs text-gray-400 file-expiry-none" data-file-type="resume">长期有效</p>
+                                    </div>
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-600 mb-1">到期日期</label>
-                                    <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs hidden" data-file-type="resume" onchange="updateFileExpiry('resume')">
-                                    <p class="text-xs text-gray-400 file-expiry-none" data-file-type="resume">长期有效</p>
+                                    <label class="block text-xs text-gray-600 mb-1">到期提醒</label>
+                                    <select class="file-reminder w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="resume" onchange="updateFileExpiry('resume')">
+                                        <option value="none">不提醒</option>
+                                        <option value="30d">提前30天提醒</option>
+                                        <option value="6m">提前6个月提醒</option>
+                                        <option value="1y">提前1年提醒</option>
+                                    </select>
+                                    <p class="mt-1 text-[10px] text-gray-400">仅当设置了到期日期时才会生效</p>
                                 </div>
                             </div>
                         </div>
@@ -2145,17 +2181,23 @@
                             const fileInfo = personnelFiles[fileType];
                             showPersonnelFilePreview(fileType, fileInfo);
                             
-                            // 恢复有效期设置
+                            // 恢复有效期设置和提醒设置
                             if (fileInfo.expiry) {
                                 const expiryType = document.querySelector(`.file-expiry-type[data-file-type="${fileType}"]`);
                                 const expiryDate = document.querySelector(`.file-expiry-date[data-file-type="${fileType}"]`);
                                 const expiryNone = document.querySelector(`.file-expiry-none[data-file-type="${fileType}"]`);
+                                const reminder = document.querySelector(`.file-reminder[data-file-type="${fileType}"]`);
                                 
                                 if (expiryType && expiryDate && expiryNone) {
                                     expiryType.value = 'date';
                                     expiryDate.value = fileInfo.expiry;
                                     expiryDate.classList.remove('hidden');
                                     expiryNone.classList.add('hidden');
+                                    
+                                    // 恢复提醒设置
+                                    if (reminder && fileInfo.reminder) {
+                                        reminder.value = fileInfo.reminder;
+                                    }
                                 }
                             }
                         });
@@ -2244,18 +2286,30 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-2 grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs text-gray-600 mb-1">有效期</label>
-                            <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="${certId}" onchange="toggleFileExpiry('${certId}'); updateFileExpiry('${certId}');">
-                                <option value="none">长期有效</option>
-                                <option value="date">设置到期日期</option>
-                            </select>
+                    <div class="mt-2 space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">有效期</label>
+                                <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="${certId}" onchange="toggleFileExpiry('${certId}'); updateFileExpiry('${certId}');">
+                                    <option value="none">长期有效</option>
+                                    <option value="date">设置到期日期</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">到期日期</label>
+                                <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs hidden" data-file-type="${certId}" onchange="updateFileExpiry('${certId}')">
+                                <p class="text-xs text-gray-400 file-expiry-none" data-file-type="${certId}">长期有效</p>
+                            </div>
                         </div>
                         <div>
-                            <label class="block text-xs text-gray-600 mb-1">到期日期</label>
-                            <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs hidden" data-file-type="${certId}" onchange="updateFileExpiry('${certId}')">
-                            <p class="text-xs text-gray-400 file-expiry-none" data-file-type="${certId}">长期有效</p>
+                            <label class="block text-xs text-gray-600 mb-1">到期提醒</label>
+                            <select class="file-reminder w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="${certId}" onchange="updateFileExpiry('${certId}')">
+                                <option value="none">不提醒</option>
+                                <option value="30d">提前30天提醒</option>
+                                <option value="6m">提前6个月提醒</option>
+                                <option value="1y">提前1年提醒</option>
+                            </select>
+                            <p class="mt-1 text-[10px] text-gray-400">仅当设置了到期日期时才会生效</p>
                         </div>
                     </div>
                 </div>
@@ -2292,18 +2346,21 @@
                 return;
             }
             
-            // 获取有效期信息（如果已设置）
+            // 获取有效期信息和提醒设置（如果已设置）
             const expiryType = document.querySelector(`.file-expiry-type[data-file-type="${fileType}"]`)?.value || 'none';
             const expiryDate = document.querySelector(`.file-expiry-date[data-file-type="${fileType}"]`)?.value || null;
+            const reminder = document.querySelector(`.file-reminder[data-file-type="${fileType}"]`)?.value || 'none';
             
             // 如果之前已有有效期信息，保留；否则使用当前设置
             const existingExpiry = personnelFiles[fileType]?.expiry;
+            const existingReminder = personnelFiles[fileType]?.reminder;
             
             personnelFiles[fileType] = {
                 name: file.name,
                 size: file.size,
                 type: file.type,
-                expiry: existingExpiry || (expiryType === 'date' && expiryDate ? expiryDate : null)
+                expiry: existingExpiry || (expiryType === 'date' && expiryDate ? expiryDate : null),
+                reminder: existingReminder || (expiryType === 'date' && expiryDate ? reminder : 'none')
             };
             
             showPersonnelFilePreview(fileType, personnelFiles[fileType]);
@@ -2315,8 +2372,10 @@
             
             const expiryType = document.querySelector(`.file-expiry-type[data-file-type="${fileType}"]`)?.value || 'none';
             const expiryDate = document.querySelector(`.file-expiry-date[data-file-type="${fileType}"]`)?.value || null;
+            const reminder = document.querySelector(`.file-reminder[data-file-type="${fileType}"]`)?.value || 'none';
             
             personnelFiles[fileType].expiry = expiryType === 'date' && expiryDate ? expiryDate : null;
+            personnelFiles[fileType].reminder = expiryType === 'date' && expiryDate ? reminder : 'none';
         }
 
         // 显示人员文件预览
@@ -2402,18 +2461,30 @@
                             </div>
                         `}
                     </div>
-                    <div class="mt-2 grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs text-gray-600 mb-1">有效期</label>
-                            <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="${cert.id}" onchange="toggleFileExpiry('${cert.id}'); updateFileExpiry('${cert.id}');">
-                                <option value="none" ${!cert.file?.expiry ? 'selected' : ''}>长期有效</option>
-                                <option value="date" ${cert.file?.expiry ? 'selected' : ''}>设置到期日期</option>
-                            </select>
+                    <div class="mt-2 space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">有效期</label>
+                                <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="${cert.id}" onchange="toggleFileExpiry('${cert.id}'); updateFileExpiry('${cert.id}');">
+                                    <option value="none" ${!cert.file?.expiry ? 'selected' : ''}>长期有效</option>
+                                    <option value="date" ${cert.file?.expiry ? 'selected' : ''}>设置到期日期</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">到期日期</label>
+                                <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs ${cert.file?.expiry ? '' : 'hidden'}" data-file-type="${cert.id}" value="${cert.file?.expiry || ''}" onchange="updateFileExpiry('${cert.id}')">
+                                <p class="text-xs text-gray-400 file-expiry-none ${cert.file?.expiry ? 'hidden' : ''}" data-file-type="${cert.id}">长期有效</p>
+                            </div>
                         </div>
                         <div>
-                            <label class="block text-xs text-gray-600 mb-1">到期日期</label>
-                            <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs ${cert.file?.expiry ? '' : 'hidden'}" data-file-type="${cert.id}" value="${cert.file?.expiry || ''}" onchange="updateFileExpiry('${cert.id}')">
-                            <p class="text-xs text-gray-400 file-expiry-none ${cert.file?.expiry ? 'hidden' : ''}" data-file-type="${cert.id}">长期有效</p>
+                            <label class="block text-xs text-gray-600 mb-1">到期提醒</label>
+                            <select class="file-reminder w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="${cert.id}" onchange="updateFileExpiry('${cert.id}')">
+                                <option value="none" ${!cert.file?.reminder || cert.file?.reminder === 'none' ? 'selected' : ''}>不提醒</option>
+                                <option value="30d" ${cert.file?.reminder === '30d' ? 'selected' : ''}>提前30天提醒</option>
+                                <option value="6m" ${cert.file?.reminder === '6m' ? 'selected' : ''}>提前6个月提醒</option>
+                                <option value="1y" ${cert.file?.reminder === '1y' ? 'selected' : ''}>提前1年提醒</option>
+                            </select>
+                            <p class="mt-1 text-[10px] text-gray-400">仅当设置了到期日期时才会生效</p>
                         </div>
                     </div>
                 </div>
@@ -2464,14 +2535,16 @@
                 return;
             }
             
-            // 收集所有文件的有效期信息（包括必填文件和动态证书）
+            // 收集所有文件的有效期信息和提醒设置（包括必填文件和动态证书）
             const allFileTypes = Object.keys(personnelFiles);
             allFileTypes.forEach(fileType => {
                 const expiryType = document.querySelector(`.file-expiry-type[data-file-type="${fileType}"]`)?.value || 'none';
                 const expiryDate = document.querySelector(`.file-expiry-date[data-file-type="${fileType}"]`)?.value || null;
+                const reminder = document.querySelector(`.file-reminder[data-file-type="${fileType}"]`)?.value || 'none';
                 
-                // 更新有效期（无论之前是否有值，都使用当前表单的值）
+                // 更新有效期和提醒（无论之前是否有值，都使用当前表单的值）
                 personnelFiles[fileType].expiry = expiryType === 'date' && expiryDate ? expiryDate : null;
+                personnelFiles[fileType].reminder = expiryType === 'date' && expiryDate ? reminder : 'none';
             });
             
             // 收集动态添加的证书

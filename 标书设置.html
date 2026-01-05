@@ -148,8 +148,8 @@
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-5">
                 <div class="flex items-center justify-between">
                     <h2 class="text-lg font-semibold text-gray-800">标书格式</h2>
-                    <button class="text-xs text-blue-600" onclick="showFormatModal()">
-                        <i class="fas fa-plus mr-1"></i> 新建格式
+                    <button class="text-xs text-gray-600 hover:text-gray-800" onclick="showFormatManageModal()">
+                        <i class="fas fa-cog mr-1"></i> 管理格式
                     </button>
                 </div>
                 
@@ -375,7 +375,7 @@
         </div>
     </section>
 
-    <div id="formatModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div id="formatModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl p-6 max-w-lg w-full">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold">新建格式模板</h3>
@@ -531,6 +531,37 @@
                 <div class="flex gap-3 pt-2">
                     <button onclick="closeFormatModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700">取消</button>
                     <button onclick="saveFormat()" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 格式管理弹窗 -->
+    <div id="formatManageModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold">格式管理</h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="showFormatModal(); closeFormatManageModal();" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
+                        <i class="fas fa-plus mr-1"></i> 新建格式
+                    </button>
+                    <button onclick="closeFormatManageModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto pr-2">
+                <!-- 格式列表 -->
+                <div id="formatList" class="space-y-3">
+                    <!-- 格式项将通过 JavaScript 动态生成 -->
+                </div>
+                
+                <!-- 空状态 -->
+                <div id="formatEmptyState" class="hidden text-center py-12 text-gray-400">
+                    <i class="fas fa-file-alt text-4xl mb-3"></i>
+                    <p class="text-sm">暂无自定义格式</p>
+                    <p class="text-xs mt-1">点击"新建格式"创建第一个格式模板</p>
                 </div>
             </div>
         </div>
@@ -747,7 +778,8 @@
 
         function updateFormatPreview() {
             const select = document.getElementById('formatSelect');
-            const preset = formatPresets[select.value] || formatPresets['default'];
+            const allFormats = getAllFormats();
+            const preset = allFormats[select.value] || formatPresets['default'];
             const bodyContainer = document.getElementById('bodyFormatPreview');
             const headingContainer = document.getElementById('headingSpec');
 
@@ -773,17 +805,262 @@
         }
 
         document.getElementById('formatSelect').addEventListener('change', updateFormatPreview);
+        
+        // 页面加载时初始化
+        updateFormatSelect();
         updateFormatPreview();
 
-        function showFormatModal() {
-            document.getElementById('formatModal').classList.remove('hidden');
+        // 格式管理相关函数
+        let currentEditingFormatId = null;
+        
+        // 从localStorage加载自定义格式
+        function loadCustomFormats() {
+            try {
+                const saved = localStorage.getItem('bidding_custom_formats');
+                return saved ? JSON.parse(saved) : {};
+            } catch (e) {
+                console.error('加载自定义格式失败:', e);
+                return {};
+            }
         }
+        
+        // 保存自定义格式到localStorage
+        function saveCustomFormats(formats) {
+            try {
+                localStorage.setItem('bidding_custom_formats', JSON.stringify(formats));
+            } catch (e) {
+                console.error('保存自定义格式失败:', e);
+            }
+        }
+        
+        // 获取所有格式（预设 + 自定义）
+        function getAllFormats() {
+            const customFormats = loadCustomFormats();
+            return { ...formatPresets, ...customFormats };
+        }
+        
+        // 更新格式选择下拉框
+        function updateFormatSelect() {
+            const select = document.getElementById('formatSelect');
+            const currentValue = select.value;
+            const customFormats = loadCustomFormats();
+            
+            // 清空自定义格式选项（保留预设格式）
+            const presetOptions = Array.from(select.options).filter(opt => 
+                ['default', 'standard'].includes(opt.value)
+            );
+            
+            // 重新构建选项
+            select.innerHTML = '';
+            presetOptions.forEach(opt => select.appendChild(opt));
+            
+            // 添加自定义格式选项
+            Object.keys(customFormats).forEach(formatId => {
+                const format = customFormats[formatId];
+                const option = document.createElement('option');
+                option.value = formatId;
+                option.textContent = format.name || formatId;
+                select.appendChild(option);
+            });
+            
+            // 恢复之前的选择
+            if (currentValue && (formatPresets[currentValue] || customFormats[currentValue])) {
+                select.value = currentValue;
+            }
+            
+            updateFormatPreview();
+        }
+        
+        // 显示格式管理弹窗
+        function showFormatManageModal() {
+            document.getElementById('formatManageModal').classList.remove('hidden');
+            renderFormatList();
+        }
+        
+        // 关闭格式管理弹窗
+        function closeFormatManageModal() {
+            document.getElementById('formatManageModal').classList.add('hidden');
+        }
+        
+        // 渲染格式列表
+        function renderFormatList() {
+            const container = document.getElementById('formatList');
+            const emptyState = document.getElementById('formatEmptyState');
+            const customFormats = loadCustomFormats();
+            const formatIds = Object.keys(customFormats);
+            
+            if (formatIds.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            container.innerHTML = formatIds.map(formatId => {
+                const format = customFormats[formatId];
+                const body = format.body || {};
+                const headings = format.headings || [];
+                
+                return `
+                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:bg-blue-50 transition">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <h4 class="text-base font-semibold text-gray-800">${format.name || formatId}</h4>
+                                    <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">自定义格式</span>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                                    <div>
+                                        <p class="font-medium text-gray-700 mb-1">正文设置</p>
+                                        <p class="text-xs">字体：${body.font || '-'}（${body.size || '-'}）</p>
+                                        <p class="text-xs">行距：${body.lineHeight || '-'}</p>
+                                        <p class="text-xs">页边距：${body.margins || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-700 mb-1">标题设置</p>
+                                        ${headings.slice(0, 3).map(h => `
+                                            <p class="text-xs">${h.level}：${h.font || '-'} ${h.size || '-'}</p>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-2 ml-4">
+                                <button onclick="editFormat('${formatId}')" class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg" title="编辑">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteFormat('${formatId}')" class="p-2 text-red-600 hover:bg-red-100 rounded-lg" title="删除">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 编辑格式
+        function editFormat(formatId) {
+            const customFormats = loadCustomFormats();
+            const format = customFormats[formatId];
+            if (!format) return;
+            
+            // 先关闭管理弹窗，再打开编辑弹窗
+            closeFormatManageModal();
+            currentEditingFormatId = formatId;
+            showFormatModal(format);
+        }
+        
+        // 删除格式
+        function deleteFormat(formatId) {
+            if (!confirm('确定要删除此格式吗？删除后无法恢复。')) return;
+            
+            const customFormats = loadCustomFormats();
+            delete customFormats[formatId];
+            saveCustomFormats(customFormats);
+            
+            // 如果当前选择的是被删除的格式，切换到默认格式
+            const select = document.getElementById('formatSelect');
+            if (select.value === formatId) {
+                select.value = 'default';
+                saveSettingsToLocal();
+                updateFormatPreview();
+            }
+            
+            renderFormatList();
+            updateFormatSelect();
+            showToast('格式已删除', 'success');
+        }
+        
+        function showFormatModal(formatData = null) {
+            const modal = document.getElementById('formatModal');
+            const title = modal.querySelector('h3');
+            const nameInput = modal.querySelector('input[type="text"]');
+            
+            // 重置表单
+            currentEditingFormatId = formatData ? formatData.id || null : null;
+            
+            if (formatData) {
+                // 编辑模式
+                title.textContent = '编辑格式模板';
+                if (nameInput) nameInput.value = formatData.name || '';
+                // TODO: 填充其他表单字段
+            } else {
+                // 新建模式
+                title.textContent = '新建格式模板';
+                if (nameInput) nameInput.value = '';
+                // TODO: 重置其他表单字段
+            }
+            
+            modal.classList.remove('hidden');
+        }
+        
         function closeFormatModal() {
             document.getElementById('formatModal').classList.add('hidden');
+            currentEditingFormatId = null;
         }
+        
         function saveFormat() {
-            alert('格式模板已保存');
+            const modal = document.getElementById('formatModal');
+            const nameInput = modal.querySelector('input[type="text"]');
+            const formatName = nameInput ? nameInput.value.trim() : '';
+            
+            if (!formatName) {
+                alert('请输入格式名称');
+                return;
+            }
+            
+            // TODO: 收集表单中的所有格式设置
+            // 这里先创建一个基本的格式对象
+            const formatId = currentEditingFormatId || 'custom_' + Date.now();
+            const customFormats = loadCustomFormats();
+            
+            customFormats[formatId] = {
+                id: formatId,
+                name: formatName,
+                body: {
+                    font: '仿宋',
+                    size: '三号',
+                    lineHeight: '1.5倍',
+                    margins: '上下2.5cm，左右3cm',
+                    headerFooter: '启用'
+                },
+                headings: [
+                    { level: '一级标题', font: '黑体', size: '三号', spacing: '段前1行 / 段后0.5行' },
+                    { level: '二级标题', font: '黑体', size: '小三号', spacing: '段前0.5行 / 段后0行' },
+                    { level: '三级标题', font: '宋体', size: '四号', spacing: '段前0.5行 / 段后0行' }
+                ]
+            };
+            
+            saveCustomFormats(customFormats);
+            updateFormatSelect();
+            showToast('格式模板已保存', 'success');
+            
             closeFormatModal();
+            
+            // 如果是从管理弹窗进入的编辑，保存后重新打开管理弹窗
+            if (currentEditingFormatId) {
+                setTimeout(() => {
+                    showFormatManageModal();
+                }, 100);
+            }
+        }
+        
+        // 显示提示消息
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
         // 保存设置到本地存储
         // 从招标解析结果同步数据（仅在用户点击时触发）
