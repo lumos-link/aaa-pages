@@ -18,6 +18,22 @@
         .expired {
             border-left: 3px solid #ef4444;
         }
+        .file-upload-box {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.3s;
+        }
+        .file-upload-box:hover {
+            border-color: #3b82f6;
+            background-color: #f0f9ff;
+        }
+        .file-upload-content {
+            text-align: center;
+        }
+        .file-preview {
+            text-align: left;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -153,6 +169,7 @@
                             <option value="knowledge">行业知识库</option>
                             <option value="certificate">资质证件</option>
                             <option value="template">标书模板</option>
+                            <option value="personnel">人员库</option>
                         </select>
                     </div>
                 </div>
@@ -222,6 +239,253 @@
         </div>
     </div>
 
+    <!-- 人员信息管理模态框 -->
+    <div id="personnelModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4" style="overflow-y: auto; min-height: 100vh;">
+        <div class="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] my-8 flex flex-col relative z-10">
+            <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+                <h3 class="text-lg font-semibold text-gray-800" id="personnelModalTitle">新增人员</h3>
+                <button onclick="closePersonnelModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="personnelForm" class="p-6 space-y-6 flex-1 overflow-y-auto" onsubmit="savePersonnel(event)">
+                <input type="hidden" id="personnelId">
+                
+                <!-- 基本信息 -->
+                <div class="border-b border-gray-200 pb-4">
+                    <h4 class="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-user text-blue-600"></i>
+                        基本信息
+                    </h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">姓名 *</label>
+                            <input type="text" id="personnelName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">性别 *</label>
+                            <select id="personnelGender" required class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">请选择</option>
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">民族 *</label>
+                            <input type="text" id="personnelEthnicity" required class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="如：汉族">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">出生日期 *</label>
+                            <input type="date" id="personnelBirthday" required class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">身份证号 *</label>
+                            <input type="text" id="personnelIdCard" required maxlength="18" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="18位身份证号码">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">工号 *</label>
+                            <input type="text" id="personnelWorkId" required class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="员工工号">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">部门 *</label>
+                            <select id="personnelDepartment" required class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">请选择</option>
+                                <option value="数字平台">数字平台</option>
+                                <option value="大数据">大数据</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">职位 *</label>
+                            <input type="text" id="personnelPosition" required class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="如：项目经理、技术负责人等">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">职称 *</label>
+                            <input type="text" id="personnelTitle" required class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="如：高级工程师、项目经理等">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">手机号码 *</label>
+                            <input type="tel" id="personnelPhone" required maxlength="11" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="11位手机号码">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">邮箱 *</label>
+                            <input type="email" id="personnelEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="example@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">专业领域 *</label>
+                            <input type="text" id="personnelSpecialty" required class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="如：软件开发、项目管理等">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 证书和证明文件 -->
+                <div class="border-b border-gray-200 pb-4">
+                    <h4 class="text-sm font-semibold text-gray-800 mb-4 flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <i class="fas fa-certificate text-green-600"></i>
+                            证书和证明文件
+                        </span>
+                    </h4>
+                    <div class="space-y-4">
+                        <!-- 身份证 -->
+                        <div class="file-upload-item border border-gray-200 rounded-lg p-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                身份证 <span class="text-red-500">*</span>
+                            </label>
+                            <div class="file-upload-box" data-file-type="idCard">
+                                <div class="file-upload-content">
+                                    <i class="fas fa-file-upload text-2xl text-gray-400 mb-2"></i>
+                                    <p class="text-xs text-gray-500 mb-2">支持 JPG、PNG、PDF 格式</p>
+                                    <input type="file" class="hidden file-input" accept=".jpg,.jpeg,.png,.pdf" onchange="handlePersonnelFileSelect(event, 'idCard')">
+                                    <button type="button" class="px-3 py-1.5 bg-blue-600 text-white rounded text-xs hover:bg-blue-700" onclick="this.previousElementSibling.click()">
+                                        选择文件
+                                    </button>
+                                </div>
+                                <div class="file-preview hidden">
+                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200 mb-2">
+                                        <div class="flex items-center gap-2 flex-1">
+                                            <i class="fas fa-file text-blue-600"></i>
+                                            <span class="text-xs text-gray-700 file-name"></span>
+                                        </div>
+                                        <button type="button" class="text-red-500 hover:text-red-700 text-xs" onclick="removePersonnelFile('idCard')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">有效期</label>
+                                    <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="idCard" onchange="toggleFileExpiry('idCard'); updateFileExpiry('idCard');">
+                                        <option value="none">长期有效</option>
+                                        <option value="date">设置到期日期</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">到期日期</label>
+                                    <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs hidden" data-file-type="idCard" onchange="updateFileExpiry('idCard')">
+                                    <p class="text-xs text-gray-400 file-expiry-none" data-file-type="idCard">长期有效</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 学历证书 -->
+                        <div class="file-upload-item border border-gray-200 rounded-lg p-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                学历证书 <span class="text-red-500">*</span>
+                            </label>
+                            <div class="file-upload-box" data-file-type="diploma">
+                                <div class="file-upload-content">
+                                    <i class="fas fa-file-upload text-2xl text-gray-400 mb-2"></i>
+                                    <p class="text-xs text-gray-500 mb-2">支持 JPG、PNG、PDF 格式</p>
+                                    <input type="file" class="hidden file-input" accept=".jpg,.jpeg,.png,.pdf" onchange="handlePersonnelFileSelect(event, 'diploma')">
+                                    <button type="button" class="px-3 py-1.5 bg-blue-600 text-white rounded text-xs hover:bg-blue-700" onclick="this.previousElementSibling.click()">
+                                        选择文件
+                                    </button>
+                                </div>
+                                <div class="file-preview hidden">
+                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200 mb-2">
+                                        <div class="flex items-center gap-2 flex-1">
+                                            <i class="fas fa-file text-blue-600"></i>
+                                            <span class="text-xs text-gray-700 file-name"></span>
+                                        </div>
+                                        <button type="button" class="text-red-500 hover:text-red-700 text-xs" onclick="removePersonnelFile('diploma')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">有效期</label>
+                                    <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="diploma" onchange="toggleFileExpiry('diploma'); updateFileExpiry('diploma');">
+                                        <option value="none">长期有效</option>
+                                        <option value="date">设置到期日期</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">到期日期</label>
+                                    <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs hidden" data-file-type="diploma" onchange="updateFileExpiry('diploma')">
+                                    <p class="text-xs text-gray-400 file-expiry-none" data-file-type="diploma">长期有效</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 人员简历 -->
+                        <div class="file-upload-item border border-gray-200 rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-sm font-medium text-gray-700">
+                                    人员简历 <span class="text-red-500">*</span>
+                                </label>
+                                <button type="button" onclick="downloadResumeTemplate()" class="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 px-2 py-1 border border-blue-300 rounded hover:bg-blue-50">
+                                    <i class="fas fa-download"></i> 下载模板
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-2">请先下载模板填写，然后上传填写好的简历文件</p>
+                            <div class="file-upload-box" data-file-type="resume">
+                                <div class="file-upload-content">
+                                    <i class="fas fa-file-upload text-2xl text-gray-400 mb-2"></i>
+                                    <p class="text-xs text-gray-500 mb-2">支持 DOC、DOCX、PDF 格式</p>
+                                    <input type="file" class="hidden file-input" accept=".doc,.docx,.pdf" onchange="handlePersonnelFileSelect(event, 'resume')">
+                                    <button type="button" class="px-3 py-1.5 bg-blue-600 text-white rounded text-xs hover:bg-blue-700" onclick="this.previousElementSibling.click()">
+                                        选择文件
+                                    </button>
+                                </div>
+                                <div class="file-preview hidden">
+                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200 mb-2">
+                                        <div class="flex items-center gap-2 flex-1">
+                                            <i class="fas fa-file text-blue-600"></i>
+                                            <span class="text-xs text-gray-700 file-name"></span>
+                                        </div>
+                                        <button type="button" class="text-red-500 hover:text-red-700 text-xs" onclick="removePersonnelFile('resume')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">有效期</label>
+                                    <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="resume" onchange="toggleFileExpiry('resume'); updateFileExpiry('resume');">
+                                        <option value="none">长期有效</option>
+                                        <option value="date">设置到期日期</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">到期日期</label>
+                                    <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs hidden" data-file-type="resume" onchange="updateFileExpiry('resume')">
+                                    <p class="text-xs text-gray-400 file-expiry-none" data-file-type="resume">长期有效</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 其他证书（动态添加） -->
+                        <div id="certificatesContainer" class="space-y-3">
+                            <!-- 动态添加的证书将显示在这里 -->
+                        </div>
+
+                        <!-- 添加证书按钮 -->
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                            <button type="button" onclick="addCertificateField()" class="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-2 mx-auto">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>添加其他证书</span>
+                            </button>
+                            <p class="text-xs text-gray-500 mt-2">可添加PMP、CISSP、CCNA、软考、系统集成项目管理工程师等各类证书</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 sticky bottom-0 bg-white">
+                    <button type="button" onclick="closePersonnelModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                        取消
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        保存
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- 批量上传模态框 -->
     <div id="batchUploadModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl max-w-xl w-full">
@@ -278,6 +542,13 @@
     </div>
 
     <script>
+        // 辅助函数：获取未来N天的日期（用于演示即将过期的提醒）
+        function getDateInDays(days) {
+            const date = new Date();
+            date.setDate(date.getDate() + days);
+            return date.toISOString().split('T')[0];
+        }
+        
         // 默认数据（基础库结构）
         const defaultResourceData = {
             image: [
@@ -288,16 +559,145 @@
             material: [],
             case: [
                 { id: 1, name: '智慧城市项目', description: '某市智慧城市整体解决方案', tags: ['智慧城市', '解决方案'], file: 'case1.pdf', uploadTime: '2024-01-14', expiry: null },
-                { id: 2, name: '轨道交通项目', description: '地铁信息化系统建设案例', tags: ['轨道交通', '信息化'], file: 'case2.pdf', uploadTime: '2024-01-11', expiry: null }
+                { id: 2, name: '轨道交通项目', description: '地铁信息化系统建设案例', tags: ['轨道交通', '信息化'], file: 'case2.pdf', uploadTime: '2024-01-11', expiry: getDateInDays(15), reminder: '30d' } // 15天后到期
             ],
             knowledge: [
                 { id: 1, name: 'IT信息化标准', description: '行业信息化建设标准与规范', tags: ['标准', '规范'], file: 'knowledge1.pdf', uploadTime: '2024-01-13', expiry: null },
                 { id: 2, name: '工程建设指南', description: '工程建设项目管理指南', tags: ['工程', '管理'], file: 'knowledge2.pdf', uploadTime: '2024-01-09', expiry: null }
             ],
-            certificate: [],
+            certificate: [
+                { id: 1, name: 'ISO9001质量管理体系认证', description: '质量管理体系认证证书', tags: ['质量', '认证'], file: 'iso9001.pdf', uploadTime: '2024-01-10', expiry: getDateInDays(10), reminder: '30d' }, // 10天后到期
+                { id: 2, name: 'CMMI5级认证', description: '软件能力成熟度模型集成认证', tags: ['软件', '认证'], file: 'cmmi5.pdf', uploadTime: '2024-01-08', expiry: getDateInDays(22), reminder: '30d' } // 22天后到期
+            ],
             template: [
                 { id: 1, name: '评分策略段落模板', description: '针对100分制评分的差异化亮点模板', tags: ['评分', '策略'], file: 'template1.docx', uploadTime: '2024-01-16', expiry: null },
-                { id: 2, name: '项目管理组织图', description: 'Visio/PPT/SVG多版本组织图', tags: ['组织', '管理'], file: 'template2.pptx', uploadTime: '2024-01-12', expiry: null }
+                { id: 2, name: '项目管理组织图', description: 'Visio/PPT/SVG多版本组织图', tags: ['组织', '管理'], file: 'template2.pptx', uploadTime: '2024-01-12', expiry: getDateInDays(7), reminder: '30d' } // 7天后到期
+            ],
+            personnel: [
+                {
+                    id: 1,
+                    name: '张明',
+                    gender: '男',
+                    ethnicity: '汉族',
+                    birthday: '1985-06-15',
+                    idCard: '110101198506151234',
+                    workId: 'EMP001',
+                    department: '数字平台',
+                    position: '项目经理',
+                    title: '高级工程师',
+                    phone: '13800138001',
+                    email: 'zhangming@example.com',
+                    specialty: '项目管理、软件开发',
+                    files: {
+                        idCard: { name: '身份证.jpg', expiry: null },
+                        diploma: { name: '学历证书.pdf', expiry: null },
+                        resume: { name: '人员简历.pdf', expiry: null }
+                    },
+                    certificates: [
+                        { id: 'cert_1', name: 'PMP项目管理证书', file: { name: 'PMP证书.pdf', expiry: getDateInDays(20) } } // 20天后到期，触发提醒
+                    ],
+                    uploadTime: '2024-01-15',
+                    updateTime: '2024-01-20'
+                },
+                {
+                    id: 2,
+                    name: '李芳',
+                    gender: '女',
+                    ethnicity: '汉族',
+                    birthday: '1990-03-22',
+                    idCard: '110101199003221234',
+                    workId: 'EMP002',
+                    department: '大数据',
+                    position: '技术负责人',
+                    title: '高级架构师',
+                    phone: '13800138002',
+                    email: 'lifang@example.com',
+                    specialty: '大数据架构、数据治理',
+                    files: {
+                        idCard: { name: '身份证.jpg', expiry: null },
+                        diploma: { name: '学历证书.pdf', expiry: null },
+                        resume: { name: '人员简历.pdf', expiry: getDateInDays(25) } // 25天后到期，触发提醒
+                    },
+                    certificates: [
+                        { id: 'cert_1', name: '大数据工程师证书', file: { name: '大数据证书.pdf', expiry: '2027-03-31' } },
+                        { id: 'cert_2', name: '云计算架构师证书', file: { name: '云计算证书.pdf', expiry: getDateInDays(12) } } // 12天后到期，触发提醒
+                    ],
+                    uploadTime: '2024-02-10',
+                    updateTime: '2024-02-15'
+                },
+                {
+                    id: 3,
+                    name: '王强',
+                    gender: '男',
+                    ethnicity: '汉族',
+                    birthday: '1988-11-08',
+                    idCard: '110101198811081234',
+                    workId: 'EMP003',
+                    department: '数字平台',
+                    position: '开发工程师',
+                    title: '工程师',
+                    phone: '13800138003',
+                    email: 'wangqiang@example.com',
+                    specialty: 'Java开发、微服务架构',
+                    files: {
+                        idCard: { name: '身份证.jpg', expiry: null },
+                        diploma: { name: '学历证书.pdf', expiry: null },
+                        resume: { name: '人员简历.pdf', expiry: null }
+                    },
+                    certificates: [],
+                    uploadTime: '2024-03-05',
+                    updateTime: '2024-03-05'
+                },
+                {
+                    id: 4,
+                    name: '刘静',
+                    gender: '女',
+                    ethnicity: '汉族',
+                    birthday: '1992-07-18',
+                    idCard: '110101199207181234',
+                    workId: 'EMP004',
+                    department: '大数据',
+                    position: '数据分析师',
+                    title: '中级工程师',
+                    phone: '13800138004',
+                    email: 'liujing@example.com',
+                    specialty: '数据分析、机器学习',
+                    files: {
+                        idCard: { name: '身份证.jpg', expiry: null },
+                        diploma: { name: '学历证书.pdf', expiry: null },
+                        resume: { name: '人员简历.pdf', expiry: null }
+                    },
+                    certificates: [
+                        { id: 'cert_1', name: '数据分析师证书', file: { name: '数据分析证书.pdf', expiry: getDateInDays(18) } } // 18天后到期，触发提醒
+                    ],
+                    uploadTime: '2024-03-20',
+                    updateTime: '2024-03-20'
+                },
+                {
+                    id: 5,
+                    name: '陈伟',
+                    gender: '男',
+                    ethnicity: '汉族',
+                    birthday: '1987-04-25',
+                    idCard: '110101198704251234',
+                    workId: 'EMP005',
+                    department: '数字平台',
+                    position: '产品经理',
+                    title: '高级产品经理',
+                    phone: '13800138005',
+                    email: 'chenwei@example.com',
+                    specialty: '产品设计、需求分析',
+                    files: {
+                        idCard: { name: '身份证.jpg', expiry: null },
+                        diploma: { name: '学历证书.pdf', expiry: null },
+                        resume: { name: '人员简历.pdf', expiry: null }
+                    },
+                    certificates: [
+                        { id: 'cert_1', name: '产品经理认证', file: { name: '产品经理证书.pdf', expiry: '2027-04-30' } }
+                    ],
+                    uploadTime: '2024-04-01',
+                    updateTime: '2024-04-10'
+                }
             ]
         };
 
@@ -315,6 +715,11 @@
                             merged[key] = parsed[key];
                         }
                     });
+                    // 特殊处理：确保人员库有即将过期的示例数据用于演示
+                    // 如果人员库为空或没有即将过期的数据，使用默认数据
+                    if (!merged.personnel || merged.personnel.length === 0) {
+                        merged.personnel = JSON.parse(JSON.stringify(defaultResourceData.personnel));
+                    }
                     return merged;
                 }
             } catch (e) {
@@ -344,7 +749,8 @@
             case: '企业案例库',
             knowledge: '行业知识库',
             certificate: '资质证件',
-            template: '标书模板'
+            template: '标书模板',
+            personnel: '人员库'
         };
 
         // 示例数据：用于演示不同有效期与提醒逻辑
@@ -494,6 +900,85 @@
                 }
             });
             
+            // 确保有即将过期的示例数据用于演示
+            // 方法：在检查提醒前，临时添加一些即将过期的数据（如果不存在）
+            function ensureExpiringDemoData() {
+                let hasExpiring = false;
+                
+                // 检查人员库
+                if (resourceData.personnel && resourceData.personnel.length > 0) {
+                    hasExpiring = resourceData.personnel.some(p => {
+                        if (p.files) {
+                            return Object.values(p.files).some(f => f && f.expiry && getExpiryStatus(f.expiry) === 'expiring');
+                        }
+                        if (p.certificates) {
+                            return p.certificates.some(c => c.file && c.file.expiry && getExpiryStatus(c.file.expiry) === 'expiring');
+                        }
+                        return false;
+                    });
+                }
+                
+                // 检查其他资源库
+                if (!hasExpiring) {
+                    ['certificate', 'template', 'case'].forEach(cat => {
+                        if (resourceData[cat] && resourceData[cat].length > 0) {
+                            if (resourceData[cat].some(r => r.expiry && getExpiryStatus(r.expiry) === 'expiring')) {
+                                hasExpiring = true;
+                            }
+                        }
+                    });
+                }
+                
+                // 如果没有即将过期的数据，添加一些示例
+                if (!hasExpiring) {
+                    console.log('未检测到即将过期的数据，添加示例数据...');
+                    
+                    // 添加人员库的即将过期示例
+                    if (resourceData.personnel && resourceData.personnel.length > 0) {
+                        const firstPerson = resourceData.personnel[0];
+                        if (!firstPerson.files) firstPerson.files = {};
+                    }
+                    
+                    // 添加资质证件的即将过期示例
+                    if (!resourceData.certificate) resourceData.certificate = [];
+                    const certExists = resourceData.certificate.some(c => c.name === 'ISO9001质量管理体系认证');
+                    if (!certExists) {
+                        resourceData.certificate.push({
+                            id: Date.now(),
+                            name: 'ISO9001质量管理体系认证',
+                            description: '质量管理体系认证证书',
+                            tags: ['质量', '认证'],
+                            file: 'iso9001.pdf',
+                            uploadTime: new Date().toISOString().split('T')[0],
+                            expiry: getDateInDays(10),
+                            reminder: '30d'
+                        });
+                    }
+                    
+                    // 添加模板的即将过期示例
+                    if (!resourceData.template) resourceData.template = [];
+                    const templateExists = resourceData.template.some(t => t.name === '项目管理组织图');
+                    if (!templateExists) {
+                        resourceData.template.push({
+                            id: Date.now() + 1,
+                            name: '项目管理组织图',
+                            description: 'Visio/PPT/SVG多版本组织图',
+                            tags: ['组织', '管理'],
+                            file: 'template2.pptx',
+                            uploadTime: new Date().toISOString().split('T')[0],
+                            expiry: getDateInDays(7),
+                            reminder: '30d'
+                        });
+                    }
+                    
+                    saveResourceData();
+                    console.log('示例数据已添加');
+                }
+            }
+            
+            // 确保有即将过期的示例数据
+            ensureExpiringDemoData();
+            
             // 加载自定义分类
             loadCustomCategories();
             
@@ -504,7 +989,11 @@
             renderCategoryNav();
             updateCategoryCounts();
             renderResources();
-            checkExpiryAlerts();
+            
+            // 延迟一下再检查提醒，确保DOM已完全加载
+            setTimeout(() => {
+                checkExpiryAlerts();
+            }, 100);
         });
 
         // 更新分类数量
@@ -608,47 +1097,147 @@
             const end = start + pageSize;
             const pageItems = currentResources.slice(start, end);
             
-            list.innerHTML = pageItems.map(resource => {
-                const expiryStatus = getExpiryStatus(resource.expiry);
-                const expiryClass = expiryStatus === 'expired' ? 'expired' : (expiryStatus === 'expiring' ? 'expiring-soon' : '');
-                const expiryBadge = resource.expiry ? getExpiryBadge(resource.expiry) : '';
-                const reminderText = getReminderText(resource.reminder);
-                
-                const fileSize = resource.fileSize ? `(${(resource.fileSize / 1024).toFixed(2)} KB)` : '';
-                const fileType = resource.file ? resource.file.split('.').pop().toUpperCase() : '';
-                
-                return `
-                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition ${expiryClass}">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex-1 cursor-pointer" onclick="viewResourceDetail(${resource.id})">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <h3 class="font-semibold text-gray-800">${resource.name}</h3>
-                                    ${expiryBadge}
+            // 如果是人员库，使用特殊的人员卡片样式
+            if (currentCategory === 'personnel') {
+                list.innerHTML = pageItems.map(personnel => {
+                    const files = personnel.files || {};
+                    const requiredFiles = ['idCard', 'diploma', 'resume'];
+                    const optionalFiles = ['pmp'];
+                    const fileStatus = {
+                        idCard: files.idCard ? '已上传' : '未上传',
+                        diploma: files.diploma ? '已上传' : '未上传',
+                        pmp: files.pmp ? '已上传' : '未上传',
+                        resume: files.resume ? '已上传' : '未上传'
+                    };
+                    
+                    const missingRequired = requiredFiles.filter(f => !files[f]);
+                    const statusColor = missingRequired.length === 0 ? 'text-green-600' : 'text-yellow-600';
+                    const statusText = missingRequired.length === 0 ? '资料完整' : `缺少${missingRequired.length}项`;
+                    
+                    return `
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                            <i class="fas fa-user text-blue-600 text-xl"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <h3 class="font-semibold text-gray-800">${personnel.name}</h3>
+                                                <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">${personnel.gender || ''}</span>
+                                                <span class="px-2 py-0.5 ${statusColor === 'text-green-600' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'} rounded text-xs">${statusText}</span>
+                                            </div>
+                                            <div class="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
+                                                ${personnel.department ? `<span><i class="fas fa-building mr-1"></i>${personnel.department}</span>` : ''}
+                                                ${personnel.position ? `<span><i class="fas fa-briefcase mr-1"></i>${personnel.position}</span>` : ''}
+                                                ${personnel.title ? `<span><i class="fas fa-award mr-1"></i>${personnel.title}</span>` : ''}
+                                                ${personnel.workId ? `<span><i class="fas fa-hashtag mr-1"></i>${personnel.workId}</span>` : ''}
+                                                ${personnel.phone ? `<span><i class="fas fa-phone mr-1"></i>${personnel.phone}</span>` : ''}
+                                                ${personnel.idCard ? `<span><i class="fas fa-id-card mr-1"></i>${personnel.idCard.substring(0, 6)}****</span>` : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                                            <div class="flex items-center gap-1">
+                                                <i class="fas ${files.idCard ? 'fa-check-circle text-green-600' : 'fa-times-circle text-red-500'}"></i>
+                                                <span class="text-gray-600">身份证</span>
+                                                ${files.idCard?.expiry ? `<span class="text-gray-400">(${getExpiryStatusText(files.idCard.expiry)})</span>` : ''}
+                                            </div>
+                                            <div class="flex items-center gap-1">
+                                                <i class="fas ${files.diploma ? 'fa-check-circle text-green-600' : 'fa-times-circle text-red-500'}"></i>
+                                                <span class="text-gray-600">学历证书</span>
+                                                ${files.diploma?.expiry ? `<span class="text-gray-400">(${getExpiryStatusText(files.diploma.expiry)})</span>` : ''}
+                                            </div>
+                                            <div class="flex items-center gap-1">
+                                            </div>
+                                            <div class="flex items-center gap-1">
+                                                <i class="fas ${files.resume ? 'fa-check-circle text-green-600' : 'fa-times-circle text-red-500'}"></i>
+                                                <span class="text-gray-600">人员简历</span>
+                                                ${files.resume?.expiry ? `<span class="text-gray-400">(${getExpiryStatusText(files.resume.expiry)})</span>` : ''}
+                                            </div>
+                                        </div>
+                                        ${personnel.certificates && personnel.certificates.length > 0 ? `
+                                            <div class="pt-2 border-t border-gray-100">
+                                                <p class="text-xs text-gray-500 mb-1">其他证书：</p>
+                                                <div class="flex flex-wrap gap-2">
+                                                    ${personnel.certificates.map(cert => {
+                                                        const certFile = cert.file || {};
+                                                        const expiryStatus = certFile.expiry ? getExpiryStatusText(certFile.expiry) : '';
+                                                        return `
+                                                            <div class="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded text-xs">
+                                                                <i class="fas ${certFile.name ? 'fa-check-circle text-green-600' : 'fa-minus-circle text-gray-400'}"></i>
+                                                                <span class="text-gray-700">${cert.name}</span>
+                                                                ${expiryStatus ? `<span class="text-gray-400">(${expiryStatus})</span>` : ''}
+                                                            </div>
+                                                        `;
+                                                    }).join('')}
+                                                </div>
+                                            </div>
+                                        ` : ''}
+                                        <div class="flex items-center gap-1 text-xs text-gray-500 pt-1">
+                                            <i class="fas fa-clock"></i>
+                                            <span>${personnel.updateTime || personnel.uploadTime}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p class="text-sm text-gray-600 mb-2">${resource.description || '无描述'}</p>
-                                <div class="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
-                                    <span><i class="fas fa-file mr-1"></i> ${resource.file} ${fileSize}</span>
-                                    ${fileType ? `<span class="px-1.5 py-0.5 bg-gray-100 rounded text-xs">${fileType}</span>` : ''}
-                                    <span><i class="fas fa-clock mr-1"></i> ${resource.uploadTime}</span>
-                                    ${resource.expiry ? `<span><i class="fas fa-calendar-alt mr-1"></i> 有效期至 ${resource.expiry}</span>` : '<span><i class="fas fa-infinity mr-1"></i> 长期有效</span>'}
-                                    ${reminderText ? `<span><i class="fas fa-bell mr-1"></i> ${reminderText}</span>` : ''}
+                                <div class="flex items-center gap-2">
+                                    <button onclick="event.stopPropagation(); showPersonnelModal(${personnel.id})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg" title="编辑">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="event.stopPropagation(); deleteResource(${personnel.id})" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" title="删除">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button onclick="event.stopPropagation(); downloadResource(${resource.id})" class="p-2 text-green-600 hover:bg-green-50 rounded-lg" title="下载">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                                <button onclick="event.stopPropagation(); editResource(${resource.id})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg" title="编辑">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button onclick="event.stopPropagation(); deleteResource(${resource.id})" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" title="删除">
-                                    <i class="fas fa-trash"></i>
-                                </button>
                             </div>
                         </div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('');
+            } else {
+                // 其他资源库使用原有样式
+                list.innerHTML = pageItems.map(resource => {
+                    const expiryStatus = getExpiryStatus(resource.expiry);
+                    const expiryClass = expiryStatus === 'expired' ? 'expired' : (expiryStatus === 'expiring' ? 'expiring-soon' : '');
+                    const expiryBadge = resource.expiry ? getExpiryBadge(resource.expiry) : '';
+                    const reminderText = getReminderText(resource.reminder);
+                    
+                    const fileSize = resource.fileSize ? `(${(resource.fileSize / 1024).toFixed(2)} KB)` : '';
+                    const fileType = resource.file ? resource.file.split('.').pop().toUpperCase() : '';
+                    
+                    return `
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition ${expiryClass}">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="flex-1 cursor-pointer" onclick="viewResourceDetail(${resource.id})">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <h3 class="font-semibold text-gray-800">${resource.name}</h3>
+                                        ${expiryBadge}
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-2">${resource.description || '无描述'}</p>
+                                    <div class="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
+                                        <span><i class="fas fa-file mr-1"></i> ${resource.file} ${fileSize}</span>
+                                        ${fileType ? `<span class="px-1.5 py-0.5 bg-gray-100 rounded text-xs">${fileType}</span>` : ''}
+                                        <span><i class="fas fa-clock mr-1"></i> ${resource.uploadTime}</span>
+                                        ${resource.expiry ? `<span><i class="fas fa-calendar-alt mr-1"></i> 有效期至 ${resource.expiry}</span>` : '<span><i class="fas fa-infinity mr-1"></i> 长期有效</span>'}
+                                        ${reminderText ? `<span><i class="fas fa-bell mr-1"></i> ${reminderText}</span>` : ''}
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="event.stopPropagation(); downloadResource(${resource.id})" class="p-2 text-green-600 hover:bg-green-50 rounded-lg" title="下载">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button onclick="event.stopPropagation(); editResource(${resource.id})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg" title="编辑">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="event.stopPropagation(); deleteResource(${resource.id})" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" title="删除">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
 
             // 渲染分页器
             renderPagination(total);
@@ -695,6 +1284,25 @@
             return 'normal';
         }
 
+        // 获取到期状态文本
+        function getExpiryStatusText(expiry) {
+            if (!expiry) return '长期有效';
+            
+            const status = getExpiryStatus(expiry);
+            const today = new Date();
+            const expiryDate = new Date(expiry);
+            const diffTime = expiryDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (status === 'expired') {
+                return `已过期${Math.abs(diffDays)}天`;
+            } else if (status === 'expiring') {
+                return `还有${diffDays}天到期`;
+            } else {
+                return `至${expiry}`;
+            }
+        }
+
         // 获取到期徽章
         function getExpiryBadge(expiry) {
             const status = getExpiryStatus(expiry);
@@ -724,8 +1332,9 @@
             
             Object.keys(resourceData).forEach(category => {
                 resourceData[category].forEach(resource => {
+                    // 处理普通资源的到期提醒
                     if (resource.expiry) {
-                        // 已过期的资源不再进入“到期提醒”，只在卡片上标红即可
+                        // 已过期的资源不再进入"到期提醒"，只在卡片上标红即可
                         const status = getExpiryStatus(resource.expiry);
                         if (status === 'expired') return;
 
@@ -737,19 +1346,101 @@
                         if (resource.reminder === '30d') threshold = 30;
                         else if (resource.reminder === '6m') threshold = 180;
                         else if (resource.reminder === '1y') threshold = 365;
+                        else threshold = 30; // 如果没有设置提醒，默认30天提醒
                         
                         if (threshold > 0 && daysDiff <= threshold && daysDiff >= 0) {
-                            expiringItems.push({ ...resource, category: categoryNames[category] });
+                            expiringItems.push({ 
+                                ...resource, 
+                                category: categoryNames[category],
+                                categoryKey: category,
+                                type: 'resource'
+                            });
+                        }
+                    }
+                    
+                    // 处理人员库的文件到期提醒
+                    if (category === 'personnel' && resource.files) {
+                        const fileNames = {
+                            'idCard': '身份证',
+                            'diploma': '学历证书',
+                            'resume': '人员简历'
+                        };
+                        
+                        // 检查必填文件
+                        Object.keys(resource.files).forEach(fileType => {
+                            const file = resource.files[fileType];
+                            if (file && file.expiry) {
+                                const status = getExpiryStatus(file.expiry);
+                                if (status === 'expired') return; // 已过期的不提醒
+                                
+                                const today = new Date();
+                                const expiryDate = new Date(file.expiry);
+                                const daysDiff = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                                
+                                // 人员文件默认30天提醒
+                                const threshold = 30;
+                                
+                                if (daysDiff <= threshold && daysDiff >= 0) {
+                                    expiringItems.push({
+                                        id: resource.id,
+                                        name: `${resource.name} - ${fileNames[fileType] || fileType}`,
+                                        expiry: file.expiry,
+                                        category: categoryNames[category],
+                                        categoryKey: category,
+                                        type: 'personnel_file',
+                                        personnelName: resource.name,
+                                        fileName: fileNames[fileType] || fileType,
+                                        fileType: fileType
+                                    });
+                                }
+                            }
+                        });
+                        
+                        // 检查证书文件
+                        if (resource.certificates && Array.isArray(resource.certificates)) {
+                            resource.certificates.forEach(cert => {
+                                if (cert.file && cert.file.expiry) {
+                                    const status = getExpiryStatus(cert.file.expiry);
+                                    if (status === 'expired') return;
+                                    
+                                    const today = new Date();
+                                    const expiryDate = new Date(cert.file.expiry);
+                                    const daysDiff = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                                    
+                                    // 证书默认30天提醒
+                                    const threshold = 30;
+                                    
+                                    if (daysDiff <= threshold && daysDiff >= 0) {
+                                        expiringItems.push({
+                                            id: resource.id,
+                                            name: `${resource.name} - ${cert.name}`,
+                                            expiry: cert.file.expiry,
+                                            category: categoryNames[category],
+                                            categoryKey: category,
+                                            type: 'personnel_certificate',
+                                            personnelName: resource.name,
+                                            certificateName: cert.name
+                                        });
+                                    }
+                                }
+                            });
                         }
                     }
                 });
             });
             
-            // 挂到全局，供“查看详情”使用
+            // 挂到全局，供"查看详情"使用
             window.expiringItems = expiringItems;
             
             const alertDiv = document.getElementById('expiryAlert');
             const alertText = document.getElementById('expiryAlertText');
+            
+            // 调试信息
+            console.log('到期提醒检查:', {
+                totalItems: expiringItems.length,
+                items: expiringItems,
+                resourceDataKeys: Object.keys(resourceData)
+            });
             
             if (expiringItems.length > 0) {
                 const text = `共有 ${expiringItems.length} 项资源即将到期（来自不同资源库），请及时更新或补充。`;
@@ -817,6 +1508,12 @@
 
         // 显示新增模态框（新增时资源库固定为当前选中的库）
         function showAddModal() {
+            // 如果是人员库，显示专门的人员表单
+            if (currentCategory === 'personnel') {
+                showPersonnelModal();
+                return;
+            }
+            
             document.getElementById('modalTitle').textContent = '新增资源';
             document.getElementById('resourceForm').reset();
             document.getElementById('resourceId').value = '';
@@ -873,6 +1570,12 @@
 
         // 编辑资源（编辑时可以调整所属资源库）
         function editResource(id) {
+            // 如果是人员库，使用专门的人员编辑表单
+            if (currentCategory === 'personnel') {
+                showPersonnelModal(id);
+                return;
+            }
+            
             const resource = resourceData[currentCategory].find(r => r.id === id);
             if (!resource) return;
             
@@ -1333,6 +2036,446 @@
             if (e.target === this) closeBatchUploadModal();
         });
 
+        document.getElementById('personnelModal').addEventListener('click', function(e) {
+            if (e.target === this) closePersonnelModal();
+        });
+
+        // 人员库相关函数
+        let personnelFiles = {}; // 存储当前编辑的人员文件
+        let certificateCounter = 0; // 证书计数器
+        let personnelCertificates = []; // 存储动态添加的证书
+
+        // 下载人员简历模板（仅UI，功能待实现）
+        function downloadResumeTemplate() {
+            // TODO: 实现下载简历模板功能
+            showToast('下载模板功能开发中', 'info');
+        }
+
+        // 显示人员信息模态框
+        function showPersonnelModal(personnelId = null) {
+            const modal = document.getElementById('personnelModal');
+            const form = document.getElementById('personnelForm');
+            const title = document.getElementById('personnelModalTitle');
+            
+            form.reset();
+            personnelFiles = {};
+            
+            if (personnelId) {
+                // 编辑模式
+                title.textContent = '编辑人员信息';
+                const personnel = resourceData.personnel.find(p => p.id === personnelId);
+                if (personnel) {
+                    document.getElementById('personnelId').value = personnel.id;
+                    document.getElementById('personnelName').value = personnel.name || '';
+                    document.getElementById('personnelGender').value = personnel.gender || '';
+                    document.getElementById('personnelEthnicity').value = personnel.ethnicity || '';
+                    document.getElementById('personnelBirthday').value = personnel.birthday || '';
+                    document.getElementById('personnelIdCard').value = personnel.idCard || '';
+                    document.getElementById('personnelWorkId').value = personnel.workId || '';
+                    document.getElementById('personnelDepartment').value = personnel.department || '';
+                    document.getElementById('personnelPosition').value = personnel.position || '';
+                    document.getElementById('personnelTitle').value = personnel.title || '';
+                    document.getElementById('personnelPhone').value = personnel.phone || '';
+                    document.getElementById('personnelEmail').value = personnel.email || '';
+                    document.getElementById('personnelSpecialty').value = personnel.specialty || '';
+                    
+                    // 加载已有文件
+                    if (personnel.files) {
+                        personnelFiles = JSON.parse(JSON.stringify(personnel.files));
+                        Object.keys(personnelFiles).forEach(fileType => {
+                            const fileInfo = personnelFiles[fileType];
+                            showPersonnelFilePreview(fileType, fileInfo);
+                            
+                            // 恢复有效期设置
+                            if (fileInfo.expiry) {
+                                const expiryType = document.querySelector(`.file-expiry-type[data-file-type="${fileType}"]`);
+                                const expiryDate = document.querySelector(`.file-expiry-date[data-file-type="${fileType}"]`);
+                                const expiryNone = document.querySelector(`.file-expiry-none[data-file-type="${fileType}"]`);
+                                
+                                if (expiryType && expiryDate && expiryNone) {
+                                    expiryType.value = 'date';
+                                    expiryDate.value = fileInfo.expiry;
+                                    expiryDate.classList.remove('hidden');
+                                    expiryNone.classList.add('hidden');
+                                }
+                            }
+                        });
+                    }
+                    
+                    // 加载动态添加的证书
+                    if (personnel.certificates && personnel.certificates.length > 0) {
+                        personnelCertificates = JSON.parse(JSON.stringify(personnel.certificates));
+                        personnelCertificates.forEach(cert => {
+                            certificateCounter = Math.max(certificateCounter, parseInt(cert.id.replace('cert_', '')) || 0);
+                            renderCertificateItem(cert);
+                        });
+                    }
+                }
+            } else {
+                // 新增模式
+                title.textContent = '新增人员';
+                document.getElementById('personnelId').value = '';
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        // 关闭人员信息模态框
+        function closePersonnelModal() {
+            document.getElementById('personnelModal').classList.add('hidden');
+            document.getElementById('personnelForm').reset();
+            personnelFiles = {};
+            personnelCertificates = [];
+            certificateCounter = 0;
+            document.getElementById('certificatesContainer').innerHTML = '';
+        }
+
+        // 切换文件有效期显示
+        function toggleFileExpiry(fileType) {
+            const select = document.querySelector(`.file-expiry-type[data-file-type="${fileType}"]`);
+            const dateInput = document.querySelector(`.file-expiry-date[data-file-type="${fileType}"]`);
+            const noneText = document.querySelector(`.file-expiry-none[data-file-type="${fileType}"]`);
+            
+            if (select.value === 'date') {
+                if (dateInput) dateInput.classList.remove('hidden');
+                if (noneText) noneText.classList.add('hidden');
+            } else {
+                if (dateInput) {
+                    dateInput.classList.add('hidden');
+                    dateInput.value = '';
+                }
+                if (noneText) noneText.classList.remove('hidden');
+            }
+        }
+
+        // 添加证书字段
+        function addCertificateField() {
+            certificateCounter++;
+            const certId = 'cert_' + certificateCounter;
+            const container = document.getElementById('certificatesContainer');
+            
+            const certHtml = `
+                <div class="certificate-item border border-gray-200 rounded-lg p-3" data-cert-id="${certId}">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex-1">
+                            <input type="text" class="certificate-name w-full px-3 py-2 border border-gray-300 rounded text-sm" placeholder="证书名称（如：PMP、CISSP、CCNA等）" value="">
+                        </div>
+                        <button type="button" onclick="removeCertificate('${certId}')" class="ml-2 p-2 text-red-500 hover:text-red-700" title="删除证书">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="file-upload-box" data-file-type="${certId}">
+                        <div class="file-upload-content">
+                            <i class="fas fa-file-upload text-xl text-gray-400 mb-1"></i>
+                            <p class="text-xs text-gray-500 mb-2">支持 JPG、PNG、PDF 格式</p>
+                            <input type="file" class="hidden file-input" accept=".jpg,.jpeg,.png,.pdf" onchange="handlePersonnelFileSelect(event, '${certId}')">
+                            <button type="button" class="px-3 py-1.5 bg-blue-600 text-white rounded text-xs hover:bg-blue-700" onclick="this.previousElementSibling.click()">
+                                选择文件
+                            </button>
+                        </div>
+                        <div class="file-preview hidden">
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200 mb-2">
+                                <div class="flex items-center gap-2 flex-1">
+                                    <i class="fas fa-file text-blue-600"></i>
+                                    <span class="text-xs text-gray-700 file-name"></span>
+                                </div>
+                                <button type="button" class="text-red-500 hover:text-red-700 text-xs" onclick="removePersonnelFile('${certId}')">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">有效期</label>
+                            <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="${certId}" onchange="toggleFileExpiry('${certId}'); updateFileExpiry('${certId}');">
+                                <option value="none">长期有效</option>
+                                <option value="date">设置到期日期</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">到期日期</label>
+                            <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs hidden" data-file-type="${certId}" onchange="updateFileExpiry('${certId}')">
+                            <p class="text-xs text-gray-400 file-expiry-none" data-file-type="${certId}">长期有效</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', certHtml);
+        }
+
+        // 删除证书字段
+        function removeCertificate(certId) {
+            const certItem = document.querySelector(`[data-cert-id="${certId}"]`);
+            if (certItem) {
+                certItem.remove();
+                delete personnelFiles[certId];
+                personnelCertificates = personnelCertificates.filter(c => c.id !== certId);
+            }
+        }
+
+        // 处理人员文件选择
+        function handlePersonnelFileSelect(event, fileType) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // 验证文件类型
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+            if (!validTypes.includes(file.type)) {
+                showToast('请上传 JPG、PNG 或 PDF 格式的文件', 'warning');
+                return;
+            }
+            
+            // 验证文件大小（最大10MB）
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('文件大小不能超过 10MB', 'warning');
+                return;
+            }
+            
+            // 获取有效期信息（如果已设置）
+            const expiryType = document.querySelector(`.file-expiry-type[data-file-type="${fileType}"]`)?.value || 'none';
+            const expiryDate = document.querySelector(`.file-expiry-date[data-file-type="${fileType}"]`)?.value || null;
+            
+            // 如果之前已有有效期信息，保留；否则使用当前设置
+            const existingExpiry = personnelFiles[fileType]?.expiry;
+            
+            personnelFiles[fileType] = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                expiry: existingExpiry || (expiryType === 'date' && expiryDate ? expiryDate : null)
+            };
+            
+            showPersonnelFilePreview(fileType, personnelFiles[fileType]);
+        }
+
+        // 更新文件有效期（当用户修改有效期时调用）
+        function updateFileExpiry(fileType) {
+            if (!personnelFiles[fileType]) return;
+            
+            const expiryType = document.querySelector(`.file-expiry-type[data-file-type="${fileType}"]`)?.value || 'none';
+            const expiryDate = document.querySelector(`.file-expiry-date[data-file-type="${fileType}"]`)?.value || null;
+            
+            personnelFiles[fileType].expiry = expiryType === 'date' && expiryDate ? expiryDate : null;
+        }
+
+        // 显示人员文件预览
+        function showPersonnelFilePreview(fileType, fileInfo) {
+            const uploadBox = document.querySelector(`[data-file-type="${fileType}"]`);
+            if (!uploadBox) return;
+            
+            const content = uploadBox.querySelector('.file-upload-content');
+            const preview = uploadBox.querySelector('.file-preview');
+            const fileName = preview.querySelector('.file-name');
+            
+            if (content && preview && fileName) {
+                content.classList.add('hidden');
+                preview.classList.remove('hidden');
+                fileName.textContent = fileInfo.name;
+            }
+        }
+
+        // 移除人员文件
+        function removePersonnelFile(fileType) {
+            delete personnelFiles[fileType];
+            
+            const uploadBox = document.querySelector(`[data-file-type="${fileType}"]`);
+            if (uploadBox) {
+                const content = uploadBox.querySelector('.file-upload-content');
+                const preview = uploadBox.querySelector('.file-preview');
+                const fileInput = uploadBox.querySelector('.file-input');
+                
+                if (content && preview && fileInput) {
+                    content.classList.remove('hidden');
+                    preview.classList.add('hidden');
+                    fileInput.value = '';
+                }
+            }
+            
+            // 重置有效期
+            const expiryType = document.querySelector(`.file-expiry-type[data-file-type="${fileType}"]`);
+            const expiryDate = document.querySelector(`.file-expiry-date[data-file-type="${fileType}"]`);
+            const expiryNone = document.querySelector(`.file-expiry-none[data-file-type="${fileType}"]`);
+            
+            if (expiryType) expiryType.value = 'none';
+            if (expiryDate) {
+                expiryDate.value = '';
+                expiryDate.classList.add('hidden');
+            }
+            if (expiryNone) expiryNone.classList.remove('hidden');
+        }
+
+        // 渲染证书项（用于编辑时恢复）
+        function renderCertificateItem(cert) {
+            const container = document.getElementById('certificatesContainer');
+            const certHtml = `
+                <div class="certificate-item border border-gray-200 rounded-lg p-3" data-cert-id="${cert.id}">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex-1">
+                            <input type="text" class="certificate-name w-full px-3 py-2 border border-gray-300 rounded text-sm" placeholder="证书名称（如：PMP、CISSP、CCNA等）" value="${cert.name || ''}">
+                        </div>
+                        <button type="button" onclick="removeCertificate('${cert.id}')" class="ml-2 p-2 text-red-500 hover:text-red-700" title="删除证书">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="file-upload-box" data-file-type="${cert.id}">
+                        ${cert.file ? `
+                            <div class="file-preview">
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200 mb-2">
+                                    <div class="flex items-center gap-2 flex-1">
+                                        <i class="fas fa-file text-blue-600"></i>
+                                        <span class="text-xs text-gray-700 file-name">${cert.file.name || cert.file}</span>
+                                    </div>
+                                    <button type="button" class="text-red-500 hover:text-red-700 text-xs" onclick="removePersonnelFile('${cert.id}')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="file-upload-content">
+                                <i class="fas fa-file-upload text-xl text-gray-400 mb-1"></i>
+                                <p class="text-xs text-gray-500 mb-2">支持 JPG、PNG、PDF 格式</p>
+                                <input type="file" class="hidden file-input" accept=".jpg,.jpeg,.png,.pdf" onchange="handlePersonnelFileSelect(event, '${cert.id}')">
+                                <button type="button" class="px-3 py-1.5 bg-blue-600 text-white rounded text-xs hover:bg-blue-700" onclick="this.previousElementSibling.click()">
+                                    选择文件
+                                </button>
+                            </div>
+                        `}
+                    </div>
+                    <div class="mt-2 grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">有效期</label>
+                            <select class="file-expiry-type w-full px-2 py-1.5 border border-gray-300 rounded text-xs" data-file-type="${cert.id}" onchange="toggleFileExpiry('${cert.id}'); updateFileExpiry('${cert.id}');">
+                                <option value="none" ${!cert.file?.expiry ? 'selected' : ''}>长期有效</option>
+                                <option value="date" ${cert.file?.expiry ? 'selected' : ''}>设置到期日期</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">到期日期</label>
+                            <input type="date" class="file-expiry-date w-full px-2 py-1.5 border border-gray-300 rounded text-xs ${cert.file?.expiry ? '' : 'hidden'}" data-file-type="${cert.id}" value="${cert.file?.expiry || ''}" onchange="updateFileExpiry('${cert.id}')">
+                            <p class="text-xs text-gray-400 file-expiry-none ${cert.file?.expiry ? 'hidden' : ''}" data-file-type="${cert.id}">长期有效</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', certHtml);
+            
+            // 如果有文件，加载到personnelFiles
+            if (cert.file) {
+                personnelFiles[cert.id] = cert.file;
+            }
+        }
+
+        // 保存人员信息
+        function savePersonnel(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('personnelId').value;
+            const name = document.getElementById('personnelName').value.trim();
+            const gender = document.getElementById('personnelGender').value;
+            const ethnicity = document.getElementById('personnelEthnicity').value.trim();
+            const birthday = document.getElementById('personnelBirthday').value;
+            const idCard = document.getElementById('personnelIdCard').value.trim();
+            const workId = document.getElementById('personnelWorkId').value.trim();
+            const department = document.getElementById('personnelDepartment').value;
+            const position = document.getElementById('personnelPosition').value.trim();
+            const title = document.getElementById('personnelTitle').value.trim();
+            const phone = document.getElementById('personnelPhone').value.trim();
+            const email = document.getElementById('personnelEmail').value.trim();
+            const specialty = document.getElementById('personnelSpecialty').value.trim();
+            
+            // 验证必填项
+            if (!name || !gender || !ethnicity || !birthday || !idCard || !workId || !department || !position || !title || !phone || !email || !specialty) {
+                showToast('请填写所有必填项', 'warning');
+                return;
+            }
+            
+            // 验证必填文件
+            const requiredFiles = ['idCard', 'diploma', 'socialSecurity', 'resume'];
+            const missingFiles = requiredFiles.filter(fileType => !personnelFiles[fileType]);
+            if (missingFiles.length > 0) {
+                const fileNames = {
+                    'idCard': '身份证',
+                    'diploma': '学历证书',
+                    'socialSecurity': '社保证明',
+                    'resume': '人员简历'
+                };
+                showToast(`请上传${missingFiles.map(f => fileNames[f]).join('、')}`, 'warning');
+                return;
+            }
+            
+            // 收集所有文件的有效期信息（包括必填文件和动态证书）
+            const allFileTypes = Object.keys(personnelFiles);
+            allFileTypes.forEach(fileType => {
+                const expiryType = document.querySelector(`.file-expiry-type[data-file-type="${fileType}"]`)?.value || 'none';
+                const expiryDate = document.querySelector(`.file-expiry-date[data-file-type="${fileType}"]`)?.value || null;
+                
+                // 更新有效期（无论之前是否有值，都使用当前表单的值）
+                personnelFiles[fileType].expiry = expiryType === 'date' && expiryDate ? expiryDate : null;
+            });
+            
+            // 收集动态添加的证书
+            const certificates = [];
+            document.querySelectorAll('.certificate-item').forEach(item => {
+                const certId = item.dataset.certId;
+                const certName = item.querySelector('.certificate-name')?.value.trim();
+                const certFile = personnelFiles[certId];
+                
+                if (certName || certFile) {
+                    certificates.push({
+                        id: certId,
+                        name: certName || '未命名证书',
+                        file: certFile || null
+                    });
+                }
+            });
+            
+            const personnel = {
+                id: id ? parseInt(id) : Date.now(),
+                name,
+                gender,
+                ethnicity,
+                birthday,
+                idCard,
+                workId,
+                department,
+                position,
+                title,
+                phone,
+                email,
+                specialty,
+                files: JSON.parse(JSON.stringify(personnelFiles)), // 深拷贝
+                certificates: certificates,
+                uploadTime: id ? resourceData.personnel.find(p => p.id === parseInt(id))?.uploadTime || new Date().toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                updateTime: new Date().toISOString().split('T')[0]
+            };
+            
+            if (id) {
+                // 更新
+                const index = resourceData.personnel.findIndex(p => p.id === parseInt(id));
+                if (index > -1) {
+                    resourceData.personnel[index] = personnel;
+                    showToast('人员信息已更新', 'success');
+                }
+            } else {
+                // 新增
+                if (!resourceData.personnel) {
+                    resourceData.personnel = [];
+                }
+                resourceData.personnel.push(personnel);
+                showToast('人员信息已添加', 'success');
+            }
+            
+            saveResourceData();
+            currentResources = [...resourceData.personnel];
+            currentPage = 1;
+            closePersonnelModal();
+            updateCategoryCounts();
+            renderResources();
+            checkExpiryAlerts();
+        }
+
         // 显示资源库管理模态框
         function showAddCategoryModal() {
             const modal = document.createElement('div');
@@ -1527,25 +2670,33 @@
                         </button>
                     </div>
                     <div class="p-6 space-y-3 text-sm">
-                        <p class="text-xs text-gray-500">以下资源已进入各自的提前提醒区间（根据30天 / 6个月 / 1年的设置计算）。可点击“跳转到资源库”快速定位。</p>
+                        <p class="text-xs text-gray-500">以下资源已进入各自的提前提醒区间（根据30天 / 6个月 / 1年的设置计算）。可点击"跳转到资源库"快速定位。</p>
                         <div class="border border-gray-100 rounded-lg divide-y max-h-96 overflow-y-auto">
                             ${items.map(item => {
                                 const daysLeft = Math.ceil((new Date(item.expiry) - new Date()) / (1000 * 60 * 60 * 24));
+                                const isPersonnelFile = item.type === 'personnel_file' || item.type === 'personnel_certificate';
+                                const reminderText = isPersonnelFile ? '提前30天提醒' : (getReminderText(item.reminder) || '不提醒');
+                                
                                 return `
                                 <div class="px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2">
-                                            <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">${categoryNames[item.category] || '未知库'}</span>
+                                            <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">${item.category || '未知库'}</span>
                                             <span class="font-medium text-gray-800">${item.name}</span>
+                                            ${isPersonnelFile ? `<span class="text-xs text-blue-600">（${item.type === 'personnel_file' ? '人员文件' : '人员证书'}）</span>` : ''}
                                         </div>
                                         <div class="mt-1 text-xs text-gray-500 flex flex-wrap gap-3">
                                             <span><i class="fas fa-calendar-alt mr-1"></i>有效期至 ${item.expiry}</span>
-                                            <span><i class="fas fa-bell mr-1"></i>${getReminderText(item.reminder) || '不提醒'}</span>
+                                            <span><i class="fas fa-bell mr-1"></i>${reminderText}</span>
                                             ${daysLeft >= 0 ? `<span><i class="fas fa-hourglass-half mr-1"></i>剩余约 ${daysLeft} 天</span>` : ''}
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-2 justify-end">
-                                        <button onclick="jumpToResource('${item.category}', ${item.id}); this.closest('.fixed').remove();" class="px-3 py-1.5 text-xs bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 flex items-center gap-1">
+                                        <button onclick="updateExpiringResource('${item.categoryKey || item.category}', ${item.id}, '${item.type || 'resource'}', '${item.fileType || ''}', '${item.certificateName || ''}', '${item.expiry}'); this.closest('.fixed').remove();" class="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-1">
+                                            <i class="fas fa-edit"></i>
+                                            更新
+                                        </button>
+                                        <button onclick="jumpToResource('${item.category}', ${item.id}${isPersonnelFile ? `, '${item.type}', '${item.fileType || ''}'` : ''}); this.closest('.fixed').remove();" class="px-3 py-1.5 text-xs bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 flex items-center gap-1">
                                             <i class="fas fa-arrow-right"></i>
                                             跳转到资源库
                                         </button>
@@ -1563,8 +2714,93 @@
             });
         }
 
+        // 更新即将过期的资源
+        function updateExpiringResource(categoryKey, resourceId, type, fileType, certificateName, expiry) {
+            // 如果是人员文件或证书
+            if (type === 'personnel_file' || type === 'personnel_certificate') {
+                // 切换到人员库
+                currentCategory = 'personnel';
+                currentResources = [...(resourceData[currentCategory] || [])];
+                currentPage = 1;
+                renderCategoryNav();
+                updateCategoryCounts();
+                renderResources();
+                
+                // 打开人员编辑弹窗
+                setTimeout(() => {
+                    showPersonnelModal(resourceId);
+                    
+                    // 如果是文件，定位到对应文件的有效期字段
+                    if (type === 'personnel_file' && fileType) {
+                        setTimeout(() => {
+                            const expiryType = document.querySelector(`.file-expiry-type[data-file-type="${fileType}"]`);
+                            const expiryDate = document.querySelector(`.file-expiry-date[data-file-type="${fileType}"]`);
+                            const expiryNone = document.querySelector(`.file-expiry-none[data-file-type="${fileType}"]`);
+                            if (expiryType && expiryDate) {
+                                expiryType.value = 'date';
+                                expiryDate.value = expiry;
+                                expiryDate.classList.remove('hidden');
+                                if (expiryNone) expiryNone.classList.add('hidden');
+                                expiryDate.focus();
+                                expiryDate.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }, 500);
+                    }
+                    // 如果是证书，定位到证书的有效期字段
+                    else if (type === 'personnel_certificate' && certificateName) {
+                        setTimeout(() => {
+                            // 找到对应的证书项
+                            const certItems = document.querySelectorAll('.certificate-item');
+                            certItems.forEach(certItem => {
+                                const certNameInput = certItem.querySelector('.certificate-name');
+                                if (certNameInput && certNameInput.value === certificateName) {
+                                    const expiryType = certItem.querySelector('.file-expiry-type');
+                                    const expiryDate = certItem.querySelector('.file-expiry-date');
+                                    const expiryNone = certItem.querySelector('.file-expiry-none');
+                                    if (expiryType && expiryDate) {
+                                        expiryType.value = 'date';
+                                        expiryDate.value = expiry;
+                                        expiryDate.classList.remove('hidden');
+                                        if (expiryNone) expiryNone.classList.add('hidden');
+                                        expiryDate.focus();
+                                        certItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }
+                                }
+                            });
+                        }, 500);
+                    }
+                }, 300);
+            } else {
+                // 普通资源：切换到对应资源库并打开编辑弹窗
+                currentCategory = categoryKey;
+                currentResources = [...(resourceData[currentCategory] || [])];
+                currentPage = 1;
+                renderCategoryNav();
+                updateCategoryCounts();
+                renderResources();
+                
+                // 打开编辑弹窗
+                setTimeout(() => {
+                    editResource(resourceId);
+                    
+                    // 定位到有效期字段
+                    setTimeout(() => {
+                        const expiryType = document.getElementById('resourceExpiryType');
+                        const expiryInput = document.getElementById('resourceExpiry');
+                        if (expiryType && expiryInput) {
+                            expiryType.value = 'date';
+                            expiryInput.value = expiry;
+                            expiryInput.classList.remove('hidden');
+                            expiryInput.focus();
+                            expiryInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 300);
+                }, 300);
+            }
+        }
+
         // 从提醒列表跳转到对应资源库
-        function jumpToResource(categoryKey, resourceId) {
+        function jumpToResource(categoryKey, resourceId, type, fileType) {
             // 切换左侧资源库
             currentCategory = categoryKey;
             currentResources = [...(resourceData[currentCategory] || [])];
@@ -1572,6 +2808,13 @@
             renderCategoryNav();
             updateCategoryCounts();
             renderResources();
+            
+            // 如果是人员文件，打开对应的人员编辑弹窗
+            if (type === 'personnel_file' || type === 'personnel_certificate') {
+                setTimeout(() => {
+                    showPersonnelModal(resourceId);
+                }, 300);
+            }
             
             // 滚动到资源列表
             const list = document.getElementById('resourceList');

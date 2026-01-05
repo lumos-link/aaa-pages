@@ -80,6 +80,9 @@
                     <i class="fas fa-check-circle text-green-500"></i>
                     <span>已自动保存</span>
                 </div>
+                <button onclick="startAIReview()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+                    <i class="fas fa-search mr-2"></i> AI评审
+                </button>
                 <button onclick="manualSave()" class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">
                     <i class="fas fa-save mr-2"></i> 保存
                 </button>
@@ -508,6 +511,39 @@
                     <p>预览为Word格式排版示意，导出时将自动应用页眉页脚、字体字号等规范。</p>
                 </div>
                 <button class="px-4 py-2 bg-blue-600 text-white rounded-lg" onclick="closePreviewModal()">关闭预览</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI评审模态框 -->
+    <div id="aiReviewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] my-8 flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">AI评审结果</h3>
+                    <p class="text-xs text-gray-500 mt-1">基于招标文件关键项等重点内容进行评审</p>
+                </div>
+                <button onclick="closeAIReviewModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div id="reviewLoading" class="flex flex-col items-center justify-center py-12">
+                <div class="flex gap-1 mb-4">
+                    <div class="typing-indicator"></div>
+                    <div class="typing-indicator"></div>
+                    <div class="typing-indicator"></div>
+                </div>
+                <p class="text-sm text-gray-600">AI正在评审中，请稍候...</p>
+            </div>
+            
+            <div id="reviewContent" class="hidden flex-1 overflow-y-auto space-y-4">
+                <!-- 评审结果将动态生成 -->
+            </div>
+            
+            <div id="reviewActions" class="hidden mt-4 pt-4 border-t border-gray-200 flex gap-3">
+                <button onclick="closeAIReviewModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">关闭</button>
+                <button onclick="exportReviewReport()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-download mr-2"></i> 导出评审报告
+                </button>
             </div>
         </div>
     </div>
@@ -1656,6 +1692,388 @@
         
         function closeExportModal() {
             document.getElementById('exportModal').classList.add('hidden');
+        }
+        
+        // AI评审功能
+        function startAIReview() {
+            const modal = document.getElementById('aiReviewModal');
+            const loadingDiv = document.getElementById('reviewLoading');
+            const contentDiv = document.getElementById('reviewContent');
+            const actionsDiv = document.getElementById('reviewActions');
+            
+            // 显示弹窗和加载状态
+            modal.classList.remove('hidden');
+            loadingDiv.classList.remove('hidden');
+            contentDiv.classList.add('hidden');
+            actionsDiv.classList.add('hidden');
+            
+            // 模拟AI评审过程
+            setTimeout(() => {
+                performAIReview();
+            }, 2000);
+        }
+        
+        function closeAIReviewModal() {
+            document.getElementById('aiReviewModal').classList.add('hidden');
+        }
+        
+        function performAIReview() {
+            const loadingDiv = document.getElementById('reviewLoading');
+            const contentDiv = document.getElementById('reviewContent');
+            const actionsDiv = document.getElementById('reviewActions');
+            
+            // 获取招标解析数据
+            const interpretData = getInterpretData();
+            // 关键项可能存储为keyItems或rejectionItems
+            const keyItems = interpretData?.keyItems || interpretData?.rejectionItems || [];
+            const catalogData = getCatalogData();
+            const currentContent = getAllChapterContent();
+            
+            // 执行评审
+            const reviewResults = {
+                keyItems: reviewKeyItems(keyItems, currentContent),
+                personnel: reviewPersonnel(currentContent),
+                performance: reviewPerformance(currentContent),
+                qualification: reviewQualification(currentContent),
+                format: reviewFormat(currentContent, catalogData),
+                completeness: reviewCompleteness(catalogData, currentContent)
+            };
+            
+            // 隐藏加载，显示结果
+            loadingDiv.classList.add('hidden');
+            contentDiv.classList.remove('hidden');
+            actionsDiv.classList.remove('hidden');
+            
+            // 渲染评审结果
+            renderReviewResults(reviewResults);
+        }
+        
+        // 获取招标解析数据
+        function getInterpretData() {
+            try {
+                const saved = localStorage.getItem('bidding_interpret_data');
+                if (saved) {
+                    return JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('获取解析数据失败:', e);
+            }
+            return null;
+        }
+        
+        // 获取目录数据
+        function getCatalogData() {
+            try {
+                const saved = localStorage.getItem('bidding_catalog_data');
+                if (saved) {
+                    return JSON.parse(saved);
+                }
+            } catch (e) {}
+            return [];
+        }
+        
+        // 获取所有章节内容
+        function getAllChapterContent() {
+            try {
+                const saved = localStorage.getItem('bidding_writing_data');
+                if (saved) {
+                    return JSON.parse(saved);
+                }
+            } catch (e) {}
+            return {};
+        }
+        
+        // 评审关键项
+        function reviewKeyItems(keyItems, content) {
+            const issues = [];
+            const allText = JSON.stringify(content).toLowerCase();
+            
+            keyItems.forEach(item => {
+                const itemText = (item.title || '').toLowerCase();
+                const itemDesc = (item.description || '').toLowerCase();
+                
+                // 检查是否在内容中提及
+                let found = false;
+                if (itemText && allText.includes(itemText)) {
+                    found = true;
+                }
+                if (itemDesc && allText.includes(itemDesc)) {
+                    found = true;
+                }
+                
+                if (!found) {
+                    issues.push({
+                        type: 'missing',
+                        severity: item.type === 'substantial' ? 'high' : 'medium',
+                        title: item.title || '关键项',
+                        description: item.description || '',
+                        location: item.location || '',
+                        suggestion: `建议在标书中明确说明已满足"${item.title}"的要求`
+                    });
+                } else {
+                    // 检查是否充分说明
+                    const keywordCount = (allText.match(new RegExp(itemText, 'g')) || []).length;
+                    if (keywordCount < 2) {
+                        issues.push({
+                            type: 'insufficient',
+                            severity: 'medium',
+                            title: item.title || '关键项',
+                            description: item.description || '',
+                            location: item.location || '',
+                            suggestion: `建议更详细地说明如何满足"${item.title}"的要求`
+                        });
+                    }
+                }
+            });
+            
+            return {
+                total: keyItems.length,
+                checked: keyItems.length - issues.length,
+                issues: issues
+            };
+        }
+        
+        // 评审人员要求
+        function reviewPersonnel(content) {
+            const allText = JSON.stringify(content).toLowerCase();
+            const issues = [];
+            
+            // 检查是否包含人员配置相关内容
+            const personnelKeywords = ['人员', '团队', '项目经理', '技术负责人', '驻场'];
+            const hasPersonnel = personnelKeywords.some(keyword => allText.includes(keyword));
+            
+            if (!hasPersonnel) {
+                issues.push({
+                    type: 'missing',
+                    severity: 'high',
+                    title: '人员配置缺失',
+                    description: '未找到人员配置相关内容',
+                    suggestion: '建议在标书中添加人员配置章节，说明项目团队组成、人员资质等'
+                });
+            }
+            
+            return {
+                passed: issues.length === 0,
+                issues: issues
+            };
+        }
+        
+        // 评审业绩要求
+        function reviewPerformance(content) {
+            const allText = JSON.stringify(content).toLowerCase();
+            const issues = [];
+            
+            const performanceKeywords = ['业绩', '案例', '项目经验', '成功案例'];
+            const hasPerformance = performanceKeywords.some(keyword => allText.includes(keyword));
+            
+            if (!hasPerformance) {
+                issues.push({
+                    type: 'missing',
+                    severity: 'medium',
+                    title: '业绩案例缺失',
+                    description: '未找到业绩案例相关内容',
+                    suggestion: '建议在标书中添加业绩案例章节，展示类似项目的成功经验'
+                });
+            }
+            
+            return {
+                passed: issues.length === 0,
+                issues: issues
+            };
+        }
+        
+        // 评审资质要求
+        function reviewQualification(content) {
+            const allText = JSON.stringify(content).toLowerCase();
+            const issues = [];
+            
+            const qualificationKeywords = ['资质', '认证', '证书', 'cmmi', 'iso'];
+            const hasQualification = qualificationKeywords.some(keyword => allText.includes(keyword));
+            
+            if (!hasQualification) {
+                issues.push({
+                    type: 'missing',
+                    severity: 'high',
+                    title: '资质证明缺失',
+                    description: '未找到资质证明相关内容',
+                    suggestion: '建议在标书中添加资质证明章节，列出相关企业资质和认证'
+                });
+            }
+            
+            return {
+                passed: issues.length === 0,
+                issues: issues
+            };
+        }
+        
+        // 评审格式要求
+        function reviewFormat(content, catalog) {
+            const issues = [];
+            
+            // 检查目录完整性
+            if (!catalog || catalog.length === 0) {
+                issues.push({
+                    type: 'missing',
+                    severity: 'medium',
+                    title: '目录结构缺失',
+                    description: '未找到标书目录结构',
+                    suggestion: '建议先配置标书目录结构'
+                });
+            }
+            
+            return {
+                passed: issues.length === 0,
+                issues: issues
+            };
+        }
+        
+        // 评审完整性
+        function reviewCompleteness(catalog, content) {
+            const issues = [];
+            
+            if (catalog && catalog.length > 0) {
+                catalog.forEach(chapter => {
+                    const chapterId = chapter.id;
+                    const chapterContent = content[chapterId];
+                    
+                    if (!chapterContent || chapterContent.trim().length < 100) {
+                        issues.push({
+                            type: 'incomplete',
+                            severity: 'medium',
+                            title: `章节内容不完整：${chapter.title}`,
+                            description: '章节内容过短或为空',
+                            suggestion: `建议完善"${chapter.title}"章节的内容，至少包含100字以上`
+                        });
+                    }
+                });
+            }
+            
+            return {
+                total: catalog ? catalog.length : 0,
+                completed: catalog ? catalog.length - issues.length : 0,
+                issues: issues
+            };
+        }
+        
+        // 渲染评审结果
+        function renderReviewResults(results) {
+            const container = document.getElementById('reviewContent');
+            let html = '';
+            
+            // 总体评分
+            const totalIssues = results.keyItems.issues.length + 
+                               results.personnel.issues.length +
+                               results.performance.issues.length +
+                               results.qualification.issues.length +
+                               results.format.issues.length +
+                               results.completeness.issues.length;
+            
+            const score = Math.max(0, 100 - totalIssues * 10);
+            let scoreBgClass = 'bg-gradient-to-r from-green-50 to-green-100 border-green-200';
+            let scoreTextClass = 'text-green-600';
+            if (score < 60) {
+                scoreBgClass = 'bg-gradient-to-r from-red-50 to-red-100 border-red-200';
+                scoreTextClass = 'text-red-600';
+            } else if (score < 80) {
+                scoreBgClass = 'bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200';
+                scoreTextClass = 'text-yellow-600';
+            }
+            
+            html += `
+                <div class="p-4 ${scoreBgClass} border-2 rounded-xl mb-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 mb-1">评审得分</p>
+                            <p class="text-3xl font-bold ${scoreTextClass}">${score}分</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-600 mb-1">发现问题</p>
+                            <p class="text-2xl font-bold ${scoreTextClass}">${totalIssues}个</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 关键项评审
+            html += `
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-800 flex items-center gap-2">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            关键项检查
+                        </h4>
+                        <span class="text-sm ${results.keyItems.issues.length === 0 ? 'text-green-600' : 'text-red-600'}">
+                            ${results.keyItems.checked}/${results.keyItems.total} 项通过
+                        </span>
+                    </div>
+                    ${results.keyItems.issues.length > 0 ? `
+                        <div class="space-y-2">
+                            ${results.keyItems.issues.map(issue => `
+                                <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1">
+                                            <p class="font-medium text-red-800 mb-1">${issue.title}</p>
+                                            <p class="text-xs text-gray-600 mb-2">${issue.description}</p>
+                                            <p class="text-xs text-blue-600"><i class="fas fa-lightbulb mr-1"></i>${issue.suggestion}</p>
+                                        </div>
+                                        <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs ml-2">${issue.severity === 'high' ? '严重' : '中等'}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : `
+                        <p class="text-sm text-green-600"><i class="fas fa-check-circle mr-1"></i>所有关键项均已满足</p>
+                    `}
+                </div>
+            `;
+            
+            // 其他评审项
+            const reviewSections = [
+                { key: 'personnel', title: '人员配置', icon: 'users', iconClass: 'text-blue-600' },
+                { key: 'performance', title: '业绩案例', icon: 'folder-open', iconClass: 'text-green-600' },
+                { key: 'qualification', title: '资质证明', icon: 'certificate', iconClass: 'text-purple-600' },
+                { key: 'format', title: '格式规范', icon: 'file-alt', iconClass: 'text-gray-600' },
+                { key: 'completeness', title: '内容完整性', icon: 'check-circle', iconClass: 'text-orange-600' }
+            ];
+            
+            reviewSections.forEach(section => {
+                const result = results[section.key];
+                const hasIssues = result.issues && result.issues.length > 0;
+                
+                html += `
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-semibold text-gray-800 flex items-center gap-2">
+                                <i class="fas fa-${section.icon} ${section.iconClass}"></i>
+                                ${section.title}
+                            </h4>
+                            <span class="text-sm ${hasIssues ? 'text-red-600' : 'text-green-600'}">
+                                ${hasIssues ? '发现问题' : '通过'}
+                            </span>
+                        </div>
+                        ${hasIssues ? `
+                            <div class="space-y-2">
+                                ${result.issues.map(issue => `
+                                    <div class="p-3 bg-yellow-50 border-l-4 border-yellow-500 rounded">
+                                        <p class="font-medium text-gray-800 mb-1">${issue.title}</p>
+                                        <p class="text-xs text-gray-600 mb-2">${issue.description}</p>
+                                        <p class="text-xs text-blue-600"><i class="fas fa-lightbulb mr-1"></i>${issue.suggestion}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <p class="text-sm text-green-600"><i class="fas fa-check-circle mr-1"></i>检查通过</p>
+                        `}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // 导出评审报告
+        function exportReviewReport() {
+            showToast('评审报告导出功能开发中', 'info');
         }
         
         function initExportFormatSelection() {

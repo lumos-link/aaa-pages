@@ -69,6 +69,8 @@
                         <div><span class="text-gray-500">代理机构：</span><span id="agency">XX招标代理公司</span></div>
                         <div><span class="text-gray-500">开标：</span><span id="bidDate">2025-03-15 09:00</span></div>
                         <div><span class="text-gray-500">有效期：</span><span id="validPeriod">90天</span></div>
+                        <div><span class="text-gray-500">质保期：</span><span id="warrantyPeriod">未填写</span></div>
+                        <div><span class="text-gray-500">回款方式：</span><span id="paymentMethod">未填写</span></div>
                     </div>
                     <div id="projectInfoEdit" class="hidden mt-3 space-y-2">
                         <div class="grid md:grid-cols-2 gap-2">
@@ -105,6 +107,17 @@
                                     <span class="self-center text-[11px] text-gray-500">天</span>
                                 </div>
                             </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-600 mb-1">质保期</label>
+                                <div class="flex gap-1">
+                                    <input type="number" id="editWarrantyPeriod" class="flex-1 px-2 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500" placeholder="月数" min="0">
+                                    <span class="self-center text-[11px] text-gray-500">月</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-600 mb-1">回款方式</label>
+                                <input type="text" id="editPaymentMethod" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500" placeholder="如：验收后30天内付款">
+                            </div>
                         </div>
                         <div class="flex gap-2 mt-2">
                             <button onclick="saveProjectInfo()" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700">
@@ -129,7 +142,7 @@
                 <div class="border-b border-gray-200 mt-2">
                     <div class="flex gap-2 overflow-x-auto pb-2" id="tabButtonsContainer">
                         <button class="tab-btn active px-4 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-600 whitespace-nowrap" data-tab="overview">建设目标</button>
-                        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="rejection">废标项</button>
+                        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="rejection">关键项</button>
                         <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="personnel">人员要求</button>
                         <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="performance">业绩要求</button>
                         <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" data-tab="qualification">资质要求</button>
@@ -153,11 +166,11 @@
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
                                 <i class="fas fa-exclamation-triangle text-red-600"></i>
-                                <p class="font-semibold text-red-800">废标条件（必须严格遵守）</p>
+                                <p class="font-semibold text-red-800">关键项（必须严格遵守）</p>
                             </div>
                         </div>
                         <div id="rejectionItemsList" class="space-y-3">
-                            <!-- 结构化废标项列表，将动态生成 -->
+                            <!-- 结构化关键项列表，将动态生成 -->
                             <div class="rejection-item p-3 bg-white rounded-lg border-l-4 border-red-500" data-type="substantial" data-symbol="★">
                                 <div class="flex items-start">
                                     <div class="flex-1">
@@ -439,7 +452,7 @@
                                 </div>
                                 <div class="ml-6 space-y-1 text-xs text-gray-600">
                                     <p>• 投标文件实质性响应招标文件</p>
-                                    <p>• 未出现废标项</p>
+                                    <p>• 未出现关键项问题</p>
                                 </div>
                             </div>
                             <!-- 响应性评审 -->
@@ -645,7 +658,9 @@
             tenderer: 'XX市大数据局',
             agency: 'XX招标代理公司',
             bidDate: '2025-03-15T09:00',
-            validPeriod: 90
+            validPeriod: 90,
+            warrantyPeriod: 24,
+            paymentMethod: '验收合格后30个工作日内支付合同总价的60%，系统上线运行稳定后支付30%，质保期满后支付剩余10%'
         };
         
         // 文件列表管理
@@ -1046,6 +1061,8 @@
             }
             
             document.getElementById('validPeriod').textContent = projectInfo.validPeriod + '天';
+            document.getElementById('warrantyPeriod').textContent = projectInfo.warrantyPeriod ? projectInfo.warrantyPeriod + '月' : '未填写';
+            document.getElementById('paymentMethod').textContent = projectInfo.paymentMethod || '未填写';
         }
         
         // 编辑项目信息
@@ -1065,6 +1082,8 @@
             document.getElementById('editAgency').value = projectInfo.agency || '';
             document.getElementById('editBidDate').value = projectInfo.bidDate ? projectInfo.bidDate.substring(0, 16) : '';
             document.getElementById('editValidPeriod').value = projectInfo.validPeriod || 90;
+            document.getElementById('editWarrantyPeriod').value = projectInfo.warrantyPeriod || '';
+            document.getElementById('editPaymentMethod').value = projectInfo.paymentMethod || '';
         }
         
         // 保存项目信息
@@ -1075,6 +1094,9 @@
             projectInfo.agency = document.getElementById('editAgency').value;
             projectInfo.bidDate = document.getElementById('editBidDate').value + ':00';
             projectInfo.validPeriod = parseInt(document.getElementById('editValidPeriod').value) || 90;
+            const warrantyValue = document.getElementById('editWarrantyPeriod').value;
+            projectInfo.warrantyPeriod = warrantyValue ? parseInt(warrantyValue) : null;
+            projectInfo.paymentMethod = document.getElementById('editPaymentMethod').value.trim();
             
             if (!projectInfo.projectName || !projectInfo.tenderer || !projectInfo.bidDate) {
                 alert('请填写必填项：项目名称、招标人、开标日期');
