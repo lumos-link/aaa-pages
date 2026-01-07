@@ -202,9 +202,6 @@
                     <button class="text-xs text-blue-600" onclick="editCatalog()">
                         <i class="fas fa-edit mr-1"></i> 编辑目录
                     </button>
-                    <button class="text-xs text-gray-600" onclick="resetCatalog()">
-                        <i class="fas fa-undo mr-1"></i> 恢复默认
-                    </button>
                 </div>
             </div>
             <p class="text-xs text-gray-500 mb-4">默认目录来自招标文件解析的"响应文件格式"，可在此修改</p>
@@ -233,8 +230,16 @@
                         <div class="ml-4 mt-1 space-y-1 text-xs text-gray-600">
                             <p>3.1 项目理解</p>
                             <p>3.2 技术架构</p>
+                            <div class="ml-4 mt-1 space-y-1 text-xs text-gray-600">
+                                <p class="text-blue-600 font-medium">3.2.1 总体架构设计 <span class="text-[10px] text-blue-500">(AI生成)</span></p>
+                                <p class="text-blue-600 font-medium">3.2.2 技术选型说明 <span class="text-[10px] text-blue-500">(AI生成)</span></p>
+                                <p class="text-blue-600 font-medium">3.2.3 系统集成方案 <span class="text-[10px] text-blue-500">(AI生成)</span></p>
+                                <p class="text-blue-600 font-medium">3.2.4 数据架构设计 <span class="text-[10px] text-blue-500">(AI生成)</span></p>
+                                <p class="text-blue-600 font-medium">3.2.5 安全架构设计 <span class="text-[10px] text-blue-500">(AI生成)</span></p>
+                            </div>
                             <p>3.3 实施方案</p>
                             <p>3.4 质量保证措施</p>
+                            <p class="text-blue-600 font-medium">3.5 AI生成技术方案</p>
                         </div>
                     </div>
                 </div>
@@ -275,8 +280,8 @@
                 <div class="border border-gray-200 rounded-lg p-4">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="text-sm font-semibold text-gray-800">人员配置</h3>
-                        <button onclick="selectPersonnel()" class="text-xs text-blue-600 hover:text-blue-700">
-                            <i class="fas fa-users mr-1"></i>选择人员
+                        <button onclick="filterPersonnelByAI()" class="text-xs text-green-600 hover:text-green-700">
+                            <i class="fas fa-magic mr-1"></i>AI筛选
                         </button>
                     </div>
                     <div class="text-xs text-gray-600 mb-2">
@@ -285,7 +290,7 @@
                     </div>
                     <div id="personnelConfigList" class="space-y-2">
                         <div class="p-2 bg-gray-50 rounded text-sm">
-                            <p class="font-medium text-gray-800 mb-1">已选择：0 / 8 人</p>
+                            <p class="font-medium text-gray-800 mb-1">已选择：0 人</p>
                             <p class="text-xs text-gray-500">从公司资产库中选择符合要求的人员</p>
                         </div>
                     </div>
@@ -295,17 +300,16 @@
                 <div class="border border-gray-200 rounded-lg p-4">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="text-sm font-semibold text-gray-800">业绩配置</h3>
-                        <button onclick="refreshPerformanceRecommendations()" class="text-xs text-blue-600 hover:text-blue-700">
-                            <i class="fas fa-sync mr-1"></i>刷新推荐
+                        <button onclick="selectPerformance()" class="text-xs text-blue-600 hover:text-blue-700">
+                            <i class="fas fa-plus mr-1"></i>选择业绩
                         </button>
                     </div>
                     <div class="text-xs text-gray-600 mb-2">
                         <p>要求：近3年（2022年1月1日至今），同类项目，不少于 3 个，单个项目金额 ≥ 300 万元</p>
                         <p>需提供：合同首页、金额页、服务内容页、签字盖章页、发票</p>
-                        <p class="text-blue-600 mt-1"><i class="fas fa-robot mr-1"></i>AI已根据时间、金额、相关服务自动匹配推荐</p>
                     </div>
                     <div id="performanceConfigList" class="space-y-2">
-                        <!-- AI推荐列表将动态生成 -->
+                        <!-- 已选择的业绩列表将动态生成 -->
                     </div>
                 </div>
 
@@ -1160,171 +1164,118 @@
         function selectPersonnel() {
             currentSelectType = 'personnel';
             selectedResources = getSelectedPersonnel();
+            window.filteredPersonnelList = null; // 清除筛选列表
             showResourceSelectModal('选择人员', 'personnel');
         }
         
-        // 刷新业绩推荐
-        function refreshPerformanceRecommendations() {
-            showToast('正在AI匹配推荐业绩...', 'info');
-            // 模拟AI推荐过程
-            setTimeout(() => {
-                loadPerformanceRecommendations();
-                showToast('推荐已更新', 'success');
-            }, 1000);
-        }
-        
-        // 加载AI推荐的业绩
-        function loadPerformanceRecommendations() {
-            const requirement = getPerformanceRequirement();
-            const requirementText = '近3年（2022年1月1日至今），同类项目，不少于 3 个，单个项目金额 ≥ 300 万元';
+        // AI筛选人员（确保有完整的证明文件）
+        function filterPersonnelByAI() {
+            showToast('正在AI筛选符合要求的人员...', 'info');
             
-            // 从资源资产库获取所有业绩
+            // 获取人员要求
+            const requirement = getPersonnelRequirement();
+            const requiredFiles = ['idCard', 'diploma', 'resume']; // 必填文件
+            
+            // 从资源资产库获取所有人员
             const resourceData = loadResourceDataFromLibrary();
-            const allCases = resourceData.case || [];
+            const allPersonnel = resourceData.personnel || [];
             
-            // 模拟AI推荐逻辑：根据时间、金额、相关服务匹配
-            const recommendedCases = getAIRecommendedPerformance(allCases, requirement);
+            // AI筛选：检查人员是否有完整的证明文件
+            const filteredPersonnel = allPersonnel.filter(personnel => {
+                const files = personnel.files || {};
+                
+                // 检查必填文件是否都存在
+                const hasAllRequiredFiles = requiredFiles.every(fileType => {
+                    return files[fileType] && files[fileType].name;
+                });
+                
+                // 检查是否有证书（可选，但如果有证书，证书文件也要完整）
+                const hasValidCertificates = !personnel.certificates || personnel.certificates.length === 0 || 
+                    personnel.certificates.every(cert => cert.file && cert.file.name);
+                
+                return hasAllRequiredFiles && hasValidCertificates;
+            });
             
-            // 保存推荐结果
-            saveBusinessConfig('performanceRecommendations', recommendedCases);
-            
-            // 渲染推荐列表
-            renderPerformanceRecommendations(recommendedCases, requirement);
-        }
-        
-        // AI推荐业绩算法（模拟）
-        function getAIRecommendedPerformance(allCases, requirement) {
-            // 模拟推荐逻辑：筛选符合条件的业绩
-            const now = new Date();
-            const threeYearsAgo = new Date(now.getFullYear() - 3, 0, 1);
-            
-            return allCases
-                .filter(c => {
-                    // 检查时间（如果有日期字段）
-                    if (c.date) {
-                        const caseDate = new Date(c.date);
-                        if (caseDate < threeYearsAgo) return false;
-                    }
-                    
-                    // 检查金额（如果有金额字段）
-                    if (c.amount) {
-                        const amount = parseFloat(c.amount) || 0;
-                        if (amount < 300) return false;
-                    }
-                    
-                    // 检查服务相关性（如果有服务内容字段）
-                    if (c.serviceContent) {
-                        const content = (c.serviceContent || '').toLowerCase();
-                        // 简单匹配关键词
-                        const keywords = ['平台', '系统', '数字', '信息化', '建设', '开发'];
-                        if (!keywords.some(k => content.includes(k))) {
-                            return false;
-                        }
-                    }
-                    
-                    return true;
-                })
-                .slice(0, 10) // 最多推荐10个
-                .map((c, index) => ({
-                    ...c,
-                    matchScore: 85 + Math.floor(Math.random() * 15), // 模拟匹配度
-                    matchReason: getMatchReason(c)
-                }));
-        }
-        
-        // 获取匹配原因
-        function getMatchReason(caseItem) {
-            const reasons = [];
-            if (caseItem.amount && parseFloat(caseItem.amount) >= 300) {
-                reasons.push('金额符合');
-            }
-            if (caseItem.date) {
-                reasons.push('时间符合');
-            }
-            if (caseItem.serviceContent) {
-                reasons.push('服务相关');
-            }
-            return reasons.join('、') || '符合要求';
-        }
-        
-        // 渲染业绩推荐列表
-        function renderPerformanceRecommendations(recommendedCases, requirement) {
-            const container = document.getElementById('performanceConfigList');
-            const selected = getSelectedPerformance();
-            const selectedIds = selected.map(s => s.id);
-            
-            if (recommendedCases.length === 0) {
-                container.innerHTML = `
-                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded text-sm">
-                        <p class="text-yellow-800 mb-1"><i class="fas fa-exclamation-triangle mr-1"></i>未找到符合条件的业绩</p>
-                        <p class="text-xs text-yellow-600">请检查资源资产库中的业绩数据，确保包含时间、金额、服务内容等信息</p>
-                    </div>
-                `;
+            if (filteredPersonnel.length === 0) {
+                showToast('未找到符合要求的人员（需提供完整证明文件）', 'warning');
                 return;
             }
             
-            container.innerHTML = `
-                <div class="p-2 bg-blue-50 border border-blue-200 rounded text-sm mb-2">
-                    <p class="font-medium text-gray-800 mb-1">AI推荐：${recommendedCases.length} 个符合要求的业绩</p>
-                    <p class="text-xs text-gray-600">已选择：${selected.length} / ${requirement.count || 3} 个</p>
-                </div>
-                <div class="space-y-2">
-                    ${recommendedCases.map(c => {
-                        const isSelected = selectedIds.includes(c.id);
-                        return `
-                            <div class="flex items-start gap-3 p-3 border ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'} rounded-lg">
-                                <input type="checkbox" ${isSelected ? 'checked' : ''} 
-                                       onchange="togglePerformanceRecommendation(${c.id}, ${c.matchScore}, '${(c.name || '').replace(/'/g, "\\'")}')"
-                                       class="mt-1 rounded">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <span class="font-medium text-sm text-gray-800">${c.name || '未命名业绩'}</span>
-                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-[10px]">匹配度 ${c.matchScore}%</span>
-                                    </div>
-                                    <div class="text-xs text-gray-600 space-y-1">
-                                        ${c.date ? `<p><span class="text-gray-500">时间：</span>${c.date}</p>` : ''}
-                                        ${c.amount ? `<p><span class="text-gray-500">金额：</span>${c.amount} 万元</p>` : ''}
-                                        ${c.serviceContent ? `<p><span class="text-gray-500">服务：</span>${c.serviceContent.substring(0, 50)}${c.serviceContent.length > 50 ? '...' : ''}</p>` : ''}
-                                        <p class="text-blue-600"><i class="fas fa-check-circle mr-1"></i>${c.matchReason}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            `;
+            // 显示筛选结果，直接打开选择弹窗并只显示筛选后的人员
+            currentSelectType = 'personnel';
+            selectedResources = getSelectedPersonnel();
+            
+            // 临时存储筛选后的人员列表
+            window.filteredPersonnelList = filteredPersonnel;
+            
+            showResourceSelectModal('选择人员（AI已筛选）', 'personnel');
+            
+            // 重新渲染人员列表（只显示筛选后的）
+            setTimeout(() => {
+                renderFilteredPersonnelList(filteredPersonnel);
+                showToast(`已筛选出 ${filteredPersonnel.length} 名符合要求的人员`, 'success');
+            }, 100);
         }
         
-        // 切换业绩推荐选择
-        function togglePerformanceRecommendation(id, matchScore, name) {
-            const selected = getSelectedPerformance();
-            const selectedIds = selected.map(s => s.id);
+        // 渲染筛选后的人员列表
+        function renderFilteredPersonnelList(personnelList) {
+            const content = document.getElementById('resourceSelectContent');
             
-            if (selectedIds.includes(id)) {
-                // 取消选择
-                const newSelected = selected.filter(s => s.id !== id);
-                savePerformanceSelection(newSelected);
-            } else {
-                // 添加选择
-                const resourceData = loadResourceDataFromLibrary();
-                const allCases = resourceData.case || [];
-                const caseItem = allCases.find(c => c.id === id);
-                
-                if (caseItem) {
-                    selected.push({
-                        id: caseItem.id,
-                        name: caseItem.name || name,
-                        file: caseItem.file,
-                        matchScore: matchScore
-                    });
-                    savePerformanceSelection(selected);
-                }
+            if (personnelList.length === 0) {
+                content.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <i class="fas fa-inbox text-4xl mb-3"></i>
+                        <p class="text-sm">未找到符合要求的人员</p>
+                        <p class="text-xs mt-1">请确保人员库中的人员已上传完整的证明文件</p>
+                    </div>
+                `;
+                document.getElementById('selectedCount').textContent = '已选择：0 人';
+                return;
             }
             
-            // 重新渲染
-            const requirement = getPerformanceRequirement();
-            const recommendedCases = getBusinessConfig('performanceRecommendations') || [];
-            renderPerformanceRecommendations(recommendedCases, requirement);
+            // 渲染人员列表（复选框）
+            content.innerHTML = personnelList.map(personnel => {
+                const isSelected = selectedResources.some(r => r.id === personnel.id);
+                const safeName = (personnel.name || '未命名').replace(/"/g, '&quot;');
+                
+                return `
+                    <label class="flex items-start gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition ${isSelected ? 'border-blue-500 bg-blue-50' : ''}">
+                        <input type="checkbox" class="mt-1 resource-checkbox" 
+                               data-resource-id="${personnel.id}"
+                               ${isSelected ? 'checked' : ''}
+                               onchange="toggleResourceSelection(${personnel.id}, '${safeName}', '')">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                                    <i class="fas fa-user-check text-green-600 text-sm"></i>
+                                </div>
+                                <p class="font-medium text-sm text-gray-800">${personnel.name || '未命名'}</p>
+                                <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">${personnel.gender || ''}</span>
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">
+                                    <i class="fas fa-check-circle mr-1"></i>资料完整
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-4 text-xs text-gray-500 flex-wrap ml-10">
+                                ${personnel.department ? `<span><i class="fas fa-building mr-1"></i>${personnel.department}</span>` : ''}
+                                ${personnel.position ? `<span><i class="fas fa-briefcase mr-1"></i>${personnel.position}</span>` : ''}
+                                ${personnel.title ? `<span><i class="fas fa-award mr-1"></i>${personnel.title}</span>` : ''}
+                                ${personnel.phone ? `<span><i class="fas fa-phone mr-1"></i>${personnel.phone}</span>` : ''}
+                            </div>
+                            ${personnel.specialty ? `<p class="text-xs text-gray-500 ml-10 mt-1"><i class="fas fa-tag mr-1"></i>专业领域：${personnel.specialty}</p>` : ''}
+                        </div>
+                    </label>
+                `;
+            }).join('');
+            
+            updateSelectedCount();
+        }
+        
+        // 刷新业绩推荐
+        // 选择业绩
+        function selectPerformance() {
+            currentSelectType = 'performance';
+            selectedResources = getSelectedPerformance();
+            showResourceSelectModal('选择业绩', 'performance');
         }
         
         // 获取商务配置
@@ -1648,7 +1599,7 @@
             if (selected.length === 0) {
                 container.innerHTML = `
                     <div class="p-2 bg-gray-50 rounded text-sm">
-                        <p class="font-medium text-gray-800 mb-1">已选择：0 / ${requirement.total || 8} 人</p>
+                        <p class="font-medium text-gray-800 mb-1">已选择：0 人</p>
                         <p class="text-xs text-gray-500">从资源资产库中选择符合要求的人员</p>
                     </div>
                 `;
@@ -1657,8 +1608,7 @@
             
             container.innerHTML = `
                 <div class="p-2 bg-blue-50 border border-blue-200 rounded text-sm mb-2">
-                    <p class="font-medium text-gray-800 mb-1">已选择：${selected.length} / ${requirement.total || 8} 人</p>
-                    ${selected.length < (requirement.total || 8) ? `<p class="text-xs text-yellow-600">还需选择 ${(requirement.total || 8) - selected.length} 人</p>` : '<p class="text-xs text-green-600">人员数量已满足要求</p>'}
+                    <p class="font-medium text-gray-800 mb-1">已选择：${selected.length} 人</p>
                 </div>
                 <div class="space-y-1">
                     ${selected.map(r => `
@@ -1673,17 +1623,44 @@
             `;
         }
         
-        // 渲染业绩配置（使用AI推荐）
+        // 渲染业绩配置
         function renderPerformanceConfig() {
-            const requirement = getPerformanceRequirement();
-            const recommendedCases = getBusinessConfig('performanceRecommendations');
+            const container = document.getElementById('performanceConfigList');
+            const selected = getSelectedPerformance();
             
-            if (!recommendedCases || recommendedCases.length === 0) {
-                // 首次加载，自动获取推荐
-                loadPerformanceRecommendations();
-            } else {
-                renderPerformanceRecommendations(recommendedCases, requirement);
+            if (selected.length === 0) {
+                container.innerHTML = `
+                    <div class="p-2 bg-gray-50 rounded text-sm">
+                        <p class="font-medium text-gray-800 mb-1">已选择：0 个</p>
+                        <p class="text-xs text-gray-500">从资源资产库中选择符合要求的业绩</p>
+                    </div>
+                `;
+                return;
             }
+            
+            container.innerHTML = `
+                <div class="p-2 bg-blue-50 border border-blue-200 rounded text-sm mb-2">
+                    <p class="font-medium text-gray-800 mb-1">已选择：${selected.length} 个</p>
+                </div>
+                <div class="space-y-1">
+                    ${selected.map(r => `
+                        <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded text-xs">
+                            <span class="text-gray-700">${r.name}</span>
+                            <button onclick="removePerformance(${r.id})" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        // 删除业绩
+        function removePerformance(id) {
+            const selected = getSelectedPerformance();
+            const newSelected = selected.filter(r => r.id !== id);
+            savePerformanceSelection(newSelected);
+            renderPerformanceConfig();
         }
         
         // 刷新资质推荐
@@ -1853,14 +1830,6 @@
             renderPersonnelConfig();
         }
         
-        // 删除业绩
-        function removePerformance(id) {
-            const selected = getSelectedPerformance();
-            const newSelected = selected.filter(r => r.id !== id);
-            savePerformanceSelection(newSelected);
-            renderPerformanceConfig();
-        }
-        
         // 切换资质选择
         function toggleQualification(id) {
             const selected = getSelectedQualifications();
@@ -2028,6 +1997,43 @@
                         if (typeof updateCatalogDisplay === 'function') {
                             updateCatalogDisplay();
                         }
+                    } else {
+                        // 如果没有保存的数据，初始化默认目录（包含3.2技术架构的子目录）
+                        if (!window.catalogData || window.catalogData.length === 0) {
+                            window.catalogData = [
+                                { id: 1, title: '第一部分 投标函及投标函附录', children: [
+                                    { id: 11, title: '1.1 投标函' },
+                                    { id: 12, title: '1.2 投标函附录' }
+                                ]},
+                                { id: 2, title: '第二部分 法定代表人身份证明', children: [] },
+                                { id: 3, title: '第三部分 技术方案', children: [
+                                    { id: 31, title: '3.1 项目理解' },
+                                    { id: 32, title: '3.2 技术架构', children: [
+                                        { id: 321, title: '3.2.1 总体架构设计', aiGenerated: true },
+                                        { id: 322, title: '3.2.2 技术选型说明', aiGenerated: true },
+                                        { id: 323, title: '3.2.3 系统集成方案', aiGenerated: true },
+                                        { id: 324, title: '3.2.4 数据架构设计', aiGenerated: true },
+                                        { id: 325, title: '3.2.5 安全架构设计', aiGenerated: true }
+                                    ]},
+                                    { id: 33, title: '3.3 实施方案' },
+                                    { id: 34, title: '3.4 质量保证措施' },
+                                    { id: 35, title: '3.5 AI生成技术方案' }
+                                ]},
+                                { id: 4, title: '第四部分 商务部分', children: [
+                                    { id: 41, title: '4.1 报价明细' },
+                                    { id: 42, title: '4.2 付款方式' },
+                                    { id: 43, title: '4.3 售后服务' }
+                                ]},
+                                { id: 5, title: '第五部分 资格证明文件', children: [
+                                    { id: 51, title: '5.1 企业资质' },
+                                    { id: 52, title: '5.2 业绩案例' },
+                                    { id: 53, title: '5.3 团队配置' }
+                                ]}
+                            ];
+                            if (typeof updateCatalogDisplay === 'function') {
+                                updateCatalogDisplay();
+                            }
+                        }
                     }
                     
                     console.log('已恢复保存的标书设置');
@@ -2160,9 +2166,16 @@
                 { id: 2, title: '第二部分 法定代表人身份证明', children: [] },
                 { id: 3, title: '第三部分 技术方案', children: [
                     { id: 31, title: '3.1 项目理解' },
-                    { id: 32, title: '3.2 技术架构' },
+                    { id: 32, title: '3.2 技术架构', children: [
+                        { id: 321, title: '3.2.1 总体架构设计', aiGenerated: true },
+                        { id: 322, title: '3.2.2 技术选型说明', aiGenerated: true },
+                        { id: 323, title: '3.2.3 系统集成方案', aiGenerated: true },
+                        { id: 324, title: '3.2.4 数据架构设计', aiGenerated: true },
+                        { id: 325, title: '3.2.5 安全架构设计', aiGenerated: true }
+                    ]},
                     { id: 33, title: '3.3 实施方案' },
-                    { id: 34, title: '3.4 质量保证措施' }
+                    { id: 34, title: '3.4 质量保证措施' },
+                    { id: 35, title: '3.5 AI生成技术方案' }
                 ]},
                 { id: 4, title: '第四部分 商务部分', children: [
                     { id: 41, title: '4.1 报价明细' },
@@ -2178,6 +2191,43 @@
             window.catalogData = catalogData;
             renderCatalogEdit();
         }
+        // 递归渲染子目录（最多7级）
+        function renderChildren(children, parentPath, level = 1) {
+            if (!children || children.length === 0 || level > 7) return '';
+            
+            const indentClass = level === 1 ? 'ml-6' : level === 2 ? 'ml-6' : 'ml-4';
+            const paddingClass = level === 1 ? 'p-2' : level === 2 ? 'p-1.5' : 'p-1';
+            const bgClass = level === 1 ? 'bg-white' : level === 2 ? 'bg-gray-50' : level % 2 === 0 ? 'bg-gray-50' : 'bg-white';
+            const textSizeClass = level === 1 ? 'text-xs' : level === 2 ? 'text-[11px]' : 'text-[10px]';
+            const iconSizeClass = level === 1 ? 'text-xs' : level === 2 ? 'text-[10px]' : 'text-[9px]';
+            
+            return children.map((child, index) => {
+                const hasChildren = child.children && child.children.length > 0 && level < 7;
+                const currentPath = parentPath ? `${parentPath},${child.id}` : child.id.toString();
+                const pathArray = currentPath.split(',').map(Number);
+                
+                let html = `
+                    <div class="flex items-center gap-2 ${paddingClass} ${bgClass} rounded border border-gray-200">
+                        <i class="fas fa-grip-vertical text-gray-400 cursor-move ${iconSizeClass}"></i>
+                        <input type="text" value="${child.title}" class="flex-1 px-2 py-0.5 border border-gray-300 rounded ${textSizeClass}" onchange="updateChapterTitleByPath([${pathArray}], this.value)">
+                        ${level < 7 ? `<button onclick="addSubChapterByPath([${pathArray}])" class="${textSizeClass} text-blue-600 px-1.5 py-0.5 hover:bg-blue-50 rounded" title="添加子章节">
+                            <i class="fas fa-plus ${iconSizeClass}"></i>
+                        </button>` : ''}
+                        ${child.aiGenerated ? `<span class="${textSizeClass} text-blue-500">(AI生成)</span>` : ''}
+                        <button onclick="removeChapterByPath([${pathArray}])" class="${textSizeClass} text-red-600 px-1.5 py-0.5 hover:bg-red-50 rounded">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                if (hasChildren) {
+                    html += `<div class="${indentClass} space-y-1 mt-1">${renderChildren(child.children, currentPath, level + 1)}</div>`;
+                }
+                
+                return html;
+            }).join('');
+        }
+
         function renderCatalogEdit() {
             const container = document.getElementById('catalogEditList');
             container.innerHTML = '';
@@ -2202,15 +2252,7 @@
                             </button>
                         </div>
                         <div class="ml-6 space-y-2" id="children-${item.id}">
-                            ${item.children.map(child => `
-                                <div class="flex items-center gap-2 p-2 bg-white rounded border border-gray-200">
-                                    <i class="fas fa-grip-vertical text-gray-400 cursor-move text-xs"></i>
-                                    <input type="text" value="${child.title}" class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs" onchange="updateSubChapterTitle(${item.id}, ${child.id}, this.value)">
-                                    <button onclick="removeSubChapter(${item.id}, ${child.id})" class="text-xs text-red-600 px-2 py-1 hover:bg-red-50 rounded">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            `).join('')}
+                            ${renderChildren(item.children || [], item.id.toString(), 1)}
                         </div>
                     </div>
                 `;
@@ -2231,6 +2273,7 @@
         function addSubChapter(parentId) {
             const parent = window.catalogData.find(item => item.id === parentId);
             if (parent) {
+                if (!parent.children) parent.children = [];
                 const subNum = parent.children.length + 1;
                 const partNum = window.catalogData.findIndex(item => item.id === parentId) + 1;
                 const newId = parentId * 10 + subNum;
@@ -2242,6 +2285,112 @@
                 saveSettingsToLocal();
             }
         }
+
+        // 根据路径查找节点
+        function findNodeByPath(pathArray) {
+            if (!pathArray || pathArray.length === 0) return null;
+            
+            let current = window.catalogData.find(item => item.id === pathArray[0]);
+            if (!current) return null;
+            
+            for (let i = 1; i < pathArray.length; i++) {
+                if (!current.children) return null;
+                current = current.children.find(child => child.id === pathArray[i]);
+                if (!current) return null;
+            }
+            
+            return current;
+        }
+
+        // 根据路径查找父节点
+        function findParentByPath(pathArray) {
+            if (!pathArray || pathArray.length <= 1) return null;
+            
+            const parentPath = pathArray.slice(0, -1);
+            return findNodeByPath(parentPath);
+        }
+
+        // 根据路径添加子目录
+        function addSubChapterByPath(pathArray) {
+            if (!pathArray || pathArray.length === 0 || pathArray.length >= 7) {
+                showToast('最多支持7级子目录', 'warning');
+                return;
+            }
+            
+            const parent = findNodeByPath(pathArray);
+            if (!parent) {
+                showToast('找不到父节点', 'error');
+                return;
+            }
+            
+            if (!parent.children) parent.children = [];
+            const subNum = parent.children.length + 1;
+            
+            // 生成编号
+            let numberParts = [];
+            for (let i = 0; i < pathArray.length; i++) {
+                const currentPath = pathArray.slice(0, i + 1);
+                const node = findNodeByPath(currentPath);
+                if (i === 0) {
+                    // 顶级目录
+                    numberParts.push(window.catalogData.findIndex(item => item.id === pathArray[i]) + 1);
+                } else {
+                    // 子目录
+                    const parentNode = findNodeByPath(pathArray.slice(0, i));
+                    if (parentNode && parentNode.children) {
+                        numberParts.push(parentNode.children.findIndex(c => c.id === pathArray[i]) + 1);
+                    }
+                }
+            }
+            numberParts.push(subNum);
+            
+            // 生成ID（使用最后一个ID * 10 + 序号）
+            const newId = pathArray[pathArray.length - 1] * 10 + subNum;
+            
+            parent.children.push({
+                id: newId,
+                title: numberParts.join('.') + ' 新子章节'
+            });
+            
+            renderCatalogEdit();
+            saveSettingsToLocal();
+        }
+
+        // 根据路径更新标题
+        function updateChapterTitleByPath(pathArray, title) {
+            const node = findNodeByPath(pathArray);
+            if (node) {
+                node.title = title;
+                saveSettingsToLocal();
+            }
+        }
+
+        // 根据路径删除目录
+        function removeChapterByPath(pathArray) {
+            if (!pathArray || pathArray.length === 0) return;
+            
+            if (pathArray.length === 1) {
+                // 顶级目录
+                if (window.catalogData.length <= 1) {
+                    alert('至少需要保留一个章节');
+                    return;
+                }
+                if (confirm('确定要删除此章节及其所有子章节吗？')) {
+                    window.catalogData = window.catalogData.filter(item => item.id !== pathArray[0]);
+                    renderCatalogEdit();
+                    saveSettingsToLocal();
+                }
+            } else {
+                // 子目录
+                const parent = findParentByPath(pathArray);
+                if (parent && parent.children) {
+                    parent.children = parent.children.filter(child => child.id !== pathArray[pathArray.length - 1]);
+                    renderCatalogEdit();
+                    saveSettingsToLocal();
+                }
+            }
+        }
+
         function removeChapter(id) {
             if (window.catalogData.length <= 1) {
                 alert('至少需要保留一个章节');
@@ -2269,13 +2418,13 @@
                 saveSettingsToLocal();
             }
         }
-        function updateSubChapterTitle(parentId, childId, title) {
+        function removeSubSubChapter(parentId, childId, subChildId) {
             const parent = window.catalogData.find(item => item.id === parentId);
             if (parent) {
                 const child = parent.children.find(c => c.id === childId);
-                if (child) {
-                    child.title = title;
-                    // 自动保存
+                if (child && child.children) {
+                    child.children = child.children.filter(sc => sc.id !== subChildId);
+                    renderCatalogEdit();
                     saveSettingsToLocal();
                 }
             }
@@ -2301,6 +2450,23 @@
             
             showToast('目录已保存', 'success');
         }
+        // 递归渲染子目录用于显示（最多7级）
+        function renderChildrenForDisplay(children, level = 1) {
+            if (!children || children.length === 0 || level > 7) return '';
+            
+            return children.map(child => {
+                const hasChildren = child.children && child.children.length > 0 && level < 7;
+                const aiMark = child.aiGenerated ? ` <span class="text-[10px] text-blue-500">(AI生成)</span>` : '';
+                let html = `<p${level > 1 ? ' class="text-blue-600 font-medium"' : ''}>${child.title}${aiMark}</p>`;
+                
+                if (hasChildren) {
+                    html += `<div class="ml-4 mt-1 space-y-1">${renderChildrenForDisplay(child.children, level + 1)}</div>`;
+                }
+                
+                return html;
+            }).join('');
+        }
+
         function updateCatalogDisplay() {
             // 如果已有分配信息，使用带分配的显示
             if (window.chapterAssignments) {
@@ -2316,7 +2482,7 @@
                                 <p class="font-semibold text-gray-800">${item.title}</p>
                                 ${item.children && item.children.length > 0 ? `
                                     <div class="ml-4 mt-1 space-y-1 text-xs text-gray-600">
-                                        ${item.children.map(child => `<p>${child.title}</p>`).join('')}
+                                        ${renderChildrenForDisplay(item.children, 1)}
                                     </div>
                                 ` : ''}
                             </div>
@@ -2352,9 +2518,16 @@
                     { id: 2, title: '第二部分 法定代表人身份证明', children: [] },
                     { id: 3, title: '第三部分 技术方案', children: [
                         { id: 31, title: '3.1 项目理解' },
-                        { id: 32, title: '3.2 技术架构' },
+                        { id: 32, title: '3.2 技术架构', children: [
+                            { id: 321, title: '3.2.1 总体架构设计', aiGenerated: true },
+                            { id: 322, title: '3.2.2 技术选型说明', aiGenerated: true },
+                            { id: 323, title: '3.2.3 系统集成方案', aiGenerated: true },
+                            { id: 324, title: '3.2.4 数据架构设计', aiGenerated: true },
+                            { id: 325, title: '3.2.5 安全架构设计', aiGenerated: true }
+                        ]},
                         { id: 33, title: '3.3 实施方案' },
-                        { id: 34, title: '3.4 质量保证措施' }
+                        { id: 34, title: '3.4 质量保证措施' },
+                        { id: 35, title: '3.5 AI生成技术方案' }
                     ]},
                     { id: 4, title: '第四部分 商务部分', children: [
                         { id: 41, title: '4.1 报价明细' },
@@ -2386,9 +2559,16 @@
                     { id: 2, title: '第二部分 法定代表人身份证明', children: [] },
                     { id: 3, title: '第三部分 技术方案', children: [
                         { id: 31, title: '3.1 项目理解' },
-                        { id: 32, title: '3.2 技术架构' },
+                        { id: 32, title: '3.2 技术架构', children: [
+                            { id: 321, title: '3.2.1 总体架构设计', aiGenerated: true },
+                            { id: 322, title: '3.2.2 技术选型说明', aiGenerated: true },
+                            { id: 323, title: '3.2.3 系统集成方案', aiGenerated: true },
+                            { id: 324, title: '3.2.4 数据架构设计', aiGenerated: true },
+                            { id: 325, title: '3.2.5 安全架构设计', aiGenerated: true }
+                        ]},
                         { id: 33, title: '3.3 实施方案' },
-                        { id: 34, title: '3.4 质量保证措施' }
+                        { id: 34, title: '3.4 质量保证措施' },
+                        { id: 35, title: '3.5 AI生成技术方案' }
                     ]},
                     { id: 4, title: '第四部分 商务部分', children: [
                         { id: 41, title: '4.1 报价明细' },
@@ -2516,6 +2696,34 @@
                 // 暂时留空，后续可以接入用户搜索API
             }
         }
+
+        // 递归渲染带分配信息的子目录（最多7级）
+        function renderChildrenWithAssignments(children, parentPath, level = 1) {
+            if (!children || children.length === 0 || level > 7) return '';
+            
+            return children.map((child, childIndex) => {
+                const currentPath = parentPath ? `${parentPath}.${childIndex + 1}` : `${childIndex + 1}`;
+                const hasChildren = child.children && child.children.length > 0 && level < 7;
+                const assignees = window.chapterAssignments[currentPath] || [];
+                const aiMark = child.aiGenerated ? ` <span class="text-[10px] text-blue-500">(AI生成)</span>` : '';
+                
+                let html = `
+                    <div class="flex items-center justify-between">
+                        <p${level > 1 ? ' class="text-blue-600 font-medium"' : ''}>${child.title}${aiMark}</p>
+                        ${assignees.length > 0 ? `
+                            <span class="text-blue-600 text-[10px]">${assignees.join('、')}</span>
+                        ` : ''}
+                    </div>
+                `;
+                
+                if (hasChildren) {
+                    html += `<div class="ml-4 mt-1 space-y-1">${renderChildrenWithAssignments(child.children, currentPath, level + 1)}</div>`;
+                }
+                
+                return html;
+            }).join('');
+        }
+
         function updateCatalogWithAssignments() {
             if (!window.catalogData) return;
             
@@ -2527,12 +2735,25 @@
                 const mainChapterKey = (index + 1).toString();
                 const subChapters = item.children || [];
                 
+                // 递归收集所有子目录的负责人
+                function collectAssignees(children, parentPath, level = 1) {
+                    if (!children || children.length === 0 || level > 7) return [];
+                    let assignees = [];
+                    children.forEach((child, childIndex) => {
+                        const currentPath = parentPath ? `${parentPath}.${childIndex + 1}` : `${childIndex + 1}`;
+                        const childAssignees = window.chapterAssignments[currentPath] || [];
+                        assignees = [...new Set([...assignees, ...childAssignees])];
+                        if (child.children && child.children.length > 0 && level < 7) {
+                            const subAssignees = collectAssignees(child.children, currentPath, level + 1);
+                            assignees = [...new Set([...assignees, ...subAssignees])];
+                        }
+                    });
+                    return assignees;
+                }
+                
                 let mainAssignees = window.chapterAssignments[mainChapterKey] || [];
-                subChapters.forEach((sub, subIndex) => {
-                    const subKey = `${index + 1}.${subIndex + 1}`;
-                    const subAssignees = window.chapterAssignments[subKey] || [];
-                    mainAssignees = [...new Set([...mainAssignees, ...subAssignees])];
-                });
+                const subAssignees = collectAssignees(subChapters, '', 1);
+                mainAssignees = [...new Set([...mainAssignees, ...subAssignees])];
                 
                 const html = `
                     <div class="flex items-start gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
@@ -2549,18 +2770,7 @@
                             </div>
                             ${subChapters.length > 0 ? `
                                 <div class="ml-4 mt-1 space-y-1 text-xs text-gray-600">
-                                    ${subChapters.map((child, subIndex) => {
-                                        const subKey = `${index + 1}.${subIndex + 1}`;
-                                        const subAssignees = window.chapterAssignments[subKey] || [];
-                                        return `
-                                            <div class="flex items-center justify-between">
-                                                <p>${child.title}</p>
-                                                ${subAssignees.length > 0 ? `
-                                                    <span class="text-blue-600 text-[10px]">${subAssignees.join('、')}</span>
-                                                ` : ''}
-                                            </div>
-                                        `;
-                                    }).join('')}
+                                    ${renderChildrenWithAssignments(subChapters, `${index + 1}`, 1)}
                                 </div>
                             ` : ''}
                         </div>
