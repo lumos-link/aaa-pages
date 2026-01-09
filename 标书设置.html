@@ -121,27 +121,19 @@
 
                 <div class="border-t border-gray-200 pt-4">
                     <h3 class="text-sm font-semibold text-gray-800 mb-3">项目信息（来自招标解析）</h3>
-                    <div class="space-y-2 text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
-                        <div class="flex justify-between">
-                            <span>招标人：</span>
-                            <span class="font-medium text-gray-800" id="displayTenderer">XX市大数据局</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>代理机构：</span>
-                            <span class="font-medium text-gray-800" id="displayAgency">XX招标代理公司</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>开标日期：</span>
-                            <span class="font-medium text-gray-800" id="displayBidDate">2025-03-15 09:00</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>投标有效期：</span>
-                            <span class="font-medium text-gray-800" id="displayValidPeriod">90天</span>
-                        </div>
-                        <button onclick="syncFromInterpret()" class="mt-2 w-full px-3 py-1.5 bg-blue-50 text-blue-600 rounded text-xs hover:bg-blue-100">
-                            <i class="fas fa-sync mr-1"></i> 同步最新解析结果
-                        </button>
+                    <div class="grid md:grid-cols-3 gap-2 text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
+                        <div><span class="text-gray-500">类型：</span><span class="font-medium text-gray-800" id="displayProjectType">研发</span></div>
+                        <div class="md:col-span-2"><span class="text-gray-500">名称：</span><span class="font-medium text-gray-800" id="displayProjectName">城市运行数字底座建设项目</span></div>
+                        <div><span class="text-gray-500">招标人：</span><span class="font-medium text-gray-800" id="displayTenderer">XX市大数据局</span></div>
+                        <div><span class="text-gray-500">代理机构：</span><span class="font-medium text-gray-800" id="displayAgency">XX招标代理公司</span></div>
+                        <div><span class="text-gray-500">开标：</span><span class="font-medium text-gray-800" id="displayBidDate">2025-03-15 09:00</span></div>
+                        <div><span class="text-gray-500">有效期：</span><span class="font-medium text-gray-800" id="displayValidPeriod">90天</span></div>
+                        <div><span class="text-gray-500">质保期：</span><span class="font-medium text-gray-800" id="displayWarrantyPeriod">未填写</span></div>
+                        <div><span class="text-gray-500">回款方式：</span><span class="font-medium text-gray-800" id="displayPaymentMethod">未填写</span></div>
                     </div>
+                    <button onclick="syncFromInterpret()" class="mt-2 w-full px-3 py-1.5 bg-blue-50 text-blue-600 rounded text-xs hover:bg-blue-100">
+                        <i class="fas fa-sync mr-1"></i> 同步最新解析结果
+                    </button>
                 </div>
             </div>
 
@@ -1096,25 +1088,71 @@
                         document.getElementById('bookTitle').value = info.projectName + '投标书';
                     }
                     
-                    // 更新显示的项目信息
+                    // 更新显示的项目信息（与招标解读中的项目基本信息一致）
+                    if (info.projectType) {
+                        const displayProjectType = document.getElementById('displayProjectType');
+                        if (displayProjectType) {
+                            displayProjectType.textContent = info.projectType;
+                        }
+                    }
+                    if (info.projectName) {
+                        const displayProjectName = document.getElementById('displayProjectName');
+                        if (displayProjectName) {
+                            displayProjectName.textContent = info.projectName;
+                        }
+                    }
                     if (info.tenderer) {
-                        document.getElementById('displayTenderer').textContent = info.tenderer;
+                        const displayTenderer = document.getElementById('displayTenderer');
+                        if (displayTenderer) {
+                            displayTenderer.textContent = info.tenderer;
+                        }
                     }
                     if (info.agency) {
-                        document.getElementById('displayAgency').textContent = info.agency;
+                        const displayAgency = document.getElementById('displayAgency');
+                        if (displayAgency) {
+                            displayAgency.textContent = info.agency;
+                        }
                     }
                     if (info.bidDate) {
                         const date = new Date(info.bidDate);
-                        document.getElementById('displayBidDate').textContent = date.toLocaleString('zh-CN', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        });
+                        const displayBidDate = document.getElementById('displayBidDate');
+                        if (displayBidDate) {
+                            displayBidDate.textContent = date.toLocaleString('zh-CN', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                        }
                     }
                     if (info.validPeriod) {
-                        document.getElementById('displayValidPeriod').textContent = info.validPeriod + '天';
+                        const displayValidPeriod = document.getElementById('displayValidPeriod');
+                        if (displayValidPeriod) {
+                            displayValidPeriod.textContent = info.validPeriod + '天';
+                        }
+                    }
+                    if (info.warrantyPeriod) {
+                        const displayWarrantyPeriod = document.getElementById('displayWarrantyPeriod');
+                        if (displayWarrantyPeriod) {
+                            displayWarrantyPeriod.textContent = info.warrantyPeriod + '月';
+                        }
+                    } else {
+                        const displayWarrantyPeriod = document.getElementById('displayWarrantyPeriod');
+                        if (displayWarrantyPeriod) {
+                            displayWarrantyPeriod.textContent = '未填写';
+                        }
+                    }
+                    if (info.paymentMethod) {
+                        const displayPaymentMethod = document.getElementById('displayPaymentMethod');
+                        if (displayPaymentMethod) {
+                            displayPaymentMethod.textContent = info.paymentMethod;
+                        }
+                    } else {
+                        const displayPaymentMethod = document.getElementById('displayPaymentMethod');
+                        if (displayPaymentMethod) {
+                            displayPaymentMethod.textContent = '未填写';
+                        }
                     }
                     
                     // 同步目录结构（从响应文件格式）——预留，后续可接入
